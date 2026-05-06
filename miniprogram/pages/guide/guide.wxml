@@ -1,0 +1,44 @@
+<view class="page">
+  <view class="section panel create-panel">
+    <view class="title">学习路径</view>
+    <view class="subtitle">把网页端 Guide 的复杂左右栏，整理成移动端可执行的今日任务。</view>
+    <textarea
+      class="topic-input"
+      auto-height
+      maxlength="300"
+      value="{{topic}}"
+      placeholder="想学什么？例如：一次函数图像与性质"
+      bindinput="onTopicInput"
+    />
+    <view class="template-list">
+      <block wx:for="{{templates}}" wx:key="*this">
+        <text data-text="{{item}}" bindtap="useTemplate">{{item}}</text>
+      </block>
+    </view>
+    <button class="button-primary start-button" bindtap="startGuide" loading="{{creating}}">
+      生成今日路径
+    </button>
+  </view>
+
+  <view class="section">
+    <view class="section-title">最近路径</view>
+    <view wx:if="{{loading}}" class="empty">正在读取学习记录...</view>
+    <view wx:elif="{{sessions.length === 0}}" class="panel empty">还没有学习路径记录。</view>
+
+    <block wx:for="{{sessions}}" wx:key="session_id">
+      <view class="session panel">
+        <view class="row-between">
+          <view class="session-title">{{item.title || item.topic || "学习会话"}}</view>
+          <text class="tag">{{item.status || "ready"}}</text>
+        </view>
+        <view class="subtitle">资料：{{item.knowledge_base || "当前资料"}}</view>
+        <view class="task-list">
+          <block wx:for="{{item.tasks}}" wx:key="*this">
+            <text>{{index + 1}}. {{item}}</text>
+          </block>
+        </view>
+        <button class="button-secondary continue-button" data-topic="{{item.title || item.topic}}" bindtap="continueInChat">继续带读</button>
+      </view>
+    </block>
+  </view>
+</view>

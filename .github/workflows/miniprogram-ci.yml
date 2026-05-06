@@ -1,0 +1,33 @@
+name: Mini Program CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "codex/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  miniprogram:
+    name: WeChat mini program checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate mini program project
+        run: node miniprogram/scripts/check-ci.js
+
+      - name: Check whitespace
+        run: git diff --check

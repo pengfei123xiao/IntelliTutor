@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/chat/chat",
+    "pages/home/home",
+    "pages/knowledge/knowledge",
+    "pages/guide/guide",
+    "pages/parent/parent",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarTitleText": "IntelliTutor",
+    "navigationBarBackgroundColor": "#faf9f5",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#faf9f5",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#6c6a64",
+    "selectedColor": "#cc785c",
+    "backgroundColor": "#faf9f5",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/chat/chat",
+        "text": "聊天"
+      },
+      {
+        "pagePath": "pages/knowledge/knowledge",
+        "text": "资料"
+      },
+      {
+        "pagePath": "pages/home/home",
+        "text": "学习"
+      },
+      {
+        "pagePath": "pages/parent/parent",
+        "text": "家长"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userInfo": {
+      "desc": "用于展示学习账号信息"
+    }
+  }
+}

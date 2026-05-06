@@ -1,0 +1,140 @@
+page {
+  background: #faf9f5;
+  color: #141413;
+  font-family: "PingFang SC", "Hiragino Sans GB", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 28rpx;
+}
+
+view,
+text,
+button,
+input,
+textarea {
+  box-sizing: border-box;
+}
+
+button {
+  margin: 0;
+  overflow: visible;
+}
+
+.page {
+  background: #faf9f5;
+  min-height: 100vh;
+  padding: 32rpx 28rpx 48rpx;
+}
+
+.section {
+  margin-bottom: 30rpx;
+}
+
+.panel {
+  background: #efe9de;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 16rpx;
+  color: #141413;
+  padding: 30rpx;
+}
+
+.row {
+  align-items: center;
+  display: flex;
+}
+
+.row-between {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title {
+  color: #141413;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-size: 48rpx;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+
+.subtitle {
+  color: #6c6a64;
+  font-size: 26rpx;
+  line-height: 1.55;
+  margin-top: 14rpx;
+}
+
+.button-primary,
+.button-secondary,
+.button-ghost {
+  align-items: center;
+  border-radius: 16rpx;
+  display: flex;
+  font-size: 27rpx;
+  font-weight: 500;
+  height: 76rpx;
+  justify-content: center;
+  line-height: 76rpx;
+  padding: 0 28rpx;
+}
+
+.button-primary {
+  background: #cc785c;
+  color: #ffffff;
+}
+
+.button-secondary {
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  color: #141413;
+}
+
+.button-ghost {
+  background: #f5f0e8;
+  border: 1rpx solid #e6dfd8;
+  color: #3d3d3a;
+}
+
+.tag {
+  background: #faf9f5;
+  border-radius: 999rpx;
+  border: 1rpx solid #e6dfd8;
+  color: #cc785c;
+  display: inline-flex;
+  font-size: 22rpx;
+  line-height: 1;
+  padding: 12rpx 18rpx;
+}
+
+.muted {
+  color: #6c6a64;
+}
+
+.danger {
+  color: #c64545;
+}
+
+.empty {
+  color: #6c6a64;
+  padding: 48rpx 0;
+  text-align: center;
+}
+
+.card-title {
+  color: #141413;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.display-title {
+  color: #141413;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.dark-panel {
+  background: #181715;
+  border-color: #252320;
+  color: #faf9f5;
+}

@@ -1,0 +1,32 @@
+<view class="page">
+  <view class="section panel profile-card">
+    <view class="avatar">{{avatarText}}</view>
+    <view class="title">我的</view>
+    <view class="subtitle">{{user ? "已连接移动端开发登录态" : "账号体系会在接入微信登录后绑定学生、家长和班级。"}}</view>
+    <button class="button-primary login-button" loading="{{loggingIn}}" bindtap="login">
+      {{user ? "重新登录" : "微信登录"}}
+    </button>
+  </view>
+
+  <view wx:if="{{user}}" class="section panel">
+    <view class="card-title">{{user.nickname}}</view>
+    <view class="env-line">角色：{{user.role}}</view>
+    <view class="env-line">OpenID：{{user.openid}}</view>
+  </view>
+
+  <view class="section panel">
+    <view class="card-title">云端环境</view>
+    <view class="env-line">环境：{{settings.cloud_env_id || "cloud1-d0gxrvlbc5c9f8145"}}</view>
+    <view class="env-line">模式：{{settings.api_mode || "cloud-function"}}</view>
+    <view class="env-line">数据库：{{settings.database_policy || "test-open"}}</view>
+  </view>
+
+  <view class="section panel">
+    <view class="card-title">已迁移能力</view>
+    <view class="feature-grid">
+      <block wx:for="{{features}}" wx:key="*this">
+        <text>{{item}}</text>
+      </block>
+    </view>
+  </view>
+</view>

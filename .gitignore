@@ -8,3 +8,4 @@ dist/
 build/
 .DS_Store
 data/*.pdf
+miniprogram/project.private.config.json

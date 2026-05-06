@@ -1,0 +1,87 @@
+<view class="page">
+  <view class="section header-band">
+    <view class="title">学习资料</view>
+    <view class="subtitle">资料库、课堂笔记和错题本都在这里，聊天时可直接引用。</view>
+  </view>
+
+  <view class="tabs">
+    <view class="{{tab === 'knowledge' ? 'active' : ''}}" data-tab="knowledge" bindtap="switchTab">资料库</view>
+    <view class="{{tab === 'notebooks' ? 'active' : ''}}" data-tab="notebooks" bindtap="switchTab">笔记</view>
+    <view class="{{tab === 'questions' ? 'active' : ''}}" data-tab="questions" bindtap="switchTab">错题</view>
+  </view>
+
+  <view wx:if="{{tab === 'knowledge'}}">
+    <view class="section toolbar">
+      <button class="button-primary" bindtap="createKb">新建资料库</button>
+      <button class="button-secondary" bindtap="chooseAndUpload" disabled="{{!activeKnowledgeBase}}">上传文件</button>
+    </view>
+
+    <view class="section">
+      <view wx:if="{{loading}}" class="empty">正在加载资料库...</view>
+      <view wx:elif="{{knowledgeBases.length === 0}}" class="panel empty">还没有资料库，先新建一个。</view>
+
+      <block wx:for="{{knowledgeBases}}" wx:key="name">
+        <view class="kb-card panel {{item.name === activeKnowledgeBase ? 'selected' : ''}}">
+          <view class="row-between">
+            <view class="kb-main">
+              <view class="kb-title">{{item.name}}</view>
+              <view class="subtitle">状态：{{item.status || "ready"}}</view>
+            </view>
+            <button
+              class="{{item.name === activeKnowledgeBase ? 'button-secondary' : 'button-ghost'}} select-button"
+              data-name="{{item.name}}"
+              bindtap="selectKb"
+            >
+              {{item.name === activeKnowledgeBase ? "已选" : "选择"}}
+            </button>
+          </view>
+          <view class="stats">
+            <text>文档 {{item.statistics.document_count || item.statistics.documents || 0}}</text>
+            <text>片段 {{item.statistics.chunk_count || item.statistics.chunks || 0}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+    <button class="wide-dark" bindtap="goChatWithKb">带着当前资料去聊天</button>
+  </view>
+
+  <view wx:if="{{tab === 'notebooks'}}" class="section">
+    <view wx:if="{{loading}}" class="empty">正在加载笔记...</view>
+    <view wx:elif="{{notebooks.length === 0}}" class="panel empty">还没有笔记。可以在聊天回复里点“保存”。</view>
+    <block wx:for="{{notebooks}}" wx:key="id">
+      <view class="notebook panel">
+        <view class="row-between">
+          <view>
+            <view class="card-title">{{item.name}}</view>
+            <view class="subtitle">{{item.description || "学习记录与生成内容"}}</view>
+          </view>
+          <text class="tag">{{item.record_count || 0}} 条</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{tab === 'questions'}}" class="section">
+    <view class="filter-row">
+      <text class="{{qFilter === 'all' ? 'active' : ''}}" data-filter="all" bindtap="setQFilter">全部</text>
+      <text class="{{qFilter === 'wrong' ? 'active' : ''}}" data-filter="wrong" bindtap="setQFilter">错题</text>
+      <text class="{{qFilter === 'bookmarked' ? 'active' : ''}}" data-filter="bookmarked" bindtap="setQFilter">收藏</text>
+    </view>
+    <view wx:if="{{loading}}" class="empty">正在加载错题...</view>
+    <view wx:elif="{{questionItems.length === 0}}" class="panel empty">暂无错题记录。出题测评后会自动沉淀。</view>
+    <block wx:for="{{questionItems}}" wx:key="id">
+      <view class="question-card panel">
+        <view class="row-between">
+          <view class="question-title">{{item.question}}</view>
+          <text class="{{item.is_correct ? 'tag' : 'tag wrong'}}">{{item.is_correct ? "已掌握" : "需复盘"}}</text>
+        </view>
+        <view class="subtitle">答案：{{item.correct_answer || "待补充"}}</view>
+        <view class="explain">{{item.explanation || "还没有解析。"}}</view>
+        <view class="question-actions">
+          <text data-id="{{item.id}}" bindtap="toggleBookmark">{{item.bookmarked ? "取消收藏" : "收藏"}}</text>
+          <text data-id="{{item.id}}" bindtap="removeQuestion">删除</text>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

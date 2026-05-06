@@ -1,0 +1,99 @@
+.hero-panel {
+  border-bottom: 1rpx solid #ebe6df;
+  padding-bottom: 30rpx;
+}
+
+.grid {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.metric {
+  background: #efe9de;
+  padding: 26rpx 14rpx;
+  text-align: center;
+}
+
+.metric-value {
+  color: #141413;
+  display: block;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-size: 38rpx;
+  line-height: 1;
+}
+
+.metric-label {
+  color: #6c6a64;
+  display: block;
+  font-size: 22rpx;
+  margin-top: 10rpx;
+}
+
+.prompt-panel {
+  background: #181715;
+  border-color: #252320;
+}
+
+.prompt-panel .card-title {
+  color: #faf9f5;
+}
+
+.tip {
+  background: #cc785c;
+  border-radius: 16rpx;
+  color: #ffffff;
+  font-size: 28rpx;
+  line-height: 1.6;
+  margin-top: 20rpx;
+  padding: 24rpx;
+}
+
+.prompt-actions {
+  display: grid;
+  gap: 14rpx;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 18rpx;
+}
+
+.prompt-panel .button-secondary {
+  background: #252320;
+  border-color: #3a3731;
+  color: #faf9f5;
+}
+
+.list-row {
+  align-items: center;
+  border-top: 1rpx solid #e6dfd8;
+  color: #3d3d3a;
+  display: flex;
+  font-size: 26rpx;
+  gap: 14rpx;
+  line-height: 1.5;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+}
+
+.dot {
+  background: #cc785c;
+  border-radius: 50%;
+  height: 12rpx;
+  width: 12rpx;
+}
+
+.review-item,
+.recent-item {
+  border-top: 1rpx solid #e6dfd8;
+  color: #141413;
+  font-size: 27rpx;
+  line-height: 1.5;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+}
+
+.recent-item text {
+  color: #6c6a64;
+  display: block;
+  font-size: 23rpx;
+  margin-top: 6rpx;
+}

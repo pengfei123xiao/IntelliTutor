@@ -1,0 +1,9 @@
+{
+  "desc": "IntelliTutor page indexing settings",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "*"
+    }
+  ]
+}

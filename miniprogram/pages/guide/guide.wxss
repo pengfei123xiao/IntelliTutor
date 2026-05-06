@@ -1,0 +1,86 @@
+.create-panel {
+  background: #181715;
+  border-color: #252320;
+}
+
+.create-panel .title {
+  color: #faf9f5;
+}
+
+.create-panel .subtitle {
+  color: #a09d96;
+}
+
+.topic-input {
+  background: #252320;
+  border: 1rpx solid #3a3731;
+  border-radius: 16rpx;
+  color: #faf9f5;
+  font-size: 27rpx;
+  line-height: 1.55;
+  margin-top: 24rpx;
+  min-height: 150rpx;
+  padding: 22rpx;
+  width: 100%;
+}
+
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.template-list text {
+  background: #252320;
+  border: 1rpx solid #3a3731;
+  border-radius: 14rpx;
+  color: #d6d1c8;
+  font-size: 24rpx;
+  line-height: 1.45;
+  padding: 16rpx;
+}
+
+.start-button {
+  margin-top: 24rpx;
+}
+
+.section-title {
+  color: #141413;
+  font-size: 31rpx;
+  font-weight: 500;
+  margin-bottom: 18rpx;
+}
+
+.session {
+  background: #efe9de;
+  margin-bottom: 18rpx;
+}
+
+.session-title {
+  color: #141413;
+  flex: 1;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-size: 34rpx;
+  line-height: 1.25;
+}
+
+.task-list {
+  background: #faf9f5;
+  border-radius: 14rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  margin-top: 18rpx;
+  padding: 18rpx;
+}
+
+.task-list text {
+  color: #3d3d3a;
+  font-size: 25rpx;
+  line-height: 1.45;
+}
+
+.continue-button {
+  margin-top: 18rpx;
+}
