@@ -30,9 +30,10 @@
 
   <view class="section panel">
     <view class="card-title">薄弱点</view>
+    <view wx:if="{{loading}}" class="subtitle">正在生成家长可读摘要...</view>
     <view wx:if="{{summary.weak_points.length === 0}}" class="subtitle">暂无明显薄弱点。</view>
     <block wx:for="{{summary.weak_points}}" wx:key="*this">
-      <view class="list-row">
+      <view class="list-row" data-text="{{item}}" bindtap="askAboutItem">
         <text class="dot"></text>
         <view>{{item}}</view>
       </view>
@@ -43,7 +44,7 @@
     <view class="card-title">复习建议</view>
     <view wx:if="{{summary.review_items.length === 0}}" class="subtitle">暂无复习建议。</view>
     <block wx:for="{{summary.review_items}}" wx:key="*this">
-      <view class="review-item">{{index + 1}}. {{item}}</view>
+      <view class="review-item" data-text="{{item}}" bindtap="askAboutItem">{{index + 1}}. {{item}}</view>
     </block>
   </view>
 
@@ -51,7 +52,7 @@
     <view class="card-title">最近学习</view>
     <view wx:if="{{recentSessions.length === 0}}" class="subtitle">暂无学习记录。</view>
     <block wx:for="{{recentSessions}}" wx:key="session_id">
-      <view class="recent-item">
+      <view class="recent-item" data-title="{{item.title || '未命名对话'}}" bindtap="openSession">
         <view>{{item.title || "未命名对话"}}</view>
         <text>{{item.interactionCount || 0}} 条互动</text>
       </view>

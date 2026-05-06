@@ -23,6 +23,19 @@ Page({
     loading: false,
   },
 
+  normalizeKnowledgeBase(item) {
+    const statistics = item.statistics || {};
+    return {
+      ...item,
+      name: item.name || item.kb_name || "未命名资料库",
+      statusLabel: item.status_label || item.status || "已就绪",
+      statistics: {
+        document_count: statistics.document_count || statistics.documents || 0,
+        chunk_count: statistics.chunk_count || statistics.chunks || 0,
+      },
+    };
+  },
+
   onShow() {
     this.setData({
       activeKnowledgeBase: app.globalData.activeKnowledgeBase,
@@ -46,7 +59,9 @@ Page({
     this.setData({ loading: true });
     try {
       const knowledgeBases = await getKnowledgeBases();
-      const list = Array.isArray(knowledgeBases) ? knowledgeBases : [];
+      const list = (Array.isArray(knowledgeBases) ? knowledgeBases : knowledgeBases.items || []).map((item) =>
+        this.normalizeKnowledgeBase(item),
+      );
       this.setData({
         knowledgeBases: list,
         loading: false,
@@ -115,7 +130,20 @@ Page({
         try {
           await createKnowledgeBase(name);
           app.setActiveKnowledgeBase(name);
-          this.setData({ activeKnowledgeBase: name });
+          const exists = this.data.knowledgeBases.some((item) => item.name === name);
+          this.setData({
+            activeKnowledgeBase: name,
+            knowledgeBases: exists
+              ? this.data.knowledgeBases
+              : [
+                  this.normalizeKnowledgeBase({
+                    name,
+                    status: "已创建",
+                    statistics: { document_count: 0, chunk_count: 0 },
+                  }),
+                  ...this.data.knowledgeBases,
+                ],
+          });
           await this.loadKnowledgeBases();
           wx.showToast({ title: "创建成功", icon: "success" });
         } catch (error) {
@@ -146,6 +174,18 @@ Page({
           for (const file of files) {
             await uploadKnowledgeFile(this.data.activeKnowledgeBase, file.path);
           }
+          const knowledgeBases = this.data.knowledgeBases.map((item) => {
+            if (item.name !== this.data.activeKnowledgeBase) return item;
+            return {
+              ...item,
+              statusLabel: "处理中",
+              statistics: {
+                ...item.statistics,
+                document_count: (item.statistics.document_count || 0) + files.length,
+              },
+            };
+          });
+          this.setData({ knowledgeBases });
           wx.showToast({ title: "已开始处理", icon: "success" });
           await this.loadKnowledgeBases();
         } catch (error) {
@@ -166,14 +206,40 @@ Page({
     const id = event.currentTarget.dataset.id;
     const item = this.data.questionItems.find((entry) => entry.id === id);
     if (!item) return;
+    this.setData({
+      questionItems: this.data.questionItems.map((entry) =>
+        entry.id === id ? { ...entry, bookmarked: !entry.bookmarked } : entry,
+      ),
+    });
     await updateQuestionEntry(id, { bookmarked: !item.bookmarked });
-    this.loadQuestions();
   },
 
   async removeQuestion(event) {
     const id = event.currentTarget.dataset.id;
+    this.setData({
+      questionItems: this.data.questionItems.filter((entry) => entry.id !== id),
+    });
     await deleteQuestionEntry(id);
-    this.loadQuestions();
+  },
+
+  askQuestion(event) {
+    const text = event.currentTarget.dataset.text || "请帮我复盘这道错题。";
+    app.setPendingChatPreset({
+      capability: "deep_solve",
+      tools: ["reason"],
+      prompt: `请带我复盘这道题：${text}`,
+    });
+    wx.switchTab({ url: "/pages/chat/chat" });
+  },
+
+  continueNotebook(event) {
+    const name = event.currentTarget.dataset.name || "课堂笔记";
+    app.setPendingChatPreset({
+      capability: "",
+      tools: ["rag"],
+      prompt: `请根据「${name}」里的学习记录，帮我总结下一步复习重点。`,
+    });
+    wx.switchTab({ url: "/pages/chat/chat" });
   },
 
   goChatWithKb() {

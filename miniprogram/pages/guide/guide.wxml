@@ -1,7 +1,7 @@
 <view class="page">
   <view class="section panel create-panel">
     <view class="title">学习路径</view>
-    <view class="subtitle">把网页端 Guide 的复杂左右栏，整理成移动端可执行的今日任务。</view>
+    <view class="subtitle">把复杂学习计划整理成移动端可执行的今日任务。</view>
     <textarea
       class="topic-input"
       auto-height
@@ -29,7 +29,7 @@
       <view class="session panel">
         <view class="row-between">
           <view class="session-title">{{item.title || item.topic || "学习会话"}}</view>
-          <text class="tag">{{item.status || "ready"}}</text>
+          <text class="tag">{{item.statusLabel || "可继续"}}</text>
         </view>
         <view class="subtitle">资料：{{item.knowledge_base || "当前资料"}}</view>
         <view class="task-list">

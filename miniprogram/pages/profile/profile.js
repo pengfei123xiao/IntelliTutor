@@ -7,8 +7,12 @@ Page({
     user: null,
     avatarText: "I",
     loggingIn: false,
-    settings: null,
-    features: ["聊天", "资料库", "笔记", "错题本", "学习路径", "家长周报"],
+    settings: {
+      cloud_env_id: "cloud1-d0gxrvlbc5c9f8145",
+      api_mode: "云函数转发",
+      database_policy: "演示数据优先，真实后端可接入",
+    },
+    features: ["聊天", "新对话", "历史记录", "学习工具", "资料问答", "参考资料", "知识库", "学习路径", "家长周报"],
   },
 
   onShow() {
@@ -24,11 +28,21 @@ Page({
     try {
       const settings = await getSettings();
       this.setData({
-        settings,
+        settings: {
+          cloud_env_id: settings.cloud_env_id || "cloud1-d0gxrvlbc5c9f8145",
+          api_mode: settings.api_mode || "云函数转发",
+          database_policy: settings.database_policy || "演示数据优先，真实后端可接入",
+        },
         features: settings.features || this.data.features,
       });
     } catch (error) {
-      this.setData({ settings: null });
+      this.setData({
+        settings: {
+          cloud_env_id: "cloud1-d0gxrvlbc5c9f8145",
+          api_mode: "云函数转发",
+          database_policy: "演示数据优先，真实后端可接入",
+        },
+      });
     }
   },
 
@@ -49,5 +63,13 @@ Page({
     } finally {
       this.setData({ loggingIn: false });
     }
+  },
+
+  goKnowledge() {
+    wx.switchTab({ url: "/pages/knowledge/knowledge" });
+  },
+
+  goParent() {
+    wx.switchTab({ url: "/pages/parent/parent" });
   },
 });

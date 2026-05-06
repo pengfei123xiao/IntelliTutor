@@ -1,6 +1,6 @@
 <view class="page home-page">
   <view class="hero section">
-    <text class="hero-kicker">K12 AI 学习伴侣</text>
+    <text class="hero-kicker">K12 智能学习伴侣</text>
     <view class="title hero-title">今天从哪里开始？</view>
     <view class="subtitle">聊天、资料、测评、路径和家长反馈围绕同一条学习记录展开。</view>
   </view>
@@ -33,7 +33,7 @@
   <view class="section">
     <view class="section-head">
       <view>
-        <view class="card-title">网页端能力</view>
+        <view class="card-title">学习工具</view>
         <view class="subtitle">已按移动端工作流重新组织。</view>
       </view>
       <button class="text-button" bindtap="goChat">进入聊天</button>
@@ -68,13 +68,13 @@
 
   <view class="section panel bot-panel">
     <view class="card-title">辅导机器人</view>
-    <view class="subtitle">网页端 TutorBot 在移动端作为轻量状态入口。</view>
+    <view class="subtitle">可一键带入聊天，按不同学习方式继续提问。</view>
     <block wx:for="{{bots}}" wx:key="bot_id">
-      <view class="bot-row">
+      <view class="bot-row" data-name="{{item.name}}" bindtap="useBot">
         <text class="bot-dot"></text>
         <view>
           <view class="bot-name">{{item.name}}</view>
-          <view class="bot-desc">{{item.description}}</view>
+          <view class="bot-desc">{{item.description}} · {{item.statusLabel}}</view>
         </view>
       </view>
     </block>

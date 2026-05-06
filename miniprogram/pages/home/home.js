@@ -3,7 +3,7 @@ const { getMobileOverview, getTutorBots } = require("../../utils/api");
 
 const CAPABILITY_CARDS = [
   {
-    title: "AI 带读",
+    title: "智能带读",
     icon: "问",
     tone: "coral",
     desc: "像网页端聊天一样，直接问、继续追问、保存笔记。",
@@ -93,7 +93,12 @@ Page({
   async loadBots() {
     try {
       const bots = await getTutorBots();
-      this.setData({ bots: Array.isArray(bots) ? bots.slice(0, 2) : [] });
+      this.setData({
+        bots: (Array.isArray(bots) ? bots : bots.items || []).slice(0, 2).map((item) => ({
+          ...item,
+          statusLabel: item.status_label || item.status || "可用",
+        })),
+      });
     } catch (error) {
       this.setData({ bots: [] });
     }
@@ -120,5 +125,15 @@ Page({
 
   goParent() {
     wx.switchTab({ url: "/pages/parent/parent" });
+  },
+
+  useBot(event) {
+    const name = event.currentTarget.dataset.name || "辅导助手";
+    app.setPendingChatPreset({
+      capability: "",
+      tools: ["rag", "reason"],
+      prompt: `请以「${name}」的方式带我学习：`,
+    });
+    wx.switchTab({ url: "/pages/chat/chat" });
   },
 });

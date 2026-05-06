@@ -35,6 +35,7 @@ Page({
       const rawSessions = Array.isArray(result) ? result : result.sessions || result.items || [];
       const sessions = rawSessions.map((item) => ({
         ...item,
+        statusLabel: item.status_label || item.status || "可继续",
         tasks: Array.isArray(item.tasks) ? item.tasks : [],
       }));
       this.setData({ sessions, loading: false });
@@ -59,12 +60,22 @@ Page({
         learning_goal: topic,
         minutes: this.data.minutes,
       });
-      await createGuideSession({
+      const created = await createGuideSession({
         topic,
         knowledge_base: kbName,
       });
       wx.showToast({ title: "已创建", icon: "success" });
-      this.setData({ topic: "" });
+      this.setData({
+        topic: "",
+        sessions: [
+          {
+            ...created,
+            statusLabel: created.status_label || created.status || "可继续",
+            tasks: Array.isArray(created.tasks) ? created.tasks : ["梳理概念", "例题讲解", "错题复盘"],
+          },
+          ...this.data.sessions,
+        ],
+      });
       await this.loadSessions();
     } catch (error) {
       showError(error, "创建学习路径失败");

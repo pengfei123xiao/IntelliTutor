@@ -11,14 +11,14 @@
   <view wx:if="{{user}}" class="section panel">
     <view class="card-title">{{user.nickname}}</view>
     <view class="env-line">角色：{{user.role}}</view>
-    <view class="env-line">OpenID：{{user.openid}}</view>
+    <view class="env-line">账号标识：{{user.openid}}</view>
   </view>
 
   <view class="section panel">
     <view class="card-title">云端环境</view>
-    <view class="env-line">环境：{{settings.cloud_env_id || "cloud1-d0gxrvlbc5c9f8145"}}</view>
-    <view class="env-line">模式：{{settings.api_mode || "cloud-function"}}</view>
-    <view class="env-line">数据库：{{settings.database_policy || "test-open"}}</view>
+    <view class="env-line">服务环境：{{settings.cloud_env_id || "cloud1-d0gxrvlbc5c9f8145"}}</view>
+    <view class="env-line">连接方式：{{settings.api_mode || "云函数转发"}}</view>
+    <view class="env-line">数据策略：{{settings.database_policy || "演示数据优先，真实后端可接入"}}</view>
   </view>
 
   <view class="section panel">
@@ -28,5 +28,11 @@
         <text>{{item}}</text>
       </block>
     </view>
+  </view>
+
+  <view class="section panel">
+    <view class="card-title">常用入口</view>
+    <button class="button-secondary login-button" bindtap="goKnowledge">管理学习资料</button>
+    <button class="button-primary login-button" bindtap="goParent">查看家长周报</button>
   </view>
 </view>

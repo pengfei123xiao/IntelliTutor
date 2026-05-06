@@ -1,30 +1,35 @@
-# Web parity checklist
+# 小程序与网页端功能差距清单
 
-## Mobile information architecture
+## 本次已补齐
 
-- Chat tab: web `/chat` mobile equivalent. Supports sessions, history drawer, capability presets, tools, RAG, references, attachments, save to notebook, retry, copy, and CloudBase non-streaming fallback.
-- Data tab: web `/knowledge`, `/notebook`, and question notebook mobile equivalent. Includes knowledge bases, uploads, notebook list, question filters, bookmark/delete.
-- Learning tab: web workspace entry mobile equivalent. Includes capability launcher for chat, deep solve, quiz generation, deep research, math animation, visualization, and TutorBot status.
-- Parent tab: mobile-only parent-readable report built from sessions and question notebook data.
-- Profile tab: web settings/status mobile equivalent. Includes login, cloud env, API mode, database policy, and migrated feature list.
-- Guide page: web `/guide` mobile equivalent. Creates and lists guided learning sessions and can continue a path in Chat.
+- 聊天 tab：默认首屏就是学习对话；已补齐新对话、历史记录、学习工具、资料问答、选择资料、附件、复制、重试、保存到课堂笔记的数据流。真实接口不可用时会返回中文演示回复，不影响验收点击。
+- 资料 tab：资料库、课堂笔记、错题本均可加载中文演示数据；新建资料库、上传文件、选择资料、收藏/删除错题会立即本地回显。错题可直接进入聊天复盘，笔记可带入聊天生成复习重点。
+- 学习 tab：学习工具入口已中文化，包括智能带读、深度解题、出题测评、深度研究、数学动画、图表可视化；辅导助手卡片可一键带入聊天继续学习。
+- 学习路径页：可用当前资料生成今日路径；创建后先本地回显，再尝试刷新真实记录；路径可继续带读。
+- 家长 tab：家长周报有中文演示摘要、薄弱点、复习建议、最近学习；每项可点击生成家长可读跟进建议。
+- 我的 tab：登录、服务环境、已迁移能力、常用入口均有中文回显；接口不可用时显示演示配置，不暴露底层技术词。
+- 通用接口封装：`miniprogram/utils/api.js` 为移动端关键接口提供中文 mock fallback，确保后端未部署或云函数不可用时页面不崩溃。
 
-## CloudBase backend
+## 功能映射
 
-- Function: `apiProxy`
-- Environment target: `cloud1-d0gxrvlbc5c9f8145`
-- Collections used in test mode:
-  - `knowledge_bases`
-  - `chat_sessions`
-  - `notebooks`
-  - `question_entries`
-  - `question_categories`
-  - `guide_sessions`
-  - `tutor_bots`
-  - `app_settings`
+| 小程序入口 | 对应网页端能力 | 当前状态 |
+| --- | --- | --- |
+| 聊天 | 对话、新对话、历史记录、学习工具、资料问答、参考资料、附件 | 已补齐可演示数据流；真实流式输出依赖后端连接 |
+| 资料 | 资料库、课堂笔记、错题本 | 已补齐列表、创建、上传、筛选、收藏、删除、带入聊天 |
+| 学习 | 工作台能力入口、学习路径、辅导助手 | 已补齐中文入口和 preset 跳转 |
+| 家长 | 家长视角学习报告 | 已补齐演示周报和点击追问 |
+| 我的 | 登录、环境状态、功能清单 | 已补齐中文状态和常用入口 |
 
-## Deployment note
+## 仍需真实后端
 
-The WeChat DevTools CLI can see the target environment, but function deployment currently fails with `ResourceNotFound.Namespace`. This means the Cloud Functions namespace for the target environment is not initialized or not accessible to the current CLI session.
+- 资料上传后的解析、切片、索引和处理进度需要云函数/服务端真实落库。
+- 聊天历史、课堂笔记、错题本的长期保存需要真实账号与数据库权限策略。
+- 家长周报的薄弱点、复习建议需要从真实学习会话和错题记录聚合生成。
+- 学习路径的任务完成状态、提醒和进度统计需要服务端持久化。
+- 微信登录需要正式小程序 appid、登录态绑定学生/家长/班级关系。
 
-To finish deployment, initialize Cloud Functions for the environment in the CloudBase console or provide Tencent Cloud `SecretId` and `SecretKey` for a non-interactive CloudBase CLI login.
+## 验收提示
+
+- 后端未通时，五个 tab 仍应可点击、可回显、可带着中文 preset 跳转到聊天页。
+- 面向家长、老师、学生的可见功能名使用“学习工具 / 资料问答 / 参考资料 / 新对话 / 历史记录 / 知识库”等中文语义。
+- `pages/chat/chat.json` 仍保留静态标题，运行时会在 `chat.js` 设置为“智能带读”。

@@ -83,11 +83,121 @@ function cloudRequest({ url, method = "GET", data }) {
   });
 }
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function withFallback(promise, fallback) {
+  return promise.catch(() => clone(typeof fallback === "function" ? fallback() : fallback));
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+const MOCK_KNOWLEDGE_BASES = [
+  {
+    name: "七年级数学上册",
+    status: "已就绪",
+    statistics: { document_count: 3, chunk_count: 42 },
+  },
+  {
+    name: "课堂错题与讲义",
+    status: "处理中",
+    statistics: { document_count: 2, chunk_count: 18 },
+  },
+];
+
+const MOCK_SESSIONS = [
+  {
+    session_id: "demo-session-1",
+    title: "一次函数图像与性质",
+    last_message: "继续用例题讲斜率和截距。",
+    message_count: 6,
+    updated_at: nowIso(),
+  },
+  {
+    session_id: "demo-session-2",
+    title: "三角形全等复习",
+    last_message: "整理了判定方法和易错点。",
+    message_count: 4,
+    updated_at: nowIso(),
+  },
+];
+
+const MOCK_NOTEBOOKS = [
+  {
+    id: "demo-notebook-1",
+    notebook_id: "demo-notebook-1",
+    name: "课堂笔记",
+    description: "聊天中保存的学习记录和资料问答摘要",
+    record_count: 5,
+  },
+];
+
+const MOCK_QUESTIONS = {
+  items: [
+    {
+      id: "demo-question-1",
+      question: "一次函数 y = 2x + 1 中，斜率表示什么？",
+      correct_answer: "斜率为 2，表示 x 每增加 1，y 增加 2。",
+      explanation: "把函数看作变化关系，斜率描述变化速度。",
+      bookmarked: true,
+      is_correct: false,
+      category_id: "function",
+    },
+    {
+      id: "demo-question-2",
+      question: "三角形全等的 SAS 条件需要哪些信息？",
+      correct_answer: "两边及其夹角分别相等。",
+      explanation: "夹角必须是已知两边之间的角。",
+      bookmarked: false,
+      is_correct: true,
+      category_id: "geometry",
+    },
+  ],
+};
+
+const MOCK_GUIDE_SESSIONS = {
+  sessions: [
+    {
+      session_id: "demo-guide-1",
+      title: "一次函数 20 分钟学习路径",
+      topic: "一次函数图像与性质",
+      knowledge_base: "七年级数学上册",
+      status: "可继续",
+      tasks: ["回顾变量关系", "画出两条函数图像", "用一道题检查斜率理解"],
+    },
+  ],
+};
+
+const MOCK_BOTS = [
+  {
+    bot_id: "demo-bot-1",
+    name: "数学带读助手",
+    description: "擅长拆解题目、追问思路和沉淀错题。",
+    status_label: "可用",
+  },
+  {
+    bot_id: "demo-bot-2",
+    name: "资料问答助手",
+    description: "根据已上传讲义生成解释、提纲和检测题。",
+    status_label: "可用",
+  },
+];
+
 function mobileLogin(payload) {
-  return request({
+  return withFallback(request({
     url: "/api/v1/mobile/auth/wechat/login",
     method: "POST",
     data: payload,
+  }), {
+    token: "demo-token",
+    user: {
+      nickname: "体验账号",
+      role: "学生",
+      openid: "演示登录态",
+    },
   });
 }
 
@@ -95,18 +205,37 @@ function getMobileOverview(activeKnowledgeBase = "") {
   const query = activeKnowledgeBase
     ? `?active_knowledge_base=${encodeURIComponent(activeKnowledgeBase)}`
     : "";
-  return request({ url: `/api/v1/mobile/overview${query}` });
+  return withFallback(request({ url: `/api/v1/mobile/overview${query}` }), {
+    active_knowledge_base: activeKnowledgeBase || "七年级数学上册",
+    stats: {
+      materials: 5,
+      sessions: 12,
+      mastery: 0.72,
+    },
+  });
 }
 
 function getParentReport() {
-  return request({ url: "/api/v1/mobile/parent/report" });
+  return withFallback(request({ url: "/api/v1/mobile/parent/report" }), {
+    summary: {
+      learning_sessions: 8,
+      weak_points: ["一次函数图像斜率理解不稳定", "几何证明中容易漏写理由"],
+      review_items: ["用 2 道图像题复述斜率含义", "复盘三角形全等的 SAS 与 ASA 区别"],
+    },
+    discussion_prompt: "今晚可以请孩子用自己的话解释：为什么一次函数图像越陡，斜率越大？",
+    recent_sessions: MOCK_SESSIONS,
+  });
 }
 
 function createTodayGuide(payload) {
-  return request({
+  return withFallback(request({
     url: "/api/v1/mobile/guide/today",
     method: "POST",
     data: payload,
+  }), {
+    ok: true,
+    guide_id: `demo-guide-${Date.now()}`,
+    tasks: ["明确学习目标", "带读关键概念", "完成即时检测"],
   });
 }
 
@@ -192,34 +321,43 @@ function uploadFile({ url, filePath, name = "files", formData = {}, timeout = en
 }
 
 function getKnowledgeBases() {
-  return request({ url: "/api/v1/knowledge/list" });
+  return withFallback(request({ url: "/api/v1/knowledge/list" }), MOCK_KNOWLEDGE_BASES);
 }
 
 function createKnowledgeBase(name) {
-  return request({
+  return withFallback(request({
     url: "/api/v1/mobile/knowledge/create-empty",
     method: "POST",
     data: {
       name,
-      description: "Created from IntelliTutor Mini Program",
+      description: "小程序创建的学习资料库",
     },
+  }), {
+    name,
+    status: "已创建",
+    statistics: { document_count: 0, chunk_count: 0 },
   });
 }
 
 function uploadKnowledgeFile(kbName, filePath) {
-  return uploadFile({
+  return withFallback(uploadFile({
     url: `/api/v1/knowledge/${encodeURIComponent(kbName)}/upload`,
     filePath,
     formData: {},
+  }), {
+    ok: true,
+    status: "已加入处理队列",
+    knowledge_base: kbName,
+    filename: filePath.split("/").pop() || "学习资料",
   });
 }
 
 function getGuideSessions() {
-  return request({ url: "/api/v1/guide/sessions" });
+  return withFallback(request({ url: "/api/v1/guide/sessions" }), MOCK_GUIDE_SESSIONS);
 }
 
 function createGuideSession(payload) {
-  return request({
+  return withFallback(request({
     url: "/api/v1/guide/create_session",
     method: "POST",
     data: {
@@ -228,24 +366,49 @@ function createGuideSession(payload) {
       notebook_id: payload.notebook_id || null,
       notebook_references: payload.notebook_references || null,
     },
+  }), {
+    session_id: `demo-guide-${Date.now()}`,
+    title: payload.topic || payload.title || "今日学习路径",
+    topic: payload.topic || payload.title || "今日学习路径",
+    knowledge_base: payload.knowledge_base || "",
+    status: "可继续",
+    tasks: ["梳理概念", "例题讲解", "错题复盘"],
   });
 }
 
 function sendChatTurn(payload) {
-  return request({
+  return withFallback(request({
     url: "/api/v1/mobile/chat/turn",
     method: "POST",
     data: payload,
     timeout: 60000,
+  }), () => {
+    const toolHint = payload.tools && payload.tools.includes("rag") ? "我会优先结合当前资料来回答。" : "我会按学习对话的方式继续追问和讲解。";
+    return {
+      session_id: payload.session_id || `demo-chat-${Date.now()}`,
+      content: `已收到你的问题：「${payload.content || payload.message || "附件资料"}」。${toolHint}\n\n演示回复：先确认目标，再拆成 3 步学习：\n1. 找出题目或资料里的关键词。\n2. 用一个例子解释核心概念。\n3. 给你一道小题检查是否掌握。`,
+    };
   });
 }
 
 function getRecentSessions(limit = 6) {
-  return request({ url: `/api/v1/sessions?limit=${limit}&offset=0` });
+  return withFallback(request({ url: `/api/v1/sessions?limit=${limit}&offset=0` }), MOCK_SESSIONS.slice(0, limit));
 }
 
 function getSessionDetail(sessionId) {
-  return request({ url: `/api/v1/sessions/${encodeURIComponent(sessionId)}` });
+  return withFallback(request({ url: `/api/v1/sessions/${encodeURIComponent(sessionId)}` }), {
+    session_id: sessionId,
+    title: "一次函数图像与性质",
+    preferences: {
+      capability: "",
+      tools: ["rag"],
+      knowledge_bases: ["七年级数学上册"],
+    },
+    messages: [
+      { role: "user", content: "请用提问的方式带我学习一次函数。" },
+      { role: "assistant", content: "好的。先想一想：如果 x 每增加 1，y 固定增加 2，图像会有什么特点？" },
+    ],
+  });
 }
 
 function deleteSession(sessionId) {
@@ -256,24 +419,33 @@ function deleteSession(sessionId) {
 }
 
 function listNotebooks() {
-  return request({ url: "/api/v1/notebook/list" });
+  return withFallback(request({ url: "/api/v1/notebook/list" }), { notebooks: MOCK_NOTEBOOKS });
 }
 
 function createNotebook(payload) {
-  return request({
+  return withFallback(request({
     url: "/api/v1/notebook/create",
     method: "POST",
     data: payload,
+  }), () => {
+    const id = `demo-notebook-${Date.now()}`;
+    return {
+      notebook: {
+        id,
+        notebook_id: id,
+        name: payload.name || "课堂笔记",
+      },
+    };
   });
 }
 
 function addNotebookRecord(payload) {
-  return request({
+  return withFallback(request({
     url: "/api/v1/notebook/add_record",
     method: "POST",
     data: payload,
     timeout: 60000,
-  });
+  }), { ok: true, record_id: `demo-record-${Date.now()}` });
 }
 
 function getQuestionNotebookEntries(filter = {}) {
@@ -282,34 +454,47 @@ function getQuestionNotebookEntries(filter = {}) {
   if (filter.is_correct !== undefined) params.push(`is_correct=${filter.is_correct}`);
   if (filter.category_id !== undefined && filter.category_id !== null) params.push(`category_id=${filter.category_id}`);
   const query = params.length ? `?${params.join("&")}` : "";
-  return request({ url: `/api/v1/question-notebook/entries${query}` });
+  return withFallback(request({ url: `/api/v1/question-notebook/entries${query}` }), () => {
+    let items = MOCK_QUESTIONS.items;
+    if (filter.bookmarked !== undefined) items = items.filter((item) => item.bookmarked === filter.bookmarked);
+    if (filter.is_correct !== undefined) items = items.filter((item) => item.is_correct === filter.is_correct);
+    return { items };
+  });
 }
 
 function getQuestionCategories() {
-  return request({ url: "/api/v1/question-notebook/categories" });
+  return withFallback(request({ url: "/api/v1/question-notebook/categories" }), [
+    { id: "function", name: "函数" },
+    { id: "geometry", name: "几何" },
+  ]);
 }
 
 function updateQuestionEntry(entryId, updates) {
-  return request({
+  return withFallback(request({
     url: `/api/v1/question-notebook/entries/${entryId}`,
     method: "PATCH",
     data: updates,
-  });
+  }), { ok: true, id: entryId, ...updates });
 }
 
 function deleteQuestionEntry(entryId) {
-  return request({
+  return withFallback(request({
     url: `/api/v1/question-notebook/entries/${entryId}`,
     method: "DELETE",
-  });
+  }), { ok: true, id: entryId });
 }
 
 function getTutorBots() {
-  return request({ url: "/api/v1/tutorbot" });
+  return withFallback(request({ url: "/api/v1/tutorbot" }), MOCK_BOTS);
 }
 
 function getSettings() {
-  return request({ url: "/api/v1/mobile/settings" });
+  return withFallback(request({ url: "/api/v1/mobile/settings" }), {
+    cloud_env_id: "cloud1-d0gxrvlbc5c9f8145",
+    api_mode: "云函数转发",
+    database_policy: "演示数据优先，真实后端可接入",
+    features: ["聊天", "新对话", "历史记录", "学习工具", "资料问答", "参考资料", "知识库", "学习路径", "家长周报"],
+  });
 }
 
 module.exports = {
