@@ -1,60 +1,87 @@
 <view class="page">
   <view class="section hero-panel">
-    <view class="title">家长周报</view>
+    <view class="title">学习周报</view>
+    <view class="subtitle">本周学习状态、图谱变化和下一步复盘重点。</view>
   </view>
 
-  <view class="section grid">
-    <view class="metric panel">
+  <view class="section report-strip">
+    <view class="metric">
       <text class="metric-value">{{summary.learning_sessions}}</text>
-      <text class="metric-label">学习会话</text>
+      <text class="metric-label">本周学习</text>
     </view>
-    <view class="metric panel">
+    <view class="metric">
+      <text class="metric-value">{{report.mastery.text}}</text>
+      <text class="metric-label">掌握度</text>
+    </view>
+    <view class="metric">
       <text class="metric-value">{{summary.weak_points.length}}</text>
-      <text class="metric-label">薄弱点</text>
-    </view>
-    <view class="metric panel">
-      <text class="metric-value">{{summary.review_items.length}}</text>
-      <text class="metric-label">待复习</text>
+      <text class="metric-label">薄弱节点</text>
     </view>
   </view>
 
-  <view class="section panel prompt-panel">
-    <view class="card-title">今晚可以聊</view>
-    <view class="tip">{{discussionPrompt}}</view>
-    <text class="ai-note">AI 生成内容仅供参考，家长沟通前请结合孩子实际情况调整。</text>
-    <view class="prompt-actions">
-      <button class="button-secondary" bindtap="copyPrompt">复制话术</button>
-      <button class="button-primary" bindtap="goChat">生成更多</button>
+  <view class="section report-card mastery-card">
+    <view class="section-heading">本周掌握度</view>
+    <view class="mastery-row">
+      <view class="mastery-number">{{report.mastery.text}}</view>
+      <view class="mastery-copy">
+        <view>{{report.mastery.label}}</view>
+        <text>{{report.mastery.confidence}}</text>
+      </view>
     </view>
+    <view class="progress-track"><view class="progress-fill" style="width: {{report.mastery.percent === '--' ? 0 : report.mastery.percent}}%;"></view></view>
+    <text class="ai-note">AI 生成内容仅供参考，请结合课堂要求和真实学习表现判断。</text>
   </view>
 
-  <view class="section panel">
-    <view class="card-title">薄弱点</view>
+  <view class="section report-card">
+    <view class="section-heading">薄弱节点</view>
     <text class="ai-note">AI 生成内容仅供参考</text>
-    <view wx:if="{{loading}}" class="subtitle">正在生成家长可读摘要...</view>
-    <view wx:if="{{summary.weak_points.length === 0}}" class="subtitle">暂无明显薄弱点。</view>
-    <block wx:for="{{summary.weak_points}}" wx:key="*this">
-      <view class="list-row" data-text="{{item}}" bindtap="askAboutItem">
-        <text class="dot"></text>
-        <view>{{item}}</view>
+    <view wx:if="{{loading}}" class="subtitle">正在生成学习摘要...</view>
+    <view wx:if="{{report.weakNodes.length === 0 && !loading}}" class="subtitle">暂无明显薄弱节点。</view>
+    <block wx:for="{{report.weakNodes}}" wx:key="title">
+      <view class="node-row" data-text="{{item.title}}：{{item.detail}}" bindtap="askAboutItem">
+        <view>
+          <view class="node-title">{{item.title}}</view>
+          <text>{{item.detail}}</text>
+        </view>
       </view>
     </block>
   </view>
 
-  <view class="section panel">
-    <view class="card-title">复习建议</view>
-    <text class="ai-note">AI 生成内容仅供参考</text>
-    <view wx:if="{{summary.review_items.length === 0}}" class="subtitle">暂无复习建议。</view>
-    <block wx:for="{{summary.review_items}}" wx:key="*this">
-      <view class="review-item" data-text="{{item}}" bindtap="askAboutItem">{{index + 1}}. {{item}}</view>
+  <view class="section report-card">
+    <view class="section-heading">知识图谱更新</view>
+    <block wx:for="{{report.graphUpdates}}" wx:key="label">
+      <view class="graph-row">
+        <view>
+          <view class="node-title">{{item.label}}</view>
+          <text>{{item.detail}}</text>
+        </view>
+        <text class="graph-value">{{item.value}}</text>
+      </view>
     </block>
   </view>
 
-  <view class="section panel">
-    <view class="card-title">最近学习</view>
+  <view class="section report-card">
+    <view class="section-heading">下周建议</view>
+    <block wx:for="{{report.nextSuggestions}}" wx:key="*this">
+      <view class="suggestion-row" data-text="{{item}}" bindtap="askAboutItem">{{item}}</view>
+    </block>
+  </view>
+
+  <view class="section report-card share-card">
+    <view class="section-heading">可分享摘要</view>
+    <view class="share-summary">{{report.shareSummary}}</view>
+    <text class="ai-note">AI 生成内容仅供参考</text>
+    <view class="prompt-actions">
+      <button class="button-secondary" bindtap="copyShareSummary">复制摘要</button>
+      <button class="button-primary" bindtap="goChat">继续生成</button>
+    </view>
+  </view>
+
+  <view class="section report-card">
+    <view class="section-heading">最近学习</view>
     <view wx:if="{{recentSessions.length === 0}}" class="subtitle">暂无学习记录。</view>
     <block wx:for="{{recentSessions}}" wx:key="session_id">
-      <view class="recent-item" data-title="{{item.title || '未命名对话'}}" bindtap="openSession">
+      <view class="recent-row" data-title="{{item.title || '未命名对话'}}" bindtap="openSession">
         <view>{{item.title || "未命名对话"}}</view>
         <text>{{item.interactionCount || 0}} 条互动</text>
       </view>

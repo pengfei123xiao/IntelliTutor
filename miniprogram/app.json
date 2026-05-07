@@ -40,7 +40,7 @@
       },
       {
         "pagePath": "pages/parent/parent",
-        "text": "家长",
+        "text": "周报",
         "iconPath": "assets/tabbar/parent.png",
         "selectedIconPath": "assets/tabbar/parent-active.png"
       },
