@@ -13,7 +13,7 @@ const TOOLS = [
     title: "智能写作",
     meta: "梳理提纲，润色表达，保留自己的观点。",
     status: "作文",
-    capability: "writing",
+    capability: "co_writer",
     tools: ["reason"],
     prompt: "请帮我梳理这篇作文的提纲和修改方向：",
   },
