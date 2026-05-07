@@ -96,6 +96,7 @@
     </view>
     <view class="button-row">
       <button class="button-primary compact-button" bindtap="saveSettings">保存设置</button>
+      <button class="button-secondary compact-button" loading="{{testing}}" bindtap="testConnection">测试后端连接</button>
       <button class="button-ghost compact-button" bindtap="resetSettings">恢复默认</button>
     </view>
   </view>

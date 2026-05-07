@@ -52,7 +52,7 @@ Page({
   },
 
   onLoad() {
-    wx.setNavigationBarTitle({ title: "智能带读" });
+    wx.setNavigationBarTitle({ title: "AIChat" });
   },
 
   onShow() {

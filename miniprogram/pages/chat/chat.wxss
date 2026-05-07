@@ -1,9 +1,12 @@
 .chat-page {
   background:
     linear-gradient(180deg, #171511 0, #171511 212rpx, #f7f0e6 212rpx, #fbf6ee 66%, #efe5d8 100%);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
+  width: 100vw;
 }
 
 .chat-topbar {
@@ -147,7 +150,14 @@
 .message-list {
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.message-content {
+  box-sizing: border-box;
   padding: 36rpx 30rpx 24rpx;
+  width: 100%;
 }
 
 .message-head {
@@ -291,8 +301,12 @@
 }
 
 .message {
+  box-sizing: border-box;
   display: flex;
   margin-bottom: 26rpx;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
 }
 
 .message.user {
@@ -305,11 +319,16 @@
 }
 
 .bubble {
+  box-sizing: border-box;
   font-size: 29rpx;
   line-height: 1.68;
   max-width: 88%;
+  min-width: 0;
+  overflow: hidden;
   padding: 0;
-  word-break: break-word;
+  white-space: normal;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .user .bubble {
@@ -324,8 +343,13 @@
   max-width: 100%;
 }
 
-.assistant .bubble text {
+.message-text {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
   white-space: pre-wrap;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .message-attachments {
@@ -372,9 +396,12 @@
   background: #1c1915;
   border: 1rpx solid #332d25;
   border-radius: 26rpx;
+  box-sizing: border-box;
   box-shadow: 0 16rpx 42rpx rgba(20, 20, 19, 0.22);
+  flex: 0 0 auto;
   margin: 0 22rpx calc(20rpx + env(safe-area-inset-bottom));
   overflow: hidden;
+  width: calc(100% - 44rpx);
 }
 
 .composer.focused {
@@ -384,6 +411,7 @@
 
 .input {
   background: #1c1915;
+  box-sizing: border-box;
   color: #fff7ed;
   font-size: 29rpx;
   line-height: 1.52;

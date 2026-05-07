@@ -53,14 +53,16 @@
 .hero-actions,
 .button-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 16rpx;
   margin-top: 26rpx;
 }
 
 .action-button,
 .compact-button {
-  flex: 1;
+  flex: 1 1 196rpx;
   min-width: 0;
+  padding: 0 18rpx;
 }
 
 .full-button {

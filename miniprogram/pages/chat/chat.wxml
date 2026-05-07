@@ -3,8 +3,8 @@
     <view class="brand-block">
       <text class="brand-mark">ic</text>
       <view class="brand-copy">
-        <text class="brand-name">intelliclass</text>
-        <text class="brand-sub">智能带读</text>
+        <text class="brand-name">AIChat</text>
+        <text class="brand-sub">中文学习助手</text>
       </view>
     </view>
     <view class="top-actions">
@@ -14,6 +14,7 @@
   </view>
 
   <scroll-view class="message-list" scroll-y scroll-with-animation scroll-into-view="{{scrollIntoView}}">
+    <view class="message-content">
     <view wx:if="{{messages.length === 0}}" class="empty-chat">
       <view class="empty-orbit">
         <text class="orbit-mark">问</text>
@@ -48,7 +49,7 @@
     <block wx:for="{{messages}}" wx:key="id">
       <view id="msg-{{item.id}}" class="message {{item.role}}">
         <view class="bubble">
-          <text>{{item.content}}</text>
+          <text class="message-text">{{item.content}}</text>
           <view wx:if="{{item.attachments.length}}" class="message-attachments">
             <block wx:for="{{item.attachments}}" wx:for-item="attachment" wx:key="filename">
               <text>{{attachment.filename}}</text>
@@ -63,6 +64,7 @@
       </view>
     </block>
     <view id="bottom"></view>
+    </view>
   </scroll-view>
 
   <view class="composer {{inputFocused ? 'focused' : ''}}">
