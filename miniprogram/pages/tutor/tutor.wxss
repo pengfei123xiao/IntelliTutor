@@ -73,11 +73,14 @@
 }
 
 .tool-list {
-  border-top: 1rpx solid #e6dfd8;
+  background: #f5f0e8;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 18rpx;
+  padding: 26rpx 24rpx;
 }
 
 .section-head {
-  padding: 22rpx 0 12rpx;
+  padding: 0 0 18rpx;
 }
 
 .section-note {
@@ -94,6 +97,10 @@
   justify-content: space-between;
   min-height: 104rpx;
   padding: 20rpx 0;
+}
+
+.tool-row:last-child {
+  border-bottom: 0;
 }
 
 .tool-copy {
@@ -130,12 +137,13 @@
 
 .mission-band {
   align-items: center;
-  border-bottom: 1rpx solid #e6dfd8;
-  border-top: 1rpx solid #e6dfd8;
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 18rpx;
   display: flex;
   gap: 24rpx;
   justify-content: space-between;
-  padding: 24rpx 0;
+  padding: 24rpx;
 }
 
 .mission-band > view {

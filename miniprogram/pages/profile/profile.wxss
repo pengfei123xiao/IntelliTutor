@@ -3,11 +3,11 @@
 }
 
 .hero-panel {
-  background: transparent;
-  border-bottom: 1rpx solid #e6dfd8;
-  border-radius: 0;
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 18rpx;
   color: #141413;
-  padding: 0 0 28rpx;
+  padding: 30rpx 28rpx;
 }
 
 .hero-top {
@@ -87,23 +87,26 @@
 }
 
 .profile-page .panel {
-  background: transparent;
-  border-width: 0 0 1rpx;
-  border-radius: 0;
-  padding: 0 0 28rpx;
+  background: #f5f0e8;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 18rpx;
+  padding: 26rpx 24rpx;
 }
 
 .info-grid {
-  border-top: 1rpx solid #e6dfd8;
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 14rpx;
   display: flex;
   flex-direction: column;
   margin-top: 22rpx;
+  overflow: hidden;
 }
 
 .info-item {
   border-bottom: 1rpx solid #e6dfd8;
   min-height: 0;
-  padding: 18rpx 0;
+  padding: 18rpx 20rpx;
 }
 
 .label,
@@ -127,7 +130,11 @@
 .form-list,
 .deploy-list,
 .contact-list {
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 14rpx;
   margin-top: 22rpx;
+  overflow: hidden;
 }
 
 .status-row {
@@ -138,7 +145,7 @@
   font-size: 25rpx;
   justify-content: space-between;
   line-height: 1.5;
-  padding: 16rpx 0;
+  padding: 16rpx 18rpx;
 }
 
 .status-row:last-child {
@@ -168,7 +175,7 @@
   font-size: 25rpx;
   justify-content: space-between;
   line-height: 1.5;
-  padding: 17rpx 0;
+  padding: 17rpx 18rpx;
 }
 
 .contact-row:last-child {
@@ -259,16 +266,16 @@
   color: #3d352e;
   font-size: 25rpx;
   line-height: 1.55;
-  padding: 16rpx 0;
+  padding: 16rpx 18rpx;
 }
 
 .deploy-item:first-child {
-  padding-top: 0;
+  padding-top: 16rpx;
 }
 
 .deploy-item:last-child {
   border-bottom: 0;
-  padding-bottom: 0;
+  padding-bottom: 16rpx;
 }
 
 .developer-panel {

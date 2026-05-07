@@ -13,8 +13,9 @@
 }
 
 .metric-strip {
-  border-bottom: 1rpx solid #e6dfd8;
-  border-top: 1rpx solid #e6dfd8;
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 18rpx;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   padding: 18rpx 0;
@@ -46,14 +47,17 @@
 }
 
 .line-section {
-  border-top: 1rpx solid #e6dfd8;
+  background: #f5f0e8;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 18rpx;
+  padding: 26rpx 24rpx;
 }
 
 .section-head {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding: 22rpx 0 12rpx;
+  padding: 0 0 18rpx;
 }
 
 .section-note {
@@ -64,12 +68,14 @@
 }
 
 .text-button {
-  background: transparent;
+  background: #faf9f5;
+  border: 1rpx solid #e2d5c6;
+  border-radius: 999rpx;
   color: #c9674f;
   font-size: 24rpx;
   height: 52rpx;
   line-height: 52rpx;
-  padding: 0;
+  padding: 0 22rpx;
 }
 
 .line-row {
@@ -79,6 +85,11 @@
   justify-content: space-between;
   min-height: 92rpx;
   padding: 18rpx 0;
+}
+
+.line-section .line-row:last-child,
+.line-section .plain-line:last-child {
+  border-bottom: 0;
 }
 
 .row-copy {
@@ -188,11 +199,13 @@
 }
 
 .weekly-strip {
-  border-bottom: 1rpx solid #e6dfd8;
-  border-top: 1rpx solid #e6dfd8;
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 14rpx;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin-top: 8rpx;
+  overflow: hidden;
 }
 
 .weekly-metric {
@@ -226,7 +239,7 @@
 }
 
 .weekly-summary {
-  background: #f5f0e8;
+  background: #faf9f5;
   border: 1rpx solid #e6dfd8;
   border-radius: 12rpx;
   color: #3d3d3a;

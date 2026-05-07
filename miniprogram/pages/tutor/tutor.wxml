@@ -21,7 +21,7 @@
     <view class="section-head">
       <view>
         <view class="card-title">常用助教</view>
-        <view class="section-note">选一个方向，直接开问。</view>
+        <view class="section-note">按当前卡点选择。</view>
       </view>
     </view>
     <block wx:for="{{tools}}" wx:key="title">
@@ -38,7 +38,7 @@
   <view class="section mission-band">
     <view>
       <view class="mission-title">学习任务</view>
-      <view class="mission-meta">从资料、错题和近期对话里挑一个目标。</view>
+      <view class="mission-meta">整理下一步目标。</view>
     </view>
     <button class="mission-button" bindtap="startMission">生成</button>
   </view>
