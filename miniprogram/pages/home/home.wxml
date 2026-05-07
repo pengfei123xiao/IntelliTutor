@@ -51,11 +51,42 @@
       <view class="graph-edge edge-b"></view>
       <view class="graph-edge edge-c"></view>
       <block wx:for="{{graph.nodes}}" wx:key="title">
-        <view class="graph-node node-{{index}} {{item.statusClass}}">
+        <view
+          class="graph-node node-{{index}} {{item.statusClass}} {{selectedGraphNode && selectedGraphNode.title === item.title ? 'selected' : ''}}"
+          bindtap="openGraphNode"
+          data-index="{{index}}"
+        >
           <text class="node-title">{{item.title}}</text>
           <text class="node-meta">{{item.masteryText}}</text>
         </view>
       </block>
+    </view>
+    <view wx:if="{{selectedGraphNode}}" class="graph-detail">
+      <view class="graph-detail-head">
+        <view>
+          <view class="detail-title">{{selectedGraphNode.title}}</view>
+          <view class="detail-subtitle">{{selectedGraphNode.statusLabel}}</view>
+        </view>
+        <button class="detail-close" aria-label="关闭" bindtap="closeGraphNode">×</button>
+      </view>
+      <view class="detail-grid">
+        <view class="detail-item">
+          <text>掌握度</text>
+          <text>{{selectedGraphNode.masteryText}}</text>
+        </view>
+        <view class="detail-item">
+          <text>依据</text>
+          <text>{{selectedGraphNode.evidenceText}}</text>
+        </view>
+      </view>
+      <view class="detail-action">
+        <view>
+          <text>下一步</text>
+          <text>{{selectedGraphNode.nextAction}}</text>
+        </view>
+        <button class="detail-button" bindtap="goGraphAction">去复习</button>
+      </view>
+      <text class="ai-note on-dark detail-note">AI 生成内容仅供参考</text>
     </view>
     <view class="graph-lines">
       <view class="graph-line">
