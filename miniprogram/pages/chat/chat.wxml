@@ -32,7 +32,15 @@
     <block wx:for="{{messages}}" wx:key="id">
       <view id="msg-{{item.id}}" class="message {{item.role}}">
         <view class="bubble">
-          <text class="message-text">{{item.content}}</text>
+          <view class="message-text">
+            <block wx:for="{{item.segments}}" wx:for-item="segment" wx:key="id">
+              <text wx:if="{{segment.type === 'text'}}" class="message-run">{{segment.text}}</text>
+              <text wx:elif="{{!segment.display}}" class="math-inline">{{segment.text}}</text>
+              <scroll-view wx:else scroll-x class="math-block-scroll" show-scrollbar="{{false}}">
+                <text class="math-block">{{segment.text}}</text>
+              </scroll-view>
+            </block>
+          </view>
           <view wx:if="{{item.attachments.length}}" class="message-attachments">
             <block wx:for="{{item.attachments}}" wx:for-item="attachment" wx:key="filename">
               <text>{{attachment.filename}}</text>

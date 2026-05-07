@@ -9,6 +9,7 @@ const {
   sendChatTurn,
 } = require("../../utils/api");
 const { showError } = require("../../utils/format");
+const { tokenizeMath } = require("../../utils/math");
 const { ChatSocket } = require("../../utils/socket");
 
 let idSeed = 1;
@@ -557,9 +558,11 @@ Page({
   appendAssistantContent(content) {
     const messages = this.data.messages.map((message) => {
       if (message.id !== this.currentAssistantId) return message;
+      const nextContent = `${message.content}${content}`;
       return {
         ...message,
-        content: `${message.content}${content}`,
+        content: nextContent,
+        segments: tokenizeMath(nextContent),
       };
     });
     this.setData({
@@ -574,6 +577,7 @@ Page({
       return {
         ...message,
         content,
+        segments: tokenizeMath(content),
       };
     });
     this.setData({ messages });
@@ -584,6 +588,7 @@ Page({
       id: idSeed++,
       role,
       content,
+      segments: tokenizeMath(content),
       attachments,
     };
   },

@@ -1,6 +1,7 @@
 const childProcess = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
 
 const miniprogramRoot = path.resolve(__dirname, "..");
 const repoRoot = path.resolve(miniprogramRoot, "..");
@@ -22,6 +23,21 @@ function readJson(file) {
 
 function exists(relativeFile) {
   return fs.existsSync(path.join(miniprogramRoot, relativeFile));
+}
+
+function assertEqual(actual, expected, message) {
+  if (actual !== expected) {
+    fail(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
+  }
+}
+
+function loadCommonJsFile(file) {
+  const code = fs.readFileSync(file, "utf8");
+  const module = { exports: {} };
+  const wrapped = `(function (module, exports, require) {\n${code}\n})`;
+  const script = new vm.Script(wrapped, { filename: file });
+  script.runInThisContext()(module, module.exports, require);
+  return module.exports;
 }
 
 function walk(dir, files = []) {
@@ -117,10 +133,38 @@ function checkSecretLeak() {
   }
 }
 
+function checkMathTokenizer() {
+  const { tokenizeMath } = loadCommonJsFile(path.join(miniprogramRoot, "utils/math.js"));
+
+  const inline = tokenizeMath("求解 $x^2 + 1$ 和 \\(y=2\\)");
+  assertEqual(inline.length, 4, "math tokenizer should split text and inline formulas");
+  assertEqual(inline[1].type, "math", "math tokenizer should mark $...$ as math");
+  assertEqual(inline[1].display, false, "math tokenizer should keep $...$ inline");
+  assertEqual(inline[1].text, "x^2 + 1", "math tokenizer should remove $ delimiters");
+  assertEqual(inline[3].text, "y=2", "math tokenizer should remove \\(\\) delimiters");
+
+  const block = tokenizeMath("推导：\n$$\na^2 + b^2 = c^2\n$$\n结束");
+  assertEqual(block[1].type, "math", "math tokenizer should mark $$...$$ as math");
+  assertEqual(block[1].display, true, "math tokenizer should mark $$...$$ as display math");
+  assertEqual(block[1].text, "a^2 + b^2 = c^2", "math tokenizer should trim display math content");
+
+  const bracketBlock = tokenizeMath("面积 \\[S = \\pi r^2\\]");
+  assertEqual(bracketBlock[1].display, true, "math tokenizer should mark \\[...\\] as display math");
+
+  const escaped = tokenizeMath("价格是 \\$5，不是公式");
+  assertEqual(escaped.length, 1, "math tokenizer should ignore escaped dollar signs");
+  assertEqual(escaped[0].text, "价格是 \\$5，不是公式", "math tokenizer should preserve raw escaped dollars");
+
+  const unmatched = tokenizeMath("保留未闭合 $x + 1");
+  assertEqual(unmatched.length, 1, "math tokenizer should keep unmatched delimiters as text");
+  assertEqual(unmatched[0].text, "保留未闭合 $x + 1", "math tokenizer should preserve unmatched raw content");
+}
+
 checkProjectConfig();
 checkPages();
 checkJavaScriptSyntax();
 checkSecretLeak();
+checkMathTokenizer();
 
 if (failures.length) {
   console.error("Mini program CI checks failed:");
