@@ -56,7 +56,7 @@ cloud/functions/apiProxy
   --lang zh
 ```
 
-当前目标环境能被开发者工具识别，但云函数部署返回 `ResourceNotFound.Namespace`，需要先在云开发控制台初始化云函数命名空间，或使用具备该环境权限的腾讯云 `SecretId` / `SecretKey` 登录 CloudBase CLI。
+当前目标环境 `cloud1-d0gxrvlbc5c9f8145` 的 `apiProxy` 云函数已通过腾讯云 SCF API 更新部署；测试期数据通过 `/api/v1/mobile/setup/seed` 写入，移动端页面默认走云函数优先、演示降级兜底。
 
 ## 上线前必须补齐
 
