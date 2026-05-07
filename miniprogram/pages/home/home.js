@@ -32,10 +32,38 @@ const FALLBACK_GRAPH = {
   updated: "今日更新",
   focus: "一次函数图像",
   nodes: [
-    { title: "一次函数", masteryText: "72%", statusClass: "learning" },
-    { title: "斜率", masteryText: "52%", statusClass: "weak" },
-    { title: "图像", masteryText: "78%", statusClass: "learning" },
-    { title: "同类题", masteryText: "64%", statusClass: "weak" },
+    {
+      title: "一次函数",
+      masteryText: "72%",
+      statusClass: "learning",
+      statusLabel: "巩固中",
+      evidenceText: "3 条 · 练习、课堂",
+      nextAction: "完成今日路径",
+    },
+    {
+      title: "斜率",
+      masteryText: "52%",
+      statusClass: "weak",
+      statusLabel: "需复盘",
+      evidenceText: "2 条 · 错题、测验",
+      nextAction: "先做 2 道同类题",
+    },
+    {
+      title: "图像",
+      masteryText: "78%",
+      statusClass: "learning",
+      statusLabel: "巩固中",
+      evidenceText: "4 条 · 练习、笔记",
+      nextAction: "补一道图像题",
+    },
+    {
+      title: "同类题",
+      masteryText: "64%",
+      statusClass: "weak",
+      statusLabel: "需复盘",
+      evidenceText: "2 条 · 错题本",
+      nextAction: "复盘最近错题",
+    },
   ],
 };
 
@@ -98,14 +126,43 @@ function formatSessionCount(value) {
   return firstText([value], FALLBACK_WEEKLY_REPORT.sessions);
 }
 
+function normalizeStatusLabel(statusClass) {
+  if (statusClass === "weak") return "需复盘";
+  if (statusClass === "strong") return "已掌握";
+  return "巩固中";
+}
+
+function normalizeEvidence(item, fallback) {
+  const sources = item.evidence_sources || item.sources || item.source_labels || item.source;
+  const sourceText = Array.isArray(sources) ? sources.filter(Boolean).slice(0, 2).join("、") : sources;
+  const count = item.evidence_count ?? item.source_count ?? item.record_count ?? item.question_count;
+  const countText = Number.isFinite(Number(count)) ? `${Number(count)} 条` : "";
+  const detail = firstText([sourceText, item.evidence_label, item.source_label], "");
+  if (countText && detail) return `${countText} · ${detail}`;
+  return firstText([countText, detail], fallback);
+}
+
+function normalizeNextAction(item, statusClass, title) {
+  return firstText(
+    [item.next_action, item.suggestion, item.review_action, item.action],
+    statusClass === "weak" ? `复盘「${title}」错题` : `继续练习「${title}」`,
+  );
+}
+
 function normalizeGraphNode(item, index) {
   const masteryPercent = Number(item.mastery_percent ?? (Number(item.mastery) <= 1 ? Number(item.mastery) * 100 : item.mastery));
   const mastery = Number.isFinite(masteryPercent) ? Math.round(masteryPercent) : Number.parseInt(FALLBACK_GRAPH.mastery, 10);
   const status = item.status || (mastery < 70 ? "weak" : mastery >= 82 ? "strong" : "learning");
+  const statusClass = status === "weak" ? "weak" : status === "strong" || mastery >= 82 ? "strong" : "learning";
+  const fallbackNode = FALLBACK_GRAPH.nodes[index % FALLBACK_GRAPH.nodes.length];
+  const title = firstText([item.title, item.topic, item.name, item.knowledge_point], fallbackNode.title);
   return {
-    title: firstText([item.title, item.topic, item.name, item.knowledge_point], FALLBACK_GRAPH.nodes[index % FALLBACK_GRAPH.nodes.length].title),
-    masteryText: formatPercent(mastery, FALLBACK_GRAPH.nodes[index % FALLBACK_GRAPH.nodes.length].masteryText),
-    statusClass: status === "weak" ? "weak" : status === "strong" || mastery >= 82 ? "strong" : "learning",
+    title,
+    masteryText: formatPercent(mastery, fallbackNode.masteryText),
+    statusClass,
+    statusLabel: firstText([item.status_label], normalizeStatusLabel(statusClass)),
+    evidenceText: normalizeEvidence(item, fallbackNode.evidenceText),
+    nextAction: normalizeNextAction(item, statusClass, title),
   };
 }
 
@@ -119,6 +176,7 @@ Page({
     },
     books: FALLBACK_BOOKS,
     graph: FALLBACK_GRAPH,
+    selectedGraphNode: null,
     today: FALLBACK_TODAY,
     review: FALLBACK_REVIEW,
     weeklyReport: FALLBACK_WEEKLY_REPORT,
@@ -174,6 +232,7 @@ Page({
         },
         books,
         graph,
+        selectedGraphNode: null,
         today,
         review,
         weeklyReport,
@@ -268,8 +327,35 @@ Page({
     wx.switchTab({ url: "/pages/knowledge/knowledge" });
   },
 
+  openGraphNode(event) {
+    const index = Number(event.currentTarget.dataset.index);
+    const node = this.data.graph.nodes[index];
+    if (!node) return;
+    this.setData({ selectedGraphNode: node });
+  },
+
+  closeGraphNode() {
+    this.setData({ selectedGraphNode: null });
+  },
+
+  goGraphAction() {
+    const node = this.data.selectedGraphNode;
+    if (!node) return;
+    app.setPendingChatPreset({
+      capability: "deep_question",
+      tools: ["rag", "reason"],
+      prompt: `请围绕「${node.title}」安排一次短复习。下一步：${node.nextAction}`,
+    });
+    wx.switchTab({ url: "/pages/chat/chat" });
+  },
+
   goGuide() {
-    wx.navigateTo({ url: "/pages/guide/guide" });
+    app.setPendingChatPreset({
+      capability: "deep_question",
+      tools: ["rag", "reason"],
+      prompt: `请围绕「${this.data.today.meta}」继续今天的学习路径。`,
+    });
+    wx.switchTab({ url: "/pages/chat/chat" });
   },
 
 });

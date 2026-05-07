@@ -125,15 +125,15 @@
       </view>
 
       <view class="section-head developer-subsection">
-        <view class="card-title sub-title">API 设置</view>
+        <view class="card-title sub-title">连接设置</view>
       </view>
       <view class="form-list">
         <view class="field">
-          <text class="field-label">API 地址</text>
+          <text class="field-label">服务地址</text>
           <input class="field-input" value="{{localSettings.apiBaseUrl}}" data-field="apiBaseUrl" bindinput="onSettingInput" placeholder="例如 http://127.0.0.1:3001" />
         </view>
         <view class="field">
-          <text class="field-label">测试 Token</text>
+          <text class="field-label">访问口令</text>
           <input class="field-input" password value="{{tokenInput}}" bindinput="onTokenInput" placeholder="{{tokenMasked}}" />
         </view>
         <view class="toggle-row">
@@ -145,18 +145,18 @@
       </view>
       <view class="button-row">
         <button class="button-primary compact-button" bindtap="saveSettings">保存设置</button>
-        <button class="button-secondary compact-button" loading="{{testing}}" bindtap="testConnection">测试后端连接</button>
+        <button class="button-secondary compact-button" loading="{{testing}}" bindtap="testConnection">测试连接</button>
         <button class="button-ghost compact-button" bindtap="resetSettings">恢复默认</button>
       </view>
 
       <view class="section-head developer-subsection">
-        <view class="card-title sub-title">模型</view>
+        <view class="card-title sub-title">学习助手</view>
       </view>
       <view class="field">
-        <text class="field-label">模型名称</text>
+        <text class="field-label">助手名称</text>
         <input class="field-input" value="{{localSettings.modelName}}" data-field="modelName" bindinput="onSettingInput" placeholder="cloudbase-adapter" />
       </view>
-      <view class="model-note">当前模型：{{settings.model}}</view>
+      <view class="model-note">当前助手：{{settings.model}}</view>
 
       <view class="section-head developer-subsection">
         <view class="card-title sub-title">功能开关</view>
@@ -188,14 +188,14 @@
 
       <view class="connection-block {{connection.status}}">
         <view class="section-head">
-          <view class="card-title sub-title">后端连接</view>
+          <view class="card-title sub-title">服务连接</view>
         </view>
         <view class="connection-result">
           <text class="connection-label">{{connection.label}}</text>
           <text wx:if="{{connection.latency}}" class="connection-latency">{{connection.latency}}</text>
         </view>
         <view class="connection-detail">{{connection.detail}}</view>
-        <button class="button-primary full-button" loading="{{testing}}" bindtap="testConnection">一键测试后端连接</button>
+        <button class="button-primary full-button" loading="{{testing}}" bindtap="testConnection">一键测试连接</button>
       </view>
 
       <view class="button-row developer-actions">

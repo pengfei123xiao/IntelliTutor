@@ -55,7 +55,7 @@ Page({
   },
 
   onLoad() {
-    wx.setNavigationBarTitle({ title: "AIChat" });
+    wx.setNavigationBarTitle({ title: "智能带读" });
   },
 
   onShow() {
@@ -307,7 +307,7 @@ Page({
       onMessage: (payload) => this.handleSocketMessage(payload),
       onError: () => {
         this.setData({ streaming: false });
-        showError({ message: "带读连接失败，请检查后端服务" });
+        showError({ message: "带读暂不可用，请稍后再试" });
       },
       onClose: () => {
         this.setData({ streaming: false });

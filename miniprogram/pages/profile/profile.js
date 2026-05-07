@@ -28,17 +28,17 @@ function normalizeSettings(settings) {
     database_policy_label: policyText(databasePolicy),
     model: settings.model || "cloudbase-adapter",
     function_name: settings.function_name || "apiProxy",
-    runtime_note: settings.runtime_note || "测试期支持演示数据降级，真实后端部署后可在这里验证。",
+    runtime_note: settings.runtime_note || "测试期支持演示数据，正式服务接入后可在这里验证。",
   };
 }
 
 function modeText(value) {
-  return value === "cloud-function" ? "云函数转发" : "直连后端";
+  return value === "cloud-function" ? "在线服务" : "本地服务";
 }
 
 function policyText(value) {
   if (value === "test-open") return "测试期演示数据优先";
-  if (value === "production") return "正式后端与权限策略";
+  if (value === "production") return "正式服务与权限策略";
   return value || "测试期演示数据优先";
 }
 
@@ -63,7 +63,7 @@ Page({
     connection: {
       status: "idle",
       label: "尚未测试",
-      detail: "点击下方按钮，检查 CloudBase 或后端服务是否可访问。",
+      detail: "点击下方按钮，检查学习服务是否可用。",
       latency: "",
     },
   },
@@ -156,7 +156,7 @@ Page({
       connection: {
         status: "testing",
         label: "正在测试",
-        detail: "正在访问移动端设置接口，请稍候。",
+        detail: "正在检查学习服务，请稍候。",
         latency: "",
       },
     });
@@ -181,7 +181,7 @@ Page({
         connection: {
           status: "error",
           label: "连接失败",
-          detail: error.message || "后端暂不可达，请检查 API 地址、云函数部署或本地服务。",
+          detail: error.message || "学习服务暂不可用，请检查服务地址或稍后再试。",
           latency: "",
         },
       });
@@ -193,7 +193,7 @@ Page({
   resetSettings() {
     wx.showModal({
       title: "重置测试配置",
-      content: "会恢复默认 API 地址、模型和功能开关，并清除本地测试 Token。",
+      content: "会恢复默认服务地址、学习助手和功能开关，并清除本地访问口令。",
       confirmText: "重置",
       success: (res) => {
         if (!res.confirm) return;
@@ -216,7 +216,7 @@ Page({
   resetDemoData() {
     wx.showModal({
       title: "重置演示数据",
-      content: "测试期会清理本地选择和草稿，云端演示数据会在下次打开页面时重新生成。",
+      content: "测试期会清理本地选择和草稿，演示数据会在下次打开页面时重新生成。",
       confirmText: "重置",
       success: (res) => {
         if (!res.confirm) return;
@@ -260,7 +260,7 @@ Page({
   },
 
   goParent() {
-    wx.switchTab({ url: "/pages/parent/parent" });
+    wx.switchTab({ url: "/pages/home/home" });
   },
 
   showPrivacy() {
@@ -276,7 +276,7 @@ Page({
   showPrivacyFallback() {
     wx.showModal({
       title: "隐私说明",
-      content: "测试期仅使用微信登录凭证、学习资料选择、聊天记录和本地 API 测试配置来提供学习辅助。AI 生成内容仅供参考，不用于自动评价、排名或处分。你可以在“我的”页清理本地缓存或联系开发者处理反馈。",
+      content: "测试期仅使用微信登录凭证、学习资料选择、聊天记录和本地服务配置来提供学习辅助。AI 生成内容仅供参考，不用于自动评价、排名或处分。你可以在“我的”页清理本地缓存或联系开发者处理反馈。",
       showCancel: false,
       confirmText: "知道了",
     });
