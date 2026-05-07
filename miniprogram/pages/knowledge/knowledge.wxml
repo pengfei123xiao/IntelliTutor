@@ -41,7 +41,6 @@
         </view>
       </block>
     </view>
-    <button class="wide-dark" bindtap="goChatWithKb">带着当前资料去聊天</button>
   </view>
 
   <view wx:if="{{tab === 'notebooks'}}" class="section">

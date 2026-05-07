@@ -241,13 +241,4 @@ Page({
     });
     wx.switchTab({ url: "/pages/chat/chat" });
   },
-
-  goChatWithKb() {
-    app.setPendingChatPreset({
-      capability: "",
-      tools: ["rag"],
-      prompt: "请结合当前资料带我学习：",
-    });
-    wx.switchTab({ url: "/pages/chat/chat" });
-  },
 });
