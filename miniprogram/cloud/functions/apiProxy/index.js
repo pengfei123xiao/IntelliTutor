@@ -974,6 +974,25 @@ async function questionStatsEndpoint() {
   return ok(analytics.questionStats, { algorithm: "deterministic-js-v1" });
 }
 
+async function settingsPing(data = {}) {
+  return ok({
+    pong: true,
+    cloud_env_id: TARGET_ENV_ID,
+    function_name: "apiProxy",
+    model: data.modelName || data.model || "cloudbase-adapter",
+    received_config: {
+      has_api_base_url: !!data.apiBaseUrl,
+      has_token_placeholder: !!data.hasToken,
+      use_cloud_functions: data.useCloudFunctions !== false,
+      enable_rag: data.enableRag !== false,
+      enable_web_search: !!data.enableWebSearch,
+      enable_math_animation: data.enableMathAnimation !== false,
+    },
+    runtime_note: "测试期只回显非敏感配置状态，不保存真实 API Key 或 Token。",
+    checked_at: now(),
+  });
+}
+
 exports.main = async (event) => {
   const { pathname, query } = parsePath(event.path);
   const method = String(event.method || "GET").toUpperCase();
@@ -1012,6 +1031,8 @@ exports.main = async (event) => {
     if (pathname === "/api/v1/mobile/parent/report") return parentReport();
     if (pathname === "/api/v1/tutorbot") return tutorBots();
     if (pathname === "/api/v1/mobile/settings") return settings();
+    if (pathname === "/api/v1/mobile/settings/ping") return settingsPing(data);
+    if (pathname === "/api/v1/mobile/settings/config" && method === "POST") return settingsPing(data);
     return ok({
       message: `接口 ${method} ${pathname} 暂未接入真实服务，当前返回 CloudBase 演示响应。`,
       path: pathname,

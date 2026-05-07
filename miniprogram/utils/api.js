@@ -1,16 +1,84 @@
 const { env } = require("../config/env");
 
+const PROFILE_SETTINGS_KEY = "profileApiSettings";
+const API_TOKEN_KEY = "profileApiToken";
+
+const DEFAULT_PROFILE_SETTINGS = {
+  apiBaseUrl: env.apiBaseUrl,
+  modelName: "cloudbase-adapter",
+  useCloudFunctions: env.useCloudFunctions,
+  enableRag: true,
+  enableWebSearch: false,
+  enableMathAnimation: true,
+  enableTeacherView: true,
+};
+
 function normalizePath(path) {
   return path.startsWith("/") ? path : `/${path}`;
 }
 
+function getProfileSettings() {
+  let saved = {};
+  try {
+    saved = wx.getStorageSync(PROFILE_SETTINGS_KEY) || {};
+  } catch (error) {
+    saved = {};
+  }
+  return {
+    ...DEFAULT_PROFILE_SETTINGS,
+    ...saved,
+    useCloudFunctions: saved.useCloudFunctions === undefined ? DEFAULT_PROFILE_SETTINGS.useCloudFunctions : !!saved.useCloudFunctions,
+    enableRag: saved.enableRag === undefined ? DEFAULT_PROFILE_SETTINGS.enableRag : !!saved.enableRag,
+    enableWebSearch: saved.enableWebSearch === undefined ? DEFAULT_PROFILE_SETTINGS.enableWebSearch : !!saved.enableWebSearch,
+    enableMathAnimation: saved.enableMathAnimation === undefined ? DEFAULT_PROFILE_SETTINGS.enableMathAnimation : !!saved.enableMathAnimation,
+    enableTeacherView: saved.enableTeacherView === undefined ? DEFAULT_PROFILE_SETTINGS.enableTeacherView : !!saved.enableTeacherView,
+  };
+}
+
+function saveProfileSettings(settings) {
+  const next = {
+    ...getProfileSettings(),
+    ...settings,
+  };
+  wx.setStorageSync(PROFILE_SETTINGS_KEY, next);
+  return next;
+}
+
+function resetProfileSettings() {
+  wx.setStorageSync(PROFILE_SETTINGS_KEY, DEFAULT_PROFILE_SETTINGS);
+  wx.removeStorageSync(API_TOKEN_KEY);
+  return { ...DEFAULT_PROFILE_SETTINGS };
+}
+
+function getProfileApiToken() {
+  try {
+    return wx.getStorageSync(API_TOKEN_KEY) || "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function saveProfileApiToken(token) {
+  wx.setStorageSync(API_TOKEN_KEY, token || "");
+  return token || "";
+}
+
+function maskToken(token) {
+  if (!token) return "未设置";
+  if (token.length <= 8) return "已保存，内容已遮罩";
+  return `${token.slice(0, 4)} **** ${token.slice(-4)}`;
+}
+
 function apiUrl(path) {
-  const base = env.apiBaseUrl.endsWith("/") ? env.apiBaseUrl.slice(0, -1) : env.apiBaseUrl;
+  const settings = getProfileSettings();
+  const configuredBase = settings.apiBaseUrl || env.apiBaseUrl;
+  const base = configuredBase.endsWith("/") ? configuredBase.slice(0, -1) : configuredBase;
   return `${base}${normalizePath(path)}`;
 }
 
 function request({ url, method = "GET", data, header = {}, timeout = env.requestTimeout }) {
-  if (env.useCloudFunctions && wx.cloud) {
+  const settings = getProfileSettings();
+  if (settings.useCloudFunctions && wx.cloud) {
     return cloudRequest({ url, method, data });
   }
 
@@ -491,9 +559,11 @@ function getTutorBots() {
 function getSettings() {
   return withFallback(request({ url: "/api/v1/mobile/settings" }), {
     cloud_env_id: "cloud1-d0gxrvlbc5c9f8145",
-    api_mode: "云函数转发",
-    database_policy: "演示数据优先，真实后端可接入",
+    api_mode: "cloud-function",
+    database_policy: "test-open",
+    model: "cloudbase-adapter",
     features: ["聊天", "新对话", "历史记录", "学习工具", "资料问答", "参考资料", "知识库", "学习路径", "家长周报"],
+    runtime_note: "测试期会优先返回中文演示数据，真实后端部署后可在此页验证连接。",
   });
 }
 
@@ -550,6 +620,31 @@ function getQuestionStats() {
   });
 }
 
+async function testBackendConnection() {
+  const startedAt = Date.now();
+  const settings = await request({
+    url: "/api/v1/mobile/settings",
+    method: "GET",
+    timeout: 12000,
+  });
+  return {
+    ok: true,
+    latency: Date.now() - startedAt,
+    settings,
+  };
+}
+
+function clearProfileCache() {
+  [
+    "activeKnowledgeBase",
+    "chatDraft",
+    "pendingChatPreset",
+    "guideDraft",
+    "lastBackendTest",
+  ].forEach((key) => wx.removeStorageSync(key));
+  return true;
+}
+
 module.exports = {
   apiUrl,
   request,
@@ -581,4 +676,12 @@ module.exports = {
   getWeakPointAnalytics,
   getLearningRecommendations,
   getQuestionStats,
+  getProfileSettings,
+  saveProfileSettings,
+  resetProfileSettings,
+  getProfileApiToken,
+  saveProfileApiToken,
+  maskToken,
+  testBackendConnection,
+  clearProfileCache,
 };
