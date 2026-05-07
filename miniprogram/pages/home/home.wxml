@@ -46,6 +46,17 @@
       </view>
       <text class="graph-score">{{graph.mastery}}</text>
     </view>
+    <view class="graph-map">
+      <view class="graph-edge edge-a"></view>
+      <view class="graph-edge edge-b"></view>
+      <view class="graph-edge edge-c"></view>
+      <block wx:for="{{graph.nodes}}" wx:key="title">
+        <view class="graph-node node-{{index}} {{item.statusClass}}">
+          <text class="node-title">{{item.title}}</text>
+          <text class="node-meta">{{item.masteryText}}</text>
+        </view>
+      </block>
+    </view>
     <view class="graph-lines">
       <view class="graph-line">
         <text>状态</text>

@@ -31,6 +31,12 @@ const FALLBACK_GRAPH = {
   weakCount: 1,
   updated: "今日更新",
   focus: "一次函数图像",
+  nodes: [
+    { title: "一次函数", masteryText: "72%", statusClass: "learning" },
+    { title: "斜率", masteryText: "52%", statusClass: "weak" },
+    { title: "图像", masteryText: "78%", statusClass: "learning" },
+    { title: "同类题", masteryText: "64%", statusClass: "weak" },
+  ],
 };
 
 const FALLBACK_TODAY = {
@@ -90,6 +96,17 @@ function normalizeAction(item) {
 function formatSessionCount(value) {
   if (Number.isFinite(Number(value))) return `${Number(value)} 次`;
   return firstText([value], FALLBACK_WEEKLY_REPORT.sessions);
+}
+
+function normalizeGraphNode(item, index) {
+  const masteryPercent = Number(item.mastery_percent ?? (Number(item.mastery) <= 1 ? Number(item.mastery) * 100 : item.mastery));
+  const mastery = Number.isFinite(masteryPercent) ? Math.round(masteryPercent) : Number.parseInt(FALLBACK_GRAPH.mastery, 10);
+  const status = item.status || (mastery < 70 ? "weak" : mastery >= 82 ? "strong" : "learning");
+  return {
+    title: firstText([item.title, item.topic, item.name, item.knowledge_point], FALLBACK_GRAPH.nodes[index % FALLBACK_GRAPH.nodes.length].title),
+    masteryText: formatPercent(mastery, FALLBACK_GRAPH.nodes[index % FALLBACK_GRAPH.nodes.length].masteryText),
+    statusClass: status === "weak" ? "weak" : status === "strong" || mastery >= 82 ? "strong" : "learning",
+  };
 }
 
 Page({
@@ -184,12 +201,21 @@ Page({
     const weakList = graph.weak_nodes || weakPoints.weak_points || weakPoints.items || stats.weak_points || [];
     const weakCount = Array.isArray(weakList) ? weakList.length : Number(weakList) || 0;
     const firstWeak = Array.isArray(weakList) ? weakList[0] || {} : {};
+    const rawNodes = Array.isArray(graph.updated_nodes) && graph.updated_nodes.length
+      ? graph.updated_nodes
+      : Array.isArray(graph.nodes) && graph.nodes.length
+        ? graph.nodes
+        : [];
+    const nodes = rawNodes.length
+      ? rawNodes.map((item, index) => normalizeGraphNode(item, index)).slice(0, 4)
+      : FALLBACK_GRAPH.nodes;
     return {
       mastery: formatPercent(graph.mastery_percent ?? mastery.mastery ?? stats.mastery, FALLBACK_GRAPH.mastery),
       label: firstText([mastery.label, mastery.status_label], FALLBACK_GRAPH.label),
       weakCount,
       updated: firstText([mastery.updated_label, mastery.confidence, graph.node_count ? `${graph.node_count} 个节点` : ""], FALLBACK_GRAPH.updated),
       focus: firstText([firstWeak.topic, firstWeak.name, firstWeak.title], FALLBACK_GRAPH.focus),
+      nodes,
     };
   },
 

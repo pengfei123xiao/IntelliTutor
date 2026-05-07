@@ -159,6 +159,125 @@
   line-height: 1;
 }
 
+.graph-map {
+  background: #201d19;
+  border: 1rpx solid #2b2721;
+  border-radius: 16rpx;
+  height: 286rpx;
+  margin-top: 26rpx;
+  overflow: hidden;
+  position: relative;
+}
+
+.graph-map::after {
+  background: rgba(204, 120, 92, 0.18);
+  border-radius: 999rpx;
+  content: "";
+  height: 130rpx;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 130rpx;
+}
+
+.graph-edge {
+  background: #3c342d;
+  height: 2rpx;
+  left: 118rpx;
+  position: absolute;
+  top: 142rpx;
+  transform-origin: left center;
+  width: 310rpx;
+}
+
+.edge-a {
+  transform: rotate(-22deg);
+}
+
+.edge-b {
+  transform: rotate(19deg);
+}
+
+.edge-c {
+  left: 210rpx;
+  transform: rotate(90deg);
+  width: 168rpx;
+}
+
+.graph-node {
+  align-items: center;
+  background: #2a2620;
+  border: 1rpx solid #3a332d;
+  border-radius: 999rpx;
+  display: flex;
+  flex-direction: column;
+  height: 104rpx;
+  justify-content: center;
+  padding: 0 16rpx;
+  position: absolute;
+  width: 176rpx;
+  z-index: 1;
+}
+
+.graph-node.weak {
+  background: #3a241f;
+  border-color: #cc785c;
+}
+
+.graph-node.strong {
+  background: #21312c;
+  border-color: #5db8a6;
+}
+
+.node-0 {
+  left: 28rpx;
+  top: 28rpx;
+}
+
+.node-1 {
+  right: 28rpx;
+  top: 42rpx;
+}
+
+.node-2 {
+  bottom: 34rpx;
+  left: 96rpx;
+}
+
+.node-3 {
+  bottom: 28rpx;
+  right: 70rpx;
+}
+
+.node-title {
+  color: #faf9f5;
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.25;
+  max-width: 138rpx;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-meta {
+  color: #a09d96;
+  display: block;
+  font-size: 20rpx;
+  line-height: 1.2;
+  margin-top: 8rpx;
+}
+
+.graph-node.weak .node-meta {
+  color: #e6b19c;
+}
+
+.graph-node.strong .node-meta {
+  color: #91d0c1;
+}
+
 .graph-lines {
   border-top: 1rpx solid #2b2721;
   margin-top: 26rpx;
