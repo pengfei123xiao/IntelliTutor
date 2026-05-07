@@ -187,6 +187,54 @@
   padding: 18rpx 0;
 }
 
+.weekly-strip {
+  border-bottom: 1rpx solid #e6dfd8;
+  border-top: 1rpx solid #e6dfd8;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 8rpx;
+}
+
+.weekly-metric {
+  border-right: 1rpx solid #e6dfd8;
+  padding: 18rpx 10rpx;
+  text-align: center;
+}
+
+.weekly-metric:last-child {
+  border-right: 0;
+}
+
+.weekly-metric text:first-child {
+  color: #141413;
+  display: block;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-size: 34rpx;
+  line-height: 1.1;
+}
+
+.weekly-metric text:last-child {
+  color: #8e8b82;
+  display: block;
+  font-size: 21rpx;
+  line-height: 1.35;
+  margin-top: 8rpx;
+}
+
+.weekly-row {
+  border-bottom: 0;
+}
+
+.weekly-summary {
+  background: #f5f0e8;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 12rpx;
+  color: #3d3d3a;
+  font-size: 24rpx;
+  line-height: 1.5;
+  padding: 18rpx 20rpx;
+}
+
 .last-section {
   margin-bottom: 18rpx;
 }

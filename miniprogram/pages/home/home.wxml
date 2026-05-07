@@ -1,7 +1,7 @@
 <view class="page home-page">
   <view class="hero section">
     <view class="title hero-title">学习</view>
-    <view class="subtitle">今天从书、图谱和复盘开始。</view>
+    <view class="subtitle">书架、路径、复盘和周报。</view>
   </view>
 
   <view class="section metric-strip">
@@ -38,7 +38,7 @@
     </block>
   </view>
 
-  <view class="section dark-panel graph-panel" bindtap="goReport">
+  <view class="section dark-panel graph-panel">
     <view class="graph-head">
       <view>
         <view class="dark-title">个人知识图谱</view>
@@ -65,7 +65,7 @@
   <view class="section line-section">
     <view class="section-head">
       <view>
-        <view class="card-title">今日学习</view>
+        <view class="card-title">今日路径</view>
         <view class="section-note">{{today.meta}}</view>
       </view>
       <button class="text-button" bindtap="goGuide">继续</button>
@@ -95,17 +95,32 @@
 
   <view class="section line-section last-section">
     <view class="section-head">
-      <view class="card-title">最近学习</view>
-    </view>
-    <block wx:for="{{recentLearning}}" wx:key="title">
-      <view class="line-row" bindtap="goReport">
-        <view class="row-copy">
-          <view class="row-title">{{item.title}}</view>
-          <view class="row-meta">{{item.meta}}</view>
-        </view>
+      <view>
+        <view class="card-title">学习周报摘要</view>
+        <view class="section-note">{{weeklyReport.period}}</view>
       </view>
-    </block>
+    </view>
+    <view class="weekly-strip">
+      <view class="weekly-metric">
+        <text>{{weeklyReport.sessions}}</text>
+        <text>本周学习</text>
+      </view>
+      <view class="weekly-metric">
+        <text>{{weeklyReport.mastery}}</text>
+        <text>掌握度</text>
+      </view>
+      <view class="weekly-metric">
+        <text>{{weeklyReport.weakCount}}</text>
+        <text>薄弱节点</text>
+      </view>
+    </view>
+    <view class="line-row weekly-row">
+      <view class="row-copy">
+        <view class="row-title">{{weeklyReport.focus}}</view>
+        <view class="row-meta">{{weeklyReport.nextAction}}</view>
+      </view>
+    </view>
+    <view class="weekly-summary">{{weeklyReport.shareSummary}}</view>
+    <text class="ai-note home-note">AI 生成内容仅供参考</text>
   </view>
-
-  <text class="ai-note home-note">掌握度和建议由学习记录估算，仅供参考。</text>
 </view>

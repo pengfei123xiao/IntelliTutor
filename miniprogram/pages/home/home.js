@@ -1,5 +1,6 @@
 const app = getApp();
 const {
+  getParentReport,
   getGuideSessions,
   getKnowledgeBases,
   getLearningRecommendations,
@@ -7,7 +8,6 @@ const {
   getMobileOverview,
   getQuestionNotebookEntries,
   getQuestionStats,
-  getRecentSessions,
   getWeakPointAnalytics,
   listNotebooks,
 } = require("../../utils/api");
@@ -45,16 +45,15 @@ const FALLBACK_REVIEW = {
   focus: "同类题复盘",
 };
 
-const FALLBACK_RECENT = [
-  {
-    title: "一次函数图像与性质",
-    meta: "6 次互动 · 今天",
-  },
-  {
-    title: "三角形全等复习",
-    meta: "4 次互动 · 最近",
-  },
-];
+const FALLBACK_WEEKLY_REPORT = {
+  period: "本周",
+  sessions: "8 次",
+  mastery: "72%",
+  weakCount: 2,
+  focus: "一次函数图像斜率",
+  nextAction: "用 2 道图像题复盘斜率含义",
+  shareSummary: "本周学习稳定，重点关注一次函数图像和几何证明理由。",
+};
 
 function formatPercent(value, fallback = "--") {
   if (value === null || value === undefined || value === "") return fallback;
@@ -68,16 +67,6 @@ function firstText(values, fallback) {
   return found === undefined ? fallback : String(found).trim();
 }
 
-function formatDateLabel(value) {
-  if (!value) return "最近";
-  const timestamp = typeof value === "number" ? value : Date.parse(value);
-  if (Number.isNaN(timestamp)) return "最近";
-  const now = new Date();
-  const date = new Date(timestamp);
-  if (date.toDateString() === now.toDateString()) return "今天";
-  return `${date.getMonth() + 1}月${date.getDate()}日`;
-}
-
 function normalizeBook(item) {
   const statistics = item.statistics || item.stats || {};
   const count = statistics.document_count || statistics.documents || statistics.file_count || item.record_count || 0;
@@ -88,12 +77,19 @@ function normalizeBook(item) {
   };
 }
 
-function normalizeRecent(item) {
-  const count = item.message_count || item.interaction_count || (Array.isArray(item.messages) ? item.messages.length : 0);
-  return {
-    title: firstText([item.title, item.topic], "最近学习"),
-    meta: `${count || "--"} 次互动 · ${formatDateLabel(item.updated_at || item.created_at)}`,
-  };
+function normalizeReportNode(item) {
+  if (typeof item === "string") return item.split(/[：:]/)[0] || item;
+  return firstText([item.title, item.topic, item.name, item.knowledge_point], FALLBACK_WEEKLY_REPORT.focus);
+}
+
+function normalizeAction(item) {
+  if (typeof item === "string") return item;
+  return firstText([item.next_action, item.title, item.detail, item.name], FALLBACK_WEEKLY_REPORT.nextAction);
+}
+
+function formatSessionCount(value) {
+  if (Number.isFinite(Number(value))) return `${Number(value)} 次`;
+  return firstText([value], FALLBACK_WEEKLY_REPORT.sessions);
 }
 
 Page({
@@ -108,7 +104,7 @@ Page({
     graph: FALLBACK_GRAPH,
     today: FALLBACK_TODAY,
     review: FALLBACK_REVIEW,
-    recentLearning: FALLBACK_RECENT,
+    weeklyReport: FALLBACK_WEEKLY_REPORT,
     notesLabel: "0 本笔记",
   },
 
@@ -130,7 +126,7 @@ Page({
         questionStats,
         wrongEntries,
         guideSessions,
-        recentSessions,
+        weeklyReportData,
       ] = await Promise.all([
         getMobileOverview(activeKnowledgeBase),
         getKnowledgeBases(),
@@ -141,7 +137,7 @@ Page({
         getQuestionStats(),
         getQuestionNotebookEntries({ is_correct: false }),
         getGuideSessions(),
-        getRecentSessions(5),
+        getParentReport(),
       ]);
 
       const overviewStats = overview.stats || {};
@@ -149,7 +145,7 @@ Page({
       const graph = this.buildGraph({ ...overviewStats, graph: overview.graph || {} }, mastery, weakPoints);
       const today = this.buildToday(recommendations, guideSessions, overview);
       const review = this.buildReview(questionStats, wrongEntries);
-      const recentLearning = this.buildRecent(overview, recentSessions, guideSessions);
+      const weeklyReport = this.buildWeeklyReport(weeklyReportData);
       const noteCount = (notebooks.notebooks || notebooks.items || []).length;
 
       this.setData({
@@ -163,7 +159,7 @@ Page({
         graph,
         today,
         review,
-        recentLearning,
+        weeklyReport,
         notesLabel: `${noteCount} 本笔记`,
       });
     } catch (error) {
@@ -220,11 +216,26 @@ Page({
     };
   },
 
-  buildRecent(overview, recentSessions, guideSessions) {
-    const sessions = overview.recent_sessions || recentSessions || [];
-    const guideList = guideSessions.sessions || guideSessions.items || [];
-    const combined = [...sessions, ...guideList].map((item) => normalizeRecent(item)).slice(0, 4);
-    return combined.length ? combined : FALLBACK_RECENT;
+  buildWeeklyReport(report) {
+    const summary = report.summary || {};
+    const graph = summary.graph || {};
+    const mastery = summary.mastery || summary.mastery_profile || {};
+    const weakNodes = Array.isArray(graph.weak_nodes) && graph.weak_nodes.length
+      ? graph.weak_nodes
+      : summary.weak_points || [];
+    const nextItems = summary.next_week || summary.review_items || [];
+    const focus = weakNodes.length ? normalizeReportNode(weakNodes[0]) : FALLBACK_WEEKLY_REPORT.focus;
+    const nextAction = nextItems.length ? normalizeAction(nextItems[0]) : FALLBACK_WEEKLY_REPORT.nextAction;
+
+    return {
+      period: firstText([summary.period_label, report.period_label], FALLBACK_WEEKLY_REPORT.period),
+      sessions: formatSessionCount(summary.learning_sessions),
+      mastery: formatPercent(summary.mastery_percent ?? mastery.mastery_percent ?? mastery.mastery, FALLBACK_WEEKLY_REPORT.mastery),
+      weakCount: Array.isArray(weakNodes) ? weakNodes.length : Number(weakNodes) || FALLBACK_WEEKLY_REPORT.weakCount,
+      focus,
+      nextAction,
+      shareSummary: firstText([summary.share_summary], `重点关注「${focus}」，下一步：${nextAction}`),
+    };
   },
 
   goKnowledge() {
@@ -235,7 +246,4 @@ Page({
     wx.navigateTo({ url: "/pages/guide/guide" });
   },
 
-  goReport() {
-    wx.switchTab({ url: "/pages/parent/parent" });
-  },
 });
