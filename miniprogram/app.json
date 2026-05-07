@@ -22,23 +22,33 @@
     "list": [
       {
         "pagePath": "pages/chat/chat",
-        "text": "聊天"
+        "text": "聊天",
+        "iconPath": "assets/tabbar/chat.png",
+        "selectedIconPath": "assets/tabbar/chat-active.png"
       },
       {
         "pagePath": "pages/knowledge/knowledge",
-        "text": "资料"
+        "text": "资料",
+        "iconPath": "assets/tabbar/knowledge.png",
+        "selectedIconPath": "assets/tabbar/knowledge-active.png"
       },
       {
         "pagePath": "pages/home/home",
-        "text": "学习"
+        "text": "学习",
+        "iconPath": "assets/tabbar/learn.png",
+        "selectedIconPath": "assets/tabbar/learn-active.png"
       },
       {
         "pagePath": "pages/parent/parent",
-        "text": "家长"
+        "text": "家长",
+        "iconPath": "assets/tabbar/parent.png",
+        "selectedIconPath": "assets/tabbar/parent-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile.png",
+        "selectedIconPath": "assets/tabbar/profile-active.png"
       }
     ]
   },
