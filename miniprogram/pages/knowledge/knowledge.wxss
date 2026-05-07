@@ -32,7 +32,6 @@
   grid-template-columns: 1fr 1fr;
 }
 
-.kb-card,
 .notebook,
 .question-card {
   background: transparent;
@@ -43,18 +42,31 @@
   position: relative;
 }
 
-.kb-card.selected {
-  background: transparent;
-  border-color: #c9674f;
+.library-list {
+  padding: 0 26rpx;
 }
 
-.kb-card.selected .kb-title {
-  color: #c9674f;
-}
-
-.kb-card.selected .subtitle,
-.kb-card.selected .stats {
+.library-head {
+  align-items: center;
+  border-bottom: 1rpx solid #e2d5c6;
   color: #6c6a64;
+  display: flex;
+  font-size: 23rpx;
+  justify-content: space-between;
+  line-height: 72rpx;
+}
+
+.kb-row {
+  border-bottom: 1rpx solid #e6dfd8;
+  padding: 26rpx 0;
+}
+
+.kb-row:last-child {
+  border-bottom: 0;
+}
+
+.kb-row.selected .kb-title {
+  color: #c9674f;
 }
 
 .kb-title {
@@ -69,19 +81,94 @@
   min-width: 0;
 }
 
+.kb-top {
+  align-items: flex-start;
+  gap: 18rpx;
+}
+
+.current-mark {
+  background: #171511;
+  border-radius: 999rpx;
+  color: #fff7ed;
+  flex: 0 0 auto;
+  font-size: 22rpx;
+  line-height: 1;
+  padding: 12rpx 18rpx;
+}
+
+.kb-metrics {
+  display: grid;
+  gap: 12rpx;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 22rpx;
+}
+
+.kb-metrics view {
+  border-right: 1rpx solid #e2d5c6;
+  min-width: 0;
+}
+
+.kb-metrics view:last-child {
+  border-right: 0;
+}
+
+.kb-metrics text {
+  color: #8e8b82;
+  display: block;
+  font-size: 22rpx;
+  line-height: 1.35;
+}
+
+.kb-metrics text + text {
+  color: #252523;
+  font-size: 28rpx;
+  margin-top: 8rpx;
+}
+
+.progress-track {
+  background: #e6dfd8;
+  border-radius: 999rpx;
+  height: 8rpx;
+  margin-top: 18rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: #c9674f;
+  border-radius: 999rpx;
+  height: 100%;
+}
+
+.kb-actions {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+
+.kb-actions > text {
+  color: #6c6a64;
+  font-size: 23rpx;
+}
+
+.action-group {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 12rpx;
+}
+
 .select-button {
   height: 64rpx;
   line-height: 64rpx;
-  min-width: 112rpx;
-  padding: 0 22rpx;
+  min-width: 116rpx;
+  padding: 0 20rpx;
 }
 
-.stats {
-  color: #6c6a64;
-  display: flex;
-  font-size: 24rpx;
-  gap: 28rpx;
-  margin-top: 14rpx;
+.continue-button {
+  height: 64rpx;
+  line-height: 64rpx;
+  min-width: 120rpx;
+  padding: 0 22rpx;
 }
 
 .wide-dark {

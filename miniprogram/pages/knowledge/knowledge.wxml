@@ -19,27 +19,60 @@
       <view wx:if="{{loading}}" class="empty">正在加载资料库...</view>
       <view wx:elif="{{knowledgeBases.length === 0}}" class="panel empty">还没有资料库，先新建一个。</view>
 
-      <block wx:for="{{knowledgeBases}}" wx:key="name">
-        <view class="kb-card panel {{item.name === activeKnowledgeBase ? 'selected' : ''}}">
-          <view class="row-between">
-            <view class="kb-main">
-              <view class="kb-title">{{item.name}}</view>
-              <view class="subtitle">{{item.statusLabel || "已就绪"}}</view>
-            </view>
-            <button
-              class="{{item.name === activeKnowledgeBase ? 'button-secondary' : 'button-ghost'}} select-button"
-              data-name="{{item.name}}"
-              bindtap="selectKb"
-            >
-              {{item.name === activeKnowledgeBase ? "已选" : "选择"}}
-            </button>
-          </view>
-          <view class="stats">
-            <text>文档 {{item.statistics.document_count || item.statistics.documents || 0}}</text>
-            <text>片段 {{item.statistics.chunk_count || item.statistics.chunks || 0}}</text>
-          </view>
+      <view wx:else class="library-list panel">
+        <view class="library-head">
+          <text>我的资料</text>
+          <text>{{knowledgeBases.length}} 本</text>
         </view>
-      </block>
+        <block wx:for="{{knowledgeBases}}" wx:key="name">
+          <view class="kb-row {{item.name === activeKnowledgeBase ? 'selected' : ''}}">
+            <view class="row-between kb-top">
+              <view class="kb-main">
+                <view class="kb-title">{{item.name}}</view>
+                <view class="subtitle">{{item.chapterLabel}}</view>
+              </view>
+              <text wx:if="{{item.name === activeKnowledgeBase}}" class="current-mark">当前</text>
+            </view>
+            <view class="kb-metrics">
+              <view>
+                <text>进度</text>
+                <text>{{item.progressText}}</text>
+              </view>
+              <view>
+                <text>掌握</text>
+                <text>{{item.masteryText}}</text>
+              </view>
+              <view>
+                <text>资料</text>
+                <text>{{item.documentText}}</text>
+              </view>
+            </view>
+            <view class="progress-track">
+              <view class="progress-fill" style="width: {{item.progressPercent}}%;"></view>
+            </view>
+            <view class="kb-actions">
+              <text>{{item.statusLabel || "已就绪"}}</text>
+              <view class="action-group">
+                <button
+                  class="button-ghost select-button"
+                  data-name="{{item.name}}"
+                  bindtap="selectKb"
+                >
+                  {{item.name === activeKnowledgeBase ? "已设" : "设为当前"}}
+                </button>
+                <button
+                  class="button-secondary continue-button"
+                  data-name="{{item.name}}"
+                  data-chapter="{{item.chapterLabel}}"
+                  bindtap="continueKnowledgeBase"
+                >
+                  {{item.name === activeKnowledgeBase ? "继续" : "去提问"}}
+                </button>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
     </view>
   </view>
 

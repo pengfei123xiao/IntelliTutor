@@ -1,6 +1,7 @@
 const app = getApp();
 const {
   createKnowledgeBase,
+  getMobileBooks,
   getKnowledgeBases,
   uploadKnowledgeFile,
   listNotebooks,
@@ -10,6 +11,26 @@ const {
   deleteQuestionEntry,
 } = require("../../utils/api");
 const { showError } = require("../../utils/format");
+
+function firstText(values, fallback) {
+  const found = values.find((value) => value !== undefined && value !== null && String(value).trim());
+  return found === undefined ? fallback : String(found).trim();
+}
+
+function normalizePercent(value, fallbackNumber) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return fallbackNumber;
+  return Math.max(0, Math.min(100, Math.round(numeric > 1 ? numeric : numeric * 100)));
+}
+
+function normalizeBookMap(result) {
+  const source = Array.isArray(result) ? result : result.books || result.items || [];
+  return source.reduce((map, item) => {
+    const name = firstText([item.title, item.name, item.kb_name], "");
+    if (name) map[name] = item;
+    return map;
+  }, {});
+}
 
 Page({
   data: {
@@ -25,13 +46,24 @@ Page({
 
   normalizeKnowledgeBase(item) {
     const statistics = item.statistics || {};
+    const documentCount = statistics.document_count || statistics.documents || statistics.file_count || item.document_count || 0;
+    const chunkCount = statistics.chunk_count || statistics.chunks || item.chunk_count || 0;
+    const fallbackProgress = documentCount ? 24 : 0;
+    const progressPercent = normalizePercent(item.progress_percent ?? item.progress, fallbackProgress);
+    const masteryPercent = normalizePercent(item.mastery_percent ?? item.mastery, documentCount ? 60 : 0);
     return {
       ...item,
       name: item.name || item.kb_name || "未命名资料库",
       statusLabel: item.status_label || item.status || "已就绪",
+      chapterLabel: firstText([item.current_chapter, item.chapter, item.topic, item.last_chapter], documentCount ? "继续学习" : "等待资料"),
+      progressPercent,
+      progressText: documentCount ? `${progressPercent}%` : "未开始",
+      masteryPercent,
+      masteryText: documentCount ? `${masteryPercent}%` : "待测",
+      documentText: `${documentCount} 份资料`,
       statistics: {
-        document_count: statistics.document_count || statistics.documents || 0,
-        chunk_count: statistics.chunk_count || statistics.chunks || 0,
+        document_count: documentCount,
+        chunk_count: chunkCount,
       },
     };
   },
@@ -58,10 +90,16 @@ Page({
   async loadKnowledgeBases() {
     this.setData({ loading: true });
     try {
-      const knowledgeBases = await getKnowledgeBases();
-      const list = (Array.isArray(knowledgeBases) ? knowledgeBases : knowledgeBases.items || []).map((item) =>
-        this.normalizeKnowledgeBase(item),
-      );
+      const [knowledgeBases, booksResult] = await Promise.all([getKnowledgeBases(), getMobileBooks()]);
+      const bookMap = normalizeBookMap(booksResult);
+      const list = (Array.isArray(knowledgeBases) ? knowledgeBases : knowledgeBases.items || []).map((item) => {
+        const name = item.name || item.kb_name || item.title || "";
+        return this.normalizeKnowledgeBase({
+          ...item,
+          ...(bookMap[name] || {}),
+          name: name || (bookMap[name] && bookMap[name].title),
+        });
+      });
       this.setData({
         knowledgeBases: list,
         loading: false,
@@ -113,7 +151,22 @@ Page({
     const name = event.currentTarget.dataset.name;
     app.setActiveKnowledgeBase(name);
     this.setData({ activeKnowledgeBase: name });
-    wx.showToast({ title: "已选择资料", icon: "success" });
+    wx.showToast({ title: "已设为当前", icon: "success" });
+  },
+
+  continueKnowledgeBase(event) {
+    const name = event.currentTarget.dataset.name;
+    const chapter = event.currentTarget.dataset.chapter || "当前章节";
+    if (!name) return;
+
+    app.setActiveKnowledgeBase(name);
+    app.setPendingChatPreset({
+      capability: "",
+      tools: ["rag"],
+      prompt: `请围绕《${name}》的「${chapter}」回答我的问题。`,
+    });
+    this.setData({ activeKnowledgeBase: name });
+    wx.switchTab({ url: "/pages/chat/chat" });
   },
 
   createKb() {
