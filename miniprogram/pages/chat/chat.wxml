@@ -22,6 +22,21 @@
           <text class="prompt-title">知识点路径</text>
         </view>
       </view>
+      <view wx:if="{{books.length}}" class="book-shelf">
+        <view class="shelf-title">当前书架</view>
+        <block wx:for="{{books}}" wx:key="title">
+          <view class="book-row" data-index="{{index}}" bindtap="useBook">
+            <view class="book-copy">
+              <view class="book-title">{{item.title}}</view>
+              <view class="book-meta">{{item.chapter}}</view>
+            </view>
+            <view class="book-stat">
+              <text>{{item.mastery}}</text>
+              <text>掌握</text>
+            </view>
+          </view>
+        </block>
+      </view>
     </view>
 
     <view wx:if="{{messages.length > 0}}" class="message-head">

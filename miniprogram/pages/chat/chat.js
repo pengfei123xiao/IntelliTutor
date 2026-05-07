@@ -2,6 +2,7 @@ const app = getApp();
 const {
   addNotebookRecord,
   createNotebook,
+  getMobileBooks,
   getKnowledgeBases,
   getRecentSessions,
   getSessionDetail,
@@ -41,6 +42,7 @@ Page({
     ragEnabled: false,
     knowledgeBases: [],
     attachments: [],
+    books: [],
     draft: "",
     messages: [],
     sessions: [],
@@ -66,6 +68,7 @@ Page({
     this.setData({
       activeKnowledgeBase: app.globalData.activeKnowledgeBase,
     });
+    this.loadBooks();
     this.loadKnowledgeBases();
     this.refreshSessions({ silent: true });
   },
@@ -98,6 +101,22 @@ Page({
       });
     } catch (error) {
       this.setData({ knowledgeBases: [] });
+    }
+  },
+
+  async loadBooks() {
+    try {
+      const result = await getMobileBooks();
+      const source = Array.isArray(result) ? result : result.books || result.items || [];
+      const books = source.map((item) => ({
+        title: item.title || item.name || "学习资料",
+        chapter: item.current_chapter || item.chapter || item.source || "继续学习",
+        progress: `${Math.round(Number(item.progress_percent || item.progress || 0))}%`,
+        mastery: `${Math.round(Number(item.mastery_percent || item.mastery || 0))}%`,
+      })).slice(0, 3);
+      this.setData({ books });
+    } catch (error) {
+      this.setData({ books: [] });
     }
   },
 
@@ -170,6 +189,22 @@ Page({
   usePrompt(event) {
     const text = event.currentTarget.dataset.text || "";
     this.setData({ draft: text });
+  },
+
+  useBook(event) {
+    const index = Number(event.currentTarget.dataset.index);
+    const book = this.data.books[index];
+    if (!book) return;
+    const enabledTools = this.data.enabledTools.includes("rag")
+      ? this.data.enabledTools
+      : [...this.data.enabledTools, "rag"];
+    app.setActiveKnowledgeBase(book.title);
+    this.setData({
+      activeKnowledgeBase: book.title,
+      enabledTools,
+      ragEnabled: true,
+      draft: `请围绕《${book.title}》的「${book.chapter}」带我复习。`,
+    });
   },
 
   applyPreset(preset) {

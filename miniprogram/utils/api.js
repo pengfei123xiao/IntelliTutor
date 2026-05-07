@@ -328,6 +328,19 @@ function getMobileOverview(activeKnowledgeBase = "") {
   });
 }
 
+function getMobileBooks() {
+  return withFallback(request({ url: "/api/v1/mobile/books" }), {
+    books: MOCK_KNOWLEDGE_BASES.map((item, index) => ({
+      book_id: `demo-book-${index + 1}`,
+      title: item.name,
+      source: "资料库",
+      progress_percent: index === 0 ? 42 : 18,
+      mastery_percent: index === 0 ? 72 : 58,
+      current_chapter: index === 0 ? "一次函数图像" : "错题复盘",
+    })),
+  });
+}
+
 function getParentReport() {
   return withFallback(request({ url: "/api/v1/mobile/parent/report" }), {
     summary: {
@@ -717,6 +730,7 @@ module.exports = {
   uploadFile,
   mobileLogin,
   getMobileOverview,
+  getMobileBooks,
   getParentReport,
   createTodayGuide,
   getKnowledgeBases,

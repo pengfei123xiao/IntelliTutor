@@ -198,6 +198,85 @@
   line-height: 1;
 }
 
+.book-shelf {
+  background: #f5f0e8;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 18rpx;
+  margin-top: 32rpx;
+  overflow: hidden;
+  text-align: left;
+  width: 100%;
+}
+
+.shelf-title {
+  border-bottom: 1rpx solid #e6dfd8;
+  color: #141413;
+  font-size: 26rpx;
+  font-weight: 500;
+  line-height: 1.35;
+  padding: 18rpx 20rpx;
+}
+
+.book-row {
+  align-items: center;
+  border-bottom: 1rpx solid #e6dfd8;
+  display: flex;
+  gap: 18rpx;
+  justify-content: space-between;
+  min-height: 86rpx;
+  padding: 16rpx 20rpx;
+}
+
+.book-row:last-child {
+  border-bottom: 0;
+}
+
+.book-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.book-title {
+  color: #141413;
+  font-size: 25rpx;
+  font-weight: 500;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-meta {
+  color: #6c6a64;
+  font-size: 21rpx;
+  line-height: 1.35;
+  margin-top: 6rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-stat {
+  align-items: flex-end;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 5rpx;
+}
+
+.book-stat text:first-child {
+  color: #c9674f;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-size: 29rpx;
+  line-height: 1;
+}
+
+.book-stat text:last-child {
+  color: #8e8b82;
+  font-size: 20rpx;
+  line-height: 1;
+}
+
 .message {
   box-sizing: border-box;
   display: flex;
