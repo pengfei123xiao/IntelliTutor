@@ -30,6 +30,7 @@
   <view class="section panel prompt-panel">
     <view class="card-title"><text class="inline-icon">谈</text>今晚可以聊</view>
     <view class="tip">{{discussionPrompt}}</view>
+    <text class="ai-note">AI 生成内容仅供参考，家长沟通前请结合孩子实际情况调整。</text>
     <view class="prompt-actions">
       <button class="button-secondary" bindtap="copyPrompt">复制话术</button>
       <button class="button-primary" bindtap="goChat">生成更多</button>
@@ -38,6 +39,7 @@
 
   <view class="section panel">
     <view class="card-title"><text class="inline-icon coral">弱</text>薄弱点</view>
+    <text class="ai-note">AI 生成内容仅供参考</text>
     <view wx:if="{{loading}}" class="subtitle">正在生成家长可读摘要...</view>
     <view wx:if="{{summary.weak_points.length === 0}}" class="subtitle">暂无明显薄弱点。</view>
     <block wx:for="{{summary.weak_points}}" wx:key="*this">
@@ -50,6 +52,7 @@
 
   <view class="section panel">
     <view class="card-title"><text class="inline-icon gold">习</text>复习建议</view>
+    <text class="ai-note">AI 生成内容仅供参考</text>
     <view wx:if="{{summary.review_items.length === 0}}" class="subtitle">暂无复习建议。</view>
     <block wx:for="{{summary.review_items}}" wx:key="*this">
       <view class="review-item" data-text="{{item}}" bindtap="askAboutItem">{{index + 1}}. {{item}}</view>

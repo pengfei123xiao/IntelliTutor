@@ -14,6 +14,13 @@
       </button>
       <button class="button-secondary action-button" loading="{{testing}}" bindtap="testConnection">测试后端</button>
     </view>
+    <checkbox-group class="privacy-check" bindchange="onPrivacyCheck">
+      <label>
+        <checkbox value="accepted" checked="{{privacyAccepted}}" color="#cc785c" />
+        <text>我已阅读并同意</text>
+        <text class="privacy-link" bindtap="showPrivacy">隐私说明</text>
+      </label>
+    </checkbox-group>
   </view>
 
   <view class="section panel status-panel">
@@ -37,6 +44,30 @@
         <text class="label">账号标识</text>
         <text class="value">{{user.openid || "登录后显示微信侧测试标识"}}</text>
       </view>
+    </view>
+  </view>
+
+  <view class="section panel contact-panel">
+    <view class="section-head">
+      <view>
+        <view class="card-title">开发者与反馈</view>
+        <view class="hint">遇到登录、资料、AI 回复或排版问题，可以直接反馈。</view>
+      </view>
+      <text class="icon-badge">馈</text>
+    </view>
+    <view class="contact-list">
+      <view class="contact-row" bindtap="copyEmail">
+        <text>邮箱</text>
+        <text>{{developer.email}}</text>
+      </view>
+      <view class="contact-row" bindtap="callDeveloper">
+        <text>电话</text>
+        <text>{{developer.phone}}</text>
+      </view>
+    </view>
+    <view class="button-row">
+      <button class="button-primary compact-button" bindtap="handleFeedback">意见反馈</button>
+      <button class="button-secondary compact-button" bindtap="showPrivacy">隐私说明</button>
     </view>
   </view>
 
@@ -167,6 +198,30 @@
       <text wx:if="{{connection.latency}}" class="connection-latency">{{connection.latency}}</text>
     </view>
     <button class="button-primary full-button" loading="{{testing}}" bindtap="testConnection">一键测试后端连接</button>
+  </view>
+
+  <view class="section panel">
+    <view class="section-head">
+      <view>
+        <view class="card-title">登录与隐私说明</view>
+        <view class="hint">测试期仅保留必要学习状态，AI 内容不用于自动评价或处分。</view>
+      </view>
+      <text class="icon-badge">隐</text>
+    </view>
+    <view class="deploy-list">
+      <view class="deploy-item">
+        <text class="deploy-dot ready"></text>
+        <text>登录使用微信临时凭证创建测试账号，不在前端保存真实敏感密钥。</text>
+      </view>
+      <view class="deploy-item">
+        <text class="deploy-dot testing"></text>
+        <text>聊天、周报、学习路径等 AI 生成内容均仅供参考，需要人工确认。</text>
+      </view>
+      <view class="deploy-item">
+        <text class="deploy-dot pending"></text>
+        <text>正式上线前需补齐完整隐私政策、用户协议、内容安全与未成年人授权流程。</text>
+      </view>
+    </view>
   </view>
 
   <view class="section panel">

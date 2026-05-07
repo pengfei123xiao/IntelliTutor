@@ -60,6 +60,7 @@
             <text wx:if="{{item.role === 'assistant'}}" data-id="{{item.id}}" bindtap="retryFromMessage">重试</text>
             <text wx:if="{{item.role === 'assistant'}}" data-id="{{item.id}}" bindtap="saveMessageToNotebook">保存</text>
           </view>
+          <text wx:if="{{item.role === 'assistant' && item.content}}" class="ai-note">AI 生成内容仅供参考</text>
         </view>
       </view>
     </block>

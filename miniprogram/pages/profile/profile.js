@@ -14,6 +14,8 @@ const {
 const { showError } = require("../../utils/format");
 
 const DEFAULT_CLOUD_ENV = "cloud1-d0gxrvlbc5c9f8145";
+const DEVELOPER_EMAIL = "734738695@qq.com";
+const DEVELOPER_PHONE = "13138112934";
 
 function normalizeSettings(settings) {
   const apiMode = settings.api_mode || "cloud-function";
@@ -47,6 +49,11 @@ Page({
     loggingIn: false,
     loadingSettings: true,
     testing: false,
+    privacyAccepted: !!wx.getStorageSync("privacyAccepted"),
+    developer: {
+      email: DEVELOPER_EMAIL,
+      phone: DEVELOPER_PHONE,
+    },
     settings: normalizeSettings({}),
     localSettings: getProfileSettings(),
     tokenInput: "",
@@ -116,6 +123,12 @@ Page({
     this.setData({
       [`localSettings.${field}`]: !!event.detail.value,
     });
+  },
+
+  onPrivacyCheck(event) {
+    const accepted = (event.detail.value || []).includes("accepted");
+    wx.setStorageSync("privacyAccepted", accepted);
+    this.setData({ privacyAccepted: accepted });
   },
 
   saveSettings() {
@@ -210,6 +223,18 @@ Page({
   },
 
   async login() {
+    if (!this.data.privacyAccepted) {
+      wx.showModal({
+        title: "需要先确认隐私说明",
+        content: "登录会使用微信登录凭证生成测试账号，并保存必要的学习会话状态。请先阅读并勾选隐私说明。",
+        confirmText: "查看说明",
+        success: (res) => {
+          if (res.confirm) this.showPrivacy();
+        },
+      });
+      return;
+    }
+
     this.setData({ loggingIn: true });
     try {
       const loginRes = await wx.login();
@@ -231,5 +256,55 @@ Page({
 
   goParent() {
     wx.switchTab({ url: "/pages/parent/parent" });
+  },
+
+  showPrivacy() {
+    if (wx.openPrivacyContract) {
+      wx.openPrivacyContract({
+        fail: () => this.showPrivacyFallback(),
+      });
+      return;
+    }
+    this.showPrivacyFallback();
+  },
+
+  showPrivacyFallback() {
+    wx.showModal({
+      title: "隐私说明",
+      content: "测试期仅使用微信登录凭证、学习资料选择、聊天记录和本地 API 测试配置来提供学习辅助。AI 生成内容仅供参考，不用于自动评价、排名或处分。你可以在“我的”页清理本地缓存或联系开发者处理反馈。",
+      showCancel: false,
+      confirmText: "知道了",
+    });
+  },
+
+  copyEmail() {
+    wx.setClipboardData({
+      data: DEVELOPER_EMAIL,
+      success: () => wx.showToast({ title: "邮箱已复制", icon: "success" }),
+    });
+  },
+
+  callDeveloper() {
+    wx.makePhoneCall({ phoneNumber: DEVELOPER_PHONE });
+  },
+
+  handleFeedback() {
+    wx.showActionSheet({
+      itemList: ["复制反馈邮箱", "拨打开发者电话", "复制反馈模板"],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.copyEmail();
+          return;
+        }
+        if (res.tapIndex === 1) {
+          this.callDeveloper();
+          return;
+        }
+        wx.setClipboardData({
+          data: `问题页面：\n操作步骤：\n期望结果：\n实际结果：\n联系方式：\n\n发送至 ${DEVELOPER_EMAIL}`,
+          success: () => wx.showToast({ title: "模板已复制", icon: "success" }),
+        });
+      },
+    });
   },
 });

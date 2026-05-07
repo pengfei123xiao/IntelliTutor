@@ -61,6 +61,7 @@
           <view>
             <view class="card-title">{{item.name}}</view>
             <view class="subtitle">{{item.description || "学习记录与生成内容"}}</view>
+            <text class="ai-note">AI 生成内容仅供参考</text>
           </view>
           <text class="tag" data-name="{{item.name}}" bindtap="continueNotebook">{{item.record_count || 0}} 条</text>
         </view>
@@ -85,6 +86,7 @@
         </view>
         <view class="subtitle">答案：{{item.correct_answer || "待补充"}}</view>
         <view class="explain">{{item.explanation || "还没有解析。"}}</view>
+        <text class="ai-note">AI 生成内容仅供参考</text>
         <view class="question-actions">
           <text data-text="{{item.question}}" bindtap="askQuestion">复盘</text>
           <text data-id="{{item.id}}" bindtap="toggleBookmark">{{item.bookmarked ? "取消收藏" : "收藏"}}</text>

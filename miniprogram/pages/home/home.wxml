@@ -25,6 +25,7 @@
       <text class="metric-label">掌握</text>
     </view>
   </view>
+  <text class="ai-note home-note">AI 生成的掌握度、建议和摘要仅供参考。</text>
 
   <view class="section panel active-card">
     <view class="row-between">
@@ -75,6 +76,7 @@
   <view class="section panel bot-panel">
     <view class="card-title"><text class="inline-icon dark">助</text>辅导助手</view>
     <view class="subtitle">可一键带入聊天，按不同学习方式继续提问。</view>
+    <text class="ai-note">AI 生成内容仅供参考</text>
     <block wx:for="{{bots}}" wx:key="bot_id">
       <view class="bot-row" data-name="{{item.name}}" bindtap="useBot">
         <text class="bot-dot"></text>

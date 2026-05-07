@@ -120,6 +120,24 @@ button {
   text-align: center;
 }
 
+.ai-note {
+  color: #8e8b82;
+  display: block;
+  font-size: 21rpx;
+  line-height: 1.45;
+  margin-top: 12rpx;
+}
+
+.ai-note.inline {
+  display: inline;
+  margin-left: 10rpx;
+  margin-top: 0;
+}
+
+.ai-note.on-dark {
+  color: #a09d96;
+}
+
 .card-title {
   color: #141413;
   font-size: 30rpx;
