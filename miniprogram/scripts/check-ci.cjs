@@ -134,13 +134,14 @@ function checkSecretLeak() {
 }
 
 function checkMathTokenizer() {
-  const { tokenizeMath } = loadCommonJsFile(path.join(miniprogramRoot, "utils/math.js"));
+  const { renderLatexText, tokenizeMath } = loadCommonJsFile(path.join(miniprogramRoot, "utils/math.js"));
 
   const inline = tokenizeMath("求解 $x^2 + 1$ 和 \\(y=2\\)");
   assertEqual(inline.length, 4, "math tokenizer should split text and inline formulas");
   assertEqual(inline[1].type, "math", "math tokenizer should mark $...$ as math");
   assertEqual(inline[1].display, false, "math tokenizer should keep $...$ inline");
   assertEqual(inline[1].text, "x^2 + 1", "math tokenizer should remove $ delimiters");
+  assertEqual(inline[1].renderedText, "x² + 1", "math tokenizer should render simple superscripts");
   assertEqual(inline[3].text, "y=2", "math tokenizer should remove \\(\\) delimiters");
 
   const block = tokenizeMath("推导：\n$$\na^2 + b^2 = c^2\n$$\n结束");
@@ -158,6 +159,9 @@ function checkMathTokenizer() {
   const unmatched = tokenizeMath("保留未闭合 $x + 1");
   assertEqual(unmatched.length, 1, "math tokenizer should keep unmatched delimiters as text");
   assertEqual(unmatched[0].text, "保留未闭合 $x + 1", "math tokenizer should preserve unmatched raw content");
+
+  assertEqual(renderLatexText("\\frac{x^2 + 1}{2}"), "x² + 1 / 2", "math renderer should make fractions readable");
+  assertEqual(renderLatexText("\\sqrt{a_n} \\leq \\pi r^2"), "√(aₙ) ≤ π r²", "math renderer should map roots, subscripts and symbols");
 }
 
 checkProjectConfig();

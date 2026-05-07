@@ -35,9 +35,9 @@
           <view class="message-text">
             <block wx:for="{{item.segments}}" wx:for-item="segment" wx:key="id">
               <text wx:if="{{segment.type === 'text'}}" class="message-run">{{segment.text}}</text>
-              <text wx:elif="{{!segment.display}}" class="math-inline">{{segment.text}}</text>
+              <text wx:elif="{{!segment.display}}" class="math-inline">{{segment.renderedText || segment.text}}</text>
               <scroll-view wx:else scroll-x class="math-block-scroll" show-scrollbar="{{false}}">
-                <text class="math-block">{{segment.text}}</text>
+                <text class="math-block">{{segment.renderedText || segment.text}}</text>
               </scroll-view>
             </block>
           </view>
