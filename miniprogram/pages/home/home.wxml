@@ -1,26 +1,18 @@
 <view class="page home-page">
   <view class="hero section">
-    <view class="hero-brand">
-      <text class="hero-mark">ic</text>
-      <text class="hero-kicker">intelliclass 学习工作台</text>
-    </view>
-    <view class="title hero-title">今天从哪里开始？</view>
-    <view class="hero-copy">聊天、资料、测评、路径和家长反馈围绕同一条学习记录展开。</view>
+    <view class="title hero-title">学习</view>
   </view>
 
-  <view class="section grid">
-    <view class="metric panel">
-      <text class="metric-icon">资</text>
+  <view class="section metric-strip">
+    <view class="metric">
       <text class="metric-value">{{stats.materials}}</text>
       <text class="metric-label">资料库</text>
     </view>
-    <view class="metric panel">
-      <text class="metric-icon coral">聊</text>
+    <view class="metric">
       <text class="metric-value">{{stats.sessions}}</text>
       <text class="metric-label">会话</text>
     </view>
-    <view class="metric panel">
-      <text class="metric-icon gold">掌</text>
+    <view class="metric">
       <text class="metric-value">{{stats.mastery}}</text>
       <text class="metric-label">掌握</text>
     </view>
@@ -30,7 +22,7 @@
   <view class="section panel active-card">
     <view class="row-between">
       <view class="active-copy">
-        <view class="card-title"><text class="inline-icon">库</text>当前资料</view>
+        <view class="card-title">当前资料</view>
         <view class="subtitle">{{activeKnowledgeBase || "还没有选择资料"}}</view>
       </view>
       <button class="button-secondary compact" bindtap="goKnowledge">切换</button>
@@ -41,45 +33,36 @@
     <view class="section-head">
       <view>
         <view class="card-title">学习工具</view>
-        <view class="subtitle">已按移动端工作流重新组织。</view>
       </view>
       <button class="text-button" bindtap="goChat">进入聊天</button>
     </view>
     <view class="capability-grid">
       <block wx:for="{{capabilities}}" wx:key="title">
-        <view class="capability-card {{item.tone}}" data-index="{{index}}" bindtap="goChatMode">
-          <view class="capability-icon">{{item.icon}}</view>
+        <view class="capability-card" data-index="{{index}}" bindtap="goChatMode">
           <view class="capability-title">{{item.title}}</view>
-          <view class="capability-desc">{{item.desc}}</view>
         </view>
       </block>
     </view>
   </view>
 
   <view class="section action-list">
-    <view class="action panel" bindtap="goGuide">
-      <view class="action-icon green">路</view>
+    <view class="action" bindtap="goGuide">
       <view class="action-copy">
         <view class="card-title">学习路径</view>
-        <view class="subtitle">生成今日任务、知识点路径和复习建议</view>
       </view>
     </view>
-    <view class="action panel" bindtap="goParent">
-      <view class="action-icon amber">报</view>
+    <view class="action" bindtap="goParent">
       <view class="action-copy">
         <view class="card-title">家长周报</view>
-        <view class="subtitle">进度、薄弱点和亲子讨论建议</view>
       </view>
     </view>
   </view>
 
   <view class="section panel bot-panel">
-    <view class="card-title"><text class="inline-icon dark">助</text>辅导助手</view>
-    <view class="subtitle">可一键带入聊天，按不同学习方式继续提问。</view>
+    <view class="card-title">辅导助手</view>
     <text class="ai-note">AI 生成内容仅供参考</text>
     <block wx:for="{{bots}}" wx:key="bot_id">
       <view class="bot-row" data-name="{{item.name}}" bindtap="useBot">
-        <text class="bot-dot"></text>
         <view>
           <view class="bot-name">{{item.name}}</view>
           <view class="bot-desc">{{item.description}} · {{item.statusLabel}}</view>

@@ -1,7 +1,6 @@
 <view class="page">
   <view class="section panel create-panel">
     <view class="title">学习路径</view>
-    <view class="subtitle">把复杂学习计划整理成移动端可执行的今日任务。</view>
     <textarea
       class="topic-input"
       auto-height
@@ -32,7 +31,7 @@
           <view class="session-title">{{item.title || item.topic || "学习会话"}}</view>
           <text class="tag">{{item.statusLabel || "可继续"}}</text>
         </view>
-        <view class="subtitle">资料：{{item.knowledge_base || "当前资料"}}</view>
+        <view class="subtitle">{{item.knowledge_base || "当前资料"}}</view>
         <text class="ai-note">AI 生成内容仅供参考</text>
         <view class="task-list">
           <block wx:for="{{item.tasks}}" wx:key="*this">

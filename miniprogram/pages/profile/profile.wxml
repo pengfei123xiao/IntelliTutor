@@ -1,11 +1,9 @@
 <view class="page profile-page">
   <view class="section hero-panel">
     <view class="hero-top">
-      <view class="avatar">{{avatarText}}</view>
       <view class="hero-copy">
-        <view class="eyebrow">intelliclass 我的</view>
-        <view class="title">账号与服务设置</view>
-        <view class="subtitle">{{user ? "已连接移动端测试登录态，可继续检查后端与模型配置。" : "测试期可先使用演示账号，正式上线后会绑定学生、家长和班级。"}}</view>
+        <view class="title">我的</view>
+        <view class="subtitle">{{user ? "已登录" : "未登录"}}</view>
       </view>
     </view>
     <view class="hero-actions">
@@ -25,11 +23,7 @@
 
   <view class="section panel status-panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">账号 / 角色</view>
-        <view class="hint">面向家长、老师和学生的移动端身份</view>
-      </view>
-      <text class="icon-badge">人</text>
+      <view class="card-title">账号</view>
     </view>
     <view class="info-grid">
       <view class="info-item">
@@ -49,11 +43,7 @@
 
   <view class="section panel contact-panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">开发者与反馈</view>
-        <view class="hint">遇到登录、资料、AI 回复或排版问题，可以直接反馈。</view>
-      </view>
-      <text class="icon-badge">馈</text>
+      <view class="card-title">开发者与反馈</view>
     </view>
     <view class="contact-list">
       <view class="contact-row" bindtap="copyEmail">
@@ -73,11 +63,7 @@
 
   <view class="section panel status-panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">云环境状态</view>
-        <view class="hint">{{settings.runtime_note}}</view>
-      </view>
-      <text class="icon-badge">云</text>
+      <view class="card-title">云环境</view>
     </view>
     <view class="status-list">
       <view class="status-row">
@@ -101,11 +87,7 @@
 
   <view class="section panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">API 设置</view>
-        <view class="hint">仅用于本机测试；请不要填写生产密钥。</view>
-      </view>
-      <text class="icon-badge">钥</text>
+      <view class="card-title">API 设置</view>
     </view>
     <view class="form-list">
       <view class="field">
@@ -115,12 +97,10 @@
       <view class="field">
         <text class="field-label">测试 Token</text>
         <input class="field-input" password value="{{tokenInput}}" bindinput="onTokenInput" placeholder="{{tokenMasked}}" />
-        <text class="field-note">只保存在本地 storage，用于测试期遮罩展示。</text>
       </view>
       <view class="toggle-row">
         <view>
           <view class="toggle-title">使用云函数转发</view>
-          <view class="toggle-note">开启后通过 CloudBase apiProxy 访问移动端接口。</view>
         </view>
         <switch checked="{{localSettings.useCloudFunctions}}" color="#cc785c" data-field="useCloudFunctions" bindchange="onSettingSwitch" />
       </view>
@@ -134,11 +114,7 @@
 
   <view class="section panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">模型设置</view>
-        <view class="hint">向网页端的模型选择靠齐，测试期先保存模型名称。</view>
-      </view>
-      <text class="icon-badge">模</text>
+      <view class="card-title">模型</view>
     </view>
     <view class="field">
       <text class="field-label">模型名称</text>
@@ -149,37 +125,29 @@
 
   <view class="section panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">功能开关</view>
-        <view class="hint">控制聊天和学习工具的测试期能力入口。</view>
-      </view>
-      <text class="icon-badge">开</text>
+      <view class="card-title">功能开关</view>
     </view>
     <view class="toggle-row">
       <view>
-        <view class="toggle-title">资料问答 / RAG</view>
-        <view class="toggle-note">聊天时优先结合已上传资料。</view>
+        <view class="toggle-title">资料问答</view>
       </view>
       <switch checked="{{localSettings.enableRag}}" color="#cc785c" data-field="enableRag" bindchange="onSettingSwitch" />
     </view>
     <view class="toggle-row">
       <view>
         <view class="toggle-title">联网搜索</view>
-        <view class="toggle-note">研究类问题可预留网页检索入口。</view>
       </view>
       <switch checked="{{localSettings.enableWebSearch}}" color="#cc785c" data-field="enableWebSearch" bindchange="onSettingSwitch" />
     </view>
     <view class="toggle-row">
       <view>
         <view class="toggle-title">数学动画</view>
-        <view class="toggle-note">为几何、函数等内容生成动画讲解脚本。</view>
       </view>
       <switch checked="{{localSettings.enableMathAnimation}}" color="#cc785c" data-field="enableMathAnimation" bindchange="onSettingSwitch" />
     </view>
     <view class="toggle-row">
       <view>
         <view class="toggle-title">老师视角</view>
-        <view class="toggle-note">保留课堂管理和学习反馈入口。</view>
       </view>
       <switch checked="{{localSettings.enableTeacherView}}" color="#cc785c" data-field="enableTeacherView" bindchange="onSettingSwitch" />
     </view>
@@ -187,11 +155,7 @@
 
   <view class="section panel connection-panel {{connection.status}}">
     <view class="section-head">
-      <view>
-        <view class="card-title">后端连通性</view>
-        <view class="hint">{{connection.detail}}</view>
-      </view>
-      <text class="icon-badge">测</text>
+      <view class="card-title">后端连接</view>
     </view>
     <view class="connection-result">
       <text class="connection-label">{{connection.label}}</text>
@@ -202,11 +166,7 @@
 
   <view class="section panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">登录与隐私说明</view>
-        <view class="hint">测试期仅保留必要学习状态，AI 内容不用于自动评价或处分。</view>
-      </view>
-      <text class="icon-badge">隐</text>
+      <view class="card-title">登录与隐私</view>
     </view>
     <view class="deploy-list">
       <view class="deploy-item">
@@ -226,50 +186,7 @@
 
   <view class="section panel">
     <view class="section-head">
-      <view>
-        <view class="card-title">部署状态说明</view>
-        <view class="hint">帮助家长和老师理解测试期与正式服务的差异。</view>
-      </view>
-      <text class="icon-badge">署</text>
-    </view>
-    <view class="deploy-list">
-      <view class="deploy-item">
-        <text class="deploy-dot ready"></text>
-        <text>小程序前端可预览，五个主 tab 均提供中文演示数据。</text>
-      </view>
-      <view class="deploy-item">
-        <text class="deploy-dot testing"></text>
-        <text>CloudBase apiProxy 可返回 settings 与演示接口，真实部署后继续复用。</text>
-      </view>
-      <view class="deploy-item">
-        <text class="deploy-dot pending"></text>
-        <text>正式账号、资料解析和长期数据保存需要后端权限与云函数发布完成。</text>
-      </view>
-    </view>
-  </view>
-
-  <view class="section panel">
-    <view class="section-head">
-      <view>
-        <view class="card-title">已迁移能力</view>
-        <view class="hint">与网页端学习、资料、家长和账户区域保持同一套中文语义。</view>
-      </view>
-      <text class="icon-badge">能</text>
-    </view>
-    <view class="feature-grid">
-      <block wx:for="{{features}}" wx:key="*this">
-        <text>{{item}}</text>
-      </block>
-    </view>
-  </view>
-
-  <view class="section panel">
-    <view class="section-head">
-      <view>
-        <view class="card-title">维护工具</view>
-        <view class="hint">用于测试期快速恢复页面状态。</view>
-      </view>
-      <text class="icon-badge">修</text>
+      <view class="card-title">维护工具</view>
     </view>
     <view class="button-row">
       <button class="button-secondary compact-button" bindtap="clearCache">清缓存</button>

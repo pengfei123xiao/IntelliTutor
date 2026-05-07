@@ -1,34 +1,25 @@
 <view class="page">
   <view class="section hero-panel">
-    <view class="hero-row">
-      <text class="glyph-icon coral">报</text>
-      <view>
-        <view class="title">家长周报</view>
-        <view class="subtitle">把学习记录翻译成家长能看懂、能跟进的话。</view>
-      </view>
-    </view>
+    <view class="title">家长周报</view>
   </view>
 
   <view class="section grid">
     <view class="metric panel">
-      <text class="metric-icon">聊</text>
       <text class="metric-value">{{summary.learning_sessions}}</text>
       <text class="metric-label">学习会话</text>
     </view>
     <view class="metric panel">
-      <text class="metric-icon coral">弱</text>
       <text class="metric-value">{{summary.weak_points.length}}</text>
       <text class="metric-label">薄弱点</text>
     </view>
     <view class="metric panel">
-      <text class="metric-icon gold">习</text>
       <text class="metric-value">{{summary.review_items.length}}</text>
       <text class="metric-label">待复习</text>
     </view>
   </view>
 
   <view class="section panel prompt-panel">
-    <view class="card-title"><text class="inline-icon">谈</text>今晚可以聊</view>
+    <view class="card-title">今晚可以聊</view>
     <view class="tip">{{discussionPrompt}}</view>
     <text class="ai-note">AI 生成内容仅供参考，家长沟通前请结合孩子实际情况调整。</text>
     <view class="prompt-actions">
@@ -38,7 +29,7 @@
   </view>
 
   <view class="section panel">
-    <view class="card-title"><text class="inline-icon coral">弱</text>薄弱点</view>
+    <view class="card-title">薄弱点</view>
     <text class="ai-note">AI 生成内容仅供参考</text>
     <view wx:if="{{loading}}" class="subtitle">正在生成家长可读摘要...</view>
     <view wx:if="{{summary.weak_points.length === 0}}" class="subtitle">暂无明显薄弱点。</view>
@@ -51,7 +42,7 @@
   </view>
 
   <view class="section panel">
-    <view class="card-title"><text class="inline-icon gold">习</text>复习建议</view>
+    <view class="card-title">复习建议</view>
     <text class="ai-note">AI 生成内容仅供参考</text>
     <view wx:if="{{summary.review_items.length === 0}}" class="subtitle">暂无复习建议。</view>
     <block wx:for="{{summary.review_items}}" wx:key="*this">
@@ -60,7 +51,7 @@
   </view>
 
   <view class="section panel">
-    <view class="card-title"><text class="inline-icon dark">近</text>最近学习</view>
+    <view class="card-title">最近学习</view>
     <view wx:if="{{recentSessions.length === 0}}" class="subtitle">暂无学习记录。</view>
     <block wx:for="{{recentSessions}}" wx:key="session_id">
       <view class="recent-item" data-title="{{item.title || '未命名对话'}}" bindtap="openSession">

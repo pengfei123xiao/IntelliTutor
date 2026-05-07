@@ -3,10 +3,11 @@
 }
 
 .hero-panel {
-  background: #2a221b;
-  border-radius: 20rpx;
-  color: #fff8ef;
-  padding: 34rpx 30rpx;
+  background: transparent;
+  border-bottom: 1rpx solid #e6dfd8;
+  border-radius: 0;
+  color: #141413;
+  padding: 0 0 28rpx;
 }
 
 .hero-top {
@@ -20,34 +21,13 @@
   min-width: 0;
 }
 
-.eyebrow {
-  color: #f1c8a9;
-  font-size: 23rpx;
-  line-height: 1.2;
-  margin-bottom: 8rpx;
-}
-
 .hero-panel .title {
-  color: #fff8ef;
-  font-size: 44rpx;
+  color: #141413;
+  font-size: 48rpx;
 }
 
 .hero-panel .subtitle {
-  color: #ead7c5;
-}
-
-.avatar {
-  align-items: center;
-  background: #cc785c;
-  border: 2rpx solid rgba(255, 248, 239, 0.42);
-  border-radius: 50%;
-  color: #ffffff;
-  display: flex;
-  flex: 0 0 112rpx;
-  font-size: 42rpx;
-  height: 112rpx;
-  justify-content: center;
-  width: 112rpx;
+  color: #6c6a64;
 }
 
 .hero-actions,
@@ -59,10 +39,10 @@
 }
 
 .privacy-check {
-  background: rgba(255, 248, 239, 0.08);
-  border: 1rpx solid rgba(255, 248, 239, 0.14);
+  background: #fbf6ee;
+  border: 1rpx solid #e6dfd8;
   border-radius: 14rpx;
-  color: #ead7c5;
+  color: #6c6a64;
   font-size: 23rpx;
   line-height: 1.45;
   margin-top: 22rpx;
@@ -77,7 +57,7 @@
 }
 
 .privacy-link {
-  color: #f1c8a9;
+  color: #c9674f;
 }
 
 .action-button,
@@ -99,9 +79,6 @@
   justify-content: space-between;
 }
 
-.hint,
-.field-note,
-.toggle-note,
 .model-note {
   color: #71645b;
   font-size: 24rpx;
@@ -109,38 +86,24 @@
   margin-top: 8rpx;
 }
 
-.icon-badge {
-  align-items: center;
-  background: #fbf4ea;
-  border: 1rpx solid #ead8c7;
-  border-radius: 50%;
-  color: #b86347;
-  display: flex;
-  flex: 0 0 58rpx;
-  font-size: 24rpx;
-  height: 58rpx;
-  justify-content: center;
-  width: 58rpx;
+.profile-page .panel {
+  background: transparent;
+  border-width: 0 0 1rpx;
+  border-radius: 0;
+  padding: 0 0 28rpx;
 }
 
 .info-grid {
+  border-top: 1rpx solid #e6dfd8;
   display: flex;
-  flex-wrap: wrap;
-  gap: 14rpx;
+  flex-direction: column;
   margin-top: 22rpx;
 }
 
 .info-item {
-  background: #fbf4ea;
-  border: 1rpx solid #ead8c7;
-  border-radius: 12rpx;
-  flex: 1 1 220rpx;
-  min-height: 112rpx;
-  padding: 18rpx;
-}
-
-.info-item.wide {
-  flex-basis: 100%;
+  border-bottom: 1rpx solid #e6dfd8;
+  min-height: 0;
+  padding: 18rpx 0;
 }
 
 .label,
@@ -156,7 +119,7 @@
   display: block;
   font-size: 27rpx;
   line-height: 1.4;
-  margin-top: 10rpx;
+  margin-top: 6rpx;
   word-break: break-all;
 }
 
@@ -194,29 +157,13 @@
 }
 
 .contact-panel {
-  background: #181715;
-  border-color: #2d2924;
-  color: #faf9f5;
-}
-
-.contact-panel .card-title {
-  color: #faf9f5;
-}
-
-.contact-panel .hint {
-  color: #a09d96;
-}
-
-.contact-panel .icon-badge {
-  background: #252320;
-  border-color: #3a342f;
-  color: #f1c8a9;
+  color: #141413;
 }
 
 .contact-row {
   align-items: center;
-  border-bottom: 1rpx solid #2d2924;
-  color: #faf9f5;
+  border-bottom: 1rpx solid #e6dfd8;
+  color: #141413;
   display: flex;
   font-size: 25rpx;
   justify-content: space-between;
@@ -229,11 +176,11 @@
 }
 
 .contact-row text:first-child {
-  color: #a09d96;
+  color: #8b7565;
 }
 
 .contact-row text:last-child {
-  color: #faf9f5;
+  color: #141413;
   text-align: right;
   word-break: break-all;
 }
@@ -243,8 +190,8 @@
 }
 
 .field-input {
-  background: #fbf4ea;
-  border: 1rpx solid #ead8c7;
+  background: #fbf6ee;
+  border: 1rpx solid #e6dfd8;
   border-radius: 12rpx;
   color: #2b2722;
   font-size: 26rpx;
@@ -289,13 +236,11 @@
 
 .connection-result {
   align-items: center;
-  background: #fbf4ea;
-  border: 1rpx solid #ead8c7;
-  border-radius: 12rpx;
+  border-top: 1rpx solid #e6dfd8;
   display: flex;
   justify-content: space-between;
   margin-top: 20rpx;
-  padding: 18rpx;
+  padding-top: 18rpx;
 }
 
 .connection-label {
@@ -337,21 +282,4 @@
 
 .deploy-dot.pending {
   background: #b8a18a;
-}
-
-.feature-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-  margin-top: 18rpx;
-}
-
-.feature-grid text {
-  background: #fbf4ea;
-  border: 1rpx solid #ead8c7;
-  border-radius: 999rpx;
-  color: #b86347;
-  font-size: 23rpx;
-  line-height: 1;
-  padding: 12rpx 18rpx;
 }

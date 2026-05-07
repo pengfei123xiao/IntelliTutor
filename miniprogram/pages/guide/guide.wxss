@@ -1,21 +1,15 @@
 .create-panel {
-  background: #181715;
-  border-color: #252320;
-}
-
-.create-panel .title {
-  color: #faf9f5;
-}
-
-.create-panel .subtitle {
-  color: #a09d96;
+  background: transparent;
+  border-width: 0 0 1rpx;
+  border-radius: 0;
+  padding: 0 0 28rpx;
 }
 
 .topic-input {
-  background: #252320;
-  border: 1rpx solid #3a3731;
+  background: #fbf6ee;
+  border: 1rpx solid #e6dfd8;
   border-radius: 16rpx;
-  color: #faf9f5;
+  color: #141413;
   font-size: 27rpx;
   line-height: 1.55;
   margin-top: 24rpx;
@@ -26,19 +20,21 @@
 
 .template-list {
   display: flex;
-  flex-direction: column;
   gap: 12rpx;
   margin-top: 18rpx;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .template-list text {
-  background: #252320;
-  border: 1rpx solid #3a3731;
-  border-radius: 14rpx;
-  color: #d6d1c8;
+  background: #efe9de;
+  border: 1rpx solid #e6dfd8;
+  border-radius: 999rpx;
+  color: #3d3d3a;
+  display: inline-flex;
   font-size: 24rpx;
-  line-height: 1.45;
-  padding: 16rpx;
+  line-height: 1;
+  padding: 16rpx 20rpx;
 }
 
 .start-button {
@@ -53,8 +49,11 @@
 }
 
 .session {
-  background: #efe9de;
-  margin-bottom: 18rpx;
+  background: transparent;
+  border-width: 0 0 1rpx;
+  border-radius: 0;
+  margin-bottom: 0;
+  padding: 24rpx 0;
 }
 
 .session-title {
@@ -66,13 +65,12 @@
 }
 
 .task-list {
-  background: #faf9f5;
-  border-radius: 14rpx;
+  border-top: 1rpx solid #e6dfd8;
   display: flex;
   flex-direction: column;
   gap: 10rpx;
   margin-top: 18rpx;
-  padding: 18rpx;
+  padding-top: 16rpx;
 }
 
 .task-list text {

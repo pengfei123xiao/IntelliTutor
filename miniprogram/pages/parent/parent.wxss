@@ -3,44 +3,31 @@
   padding-bottom: 30rpx;
 }
 
-.hero-row {
-  align-items: center;
-  display: flex;
-  gap: 18rpx;
+.page > .section.panel {
+  background: transparent;
+  border-width: 0 0 1rpx;
+  border-radius: 0;
+  padding: 0 0 28rpx;
 }
 
 .grid {
+  border-bottom: 1rpx solid #e6dfd8;
+  border-top: 1rpx solid #e6dfd8;
   display: grid;
-  gap: 16rpx;
   grid-template-columns: repeat(3, 1fr);
+  padding: 18rpx 0;
 }
 
 .metric {
-  background: #f3eadc;
-  padding: 26rpx 14rpx;
+  background: transparent;
+  border-width: 0 1rpx 0 0;
+  border-radius: 0;
+  padding: 4rpx 14rpx;
   text-align: center;
 }
 
-.metric-icon {
-  align-items: center;
-  background: #171511;
-  border-radius: 12rpx;
-  color: #fff7ed;
-  display: flex;
-  font-size: 21rpx;
-  font-weight: 600;
-  height: 42rpx;
-  justify-content: center;
-  margin: 0 auto 12rpx;
-  width: 42rpx;
-}
-
-.metric-icon.coral {
-  background: #c9674f;
-}
-
-.metric-icon.gold {
-  background: #d89945;
+.metric:last-child {
+  border-right: 0;
 }
 
 .metric-value {
@@ -59,22 +46,19 @@
 }
 
 .prompt-panel {
-  background: #171511;
-  border-color: #2b2721;
-}
-
-.prompt-panel .card-title {
-  color: #fff7ed;
+  background: transparent;
+  border-width: 0 0 1rpx;
+  border-radius: 0;
+  padding: 0 0 28rpx;
 }
 
 .tip {
-  background: #c9674f;
-  border-radius: 16rpx;
-  color: #ffffff;
+  border-left: 4rpx solid #c9674f;
+  color: #141413;
   font-size: 28rpx;
   line-height: 1.6;
   margin-top: 20rpx;
-  padding: 24rpx;
+  padding-left: 18rpx;
 }
 
 .prompt-actions {
@@ -82,38 +66,6 @@
   gap: 14rpx;
   grid-template-columns: 1fr 1fr;
   margin-top: 18rpx;
-}
-
-.prompt-panel .button-secondary {
-  background: #29251f;
-  border-color: #3a3731;
-  color: #fff7ed;
-}
-
-.inline-icon {
-  align-items: center;
-  background: #c9674f;
-  border-radius: 10rpx;
-  color: #fff7ed;
-  display: inline-flex;
-  font-size: 20rpx;
-  height: 36rpx;
-  justify-content: center;
-  margin-right: 10rpx;
-  vertical-align: middle;
-  width: 36rpx;
-}
-
-.inline-icon.coral {
-  background: #c9674f;
-}
-
-.inline-icon.gold {
-  background: #d89945;
-}
-
-.inline-icon.dark {
-  background: #171511;
 }
 
 .list-row {
