@@ -49,6 +49,7 @@ Page({
     loggingIn: false,
     loadingSettings: true,
     testing: false,
+    developerSettingsOpen: false,
     privacyAccepted: !!wx.getStorageSync("privacyAccepted"),
     developer: {
       email: DEVELOPER_EMAIL,
@@ -58,7 +59,7 @@ Page({
     localSettings: getProfileSettings(),
     tokenInput: "",
     tokenMasked: "未设置",
-    features: ["聊天", "新对话", "历史记录", "学习工具", "资料问答", "参考资料", "知识库", "学习路径", "家长周报"],
+    features: ["聊天", "新对话", "历史记录", "书架", "资料问答", "个人知识图谱", "学习路径", "学习周报"],
     connection: {
       status: "idle",
       label: "尚未测试",
@@ -129,6 +130,10 @@ Page({
     const accepted = (event.detail.value || []).includes("accepted");
     wx.setStorageSync("privacyAccepted", accepted);
     this.setData({ privacyAccepted: accepted });
+  },
+
+  toggleDeveloperSettings() {
+    this.setData({ developerSettingsOpen: !this.data.developerSettingsOpen });
   },
 
   saveSettings() {

@@ -3,14 +3,14 @@
     <view class="hero-top">
       <view class="hero-copy">
         <view class="title">我的</view>
-        <view class="subtitle">{{user ? "已登录" : "未登录"}}</view>
+        <view class="subtitle">{{user ? "已登录，可同步学习记录" : "登录后保存学习进度"}}</view>
       </view>
     </view>
     <view class="hero-actions">
       <button class="button-primary action-button" loading="{{loggingIn}}" bindtap="login">
         {{user ? "重新登录" : "微信登录"}}
       </button>
-      <button class="button-secondary action-button" loading="{{testing}}" bindtap="testConnection">测试后端</button>
+      <button class="button-secondary action-button" bindtap="showPrivacy">隐私说明</button>
     </view>
     <checkbox-group class="privacy-check" bindchange="onPrivacyCheck">
       <label>
@@ -23,7 +23,7 @@
 
   <view class="section panel status-panel">
     <view class="section-head">
-      <view class="card-title">账号</view>
+      <view class="card-title">账号信息</view>
     </view>
     <view class="info-grid">
       <view class="info-item">
@@ -32,18 +32,39 @@
       </view>
       <view class="info-item">
         <text class="label">角色</text>
-        <text class="value">{{user.role || "未绑定，测试期默认体验"}}</text>
+        <text class="value">{{user.role || "学习用户"}}</text>
       </view>
       <view class="info-item wide">
         <text class="label">账号标识</text>
-        <text class="value">{{user.openid || "登录后显示微信侧测试标识"}}</text>
+        <text class="value">{{user.openid || "登录后显示"}}</text>
       </view>
+    </view>
+  </view>
+
+  <view class="section panel">
+    <view class="section-head">
+      <view class="card-title">隐私与数据</view>
+    </view>
+    <view class="deploy-list">
+      <view class="deploy-item">
+        <text>登录仅用于创建账号和保存必要学习状态。</text>
+      </view>
+      <view class="deploy-item">
+        <text>AI 生成内容仅供参考，重要结论请人工确认。</text>
+      </view>
+      <view class="deploy-item">
+        <text>你可以随时清理本地缓存，或联系开发者处理反馈。</text>
+      </view>
+    </view>
+    <view class="button-row">
+      <button class="button-secondary compact-button" bindtap="showPrivacy">隐私说明</button>
+      <button class="button-ghost compact-button" bindtap="clearCache">清理缓存</button>
     </view>
   </view>
 
   <view class="section panel contact-panel">
     <view class="section-head">
-      <view class="card-title">开发者与反馈</view>
+      <view class="card-title">反馈与联系</view>
     </view>
     <view class="contact-list">
       <view class="contact-row" bindtap="copyEmail">
@@ -57,144 +78,129 @@
     </view>
     <view class="button-row">
       <button class="button-primary compact-button" bindtap="handleFeedback">意见反馈</button>
-      <button class="button-secondary compact-button" bindtap="showPrivacy">隐私说明</button>
-    </view>
-  </view>
-
-  <view class="section panel status-panel">
-    <view class="section-head">
-      <view class="card-title">云环境</view>
-    </view>
-    <view class="status-list">
-      <view class="status-row">
-        <text>云环境</text>
-        <text>{{settings.cloud_env_id}}</text>
-      </view>
-      <view class="status-row">
-        <text>连接方式</text>
-        <text>{{settings.api_mode_label}}</text>
-      </view>
-      <view class="status-row">
-        <text>数据策略</text>
-        <text>{{settings.database_policy_label}}</text>
-      </view>
-      <view class="status-row">
-        <text>云函数</text>
-        <text>{{settings.function_name}}</text>
-      </view>
+      <button class="button-secondary compact-button" bindtap="copyEmail">复制邮箱</button>
     </view>
   </view>
 
   <view class="section panel">
     <view class="section-head">
-      <view class="card-title">API 设置</view>
+      <view class="card-title">常用入口</view>
     </view>
-    <view class="form-list">
-      <view class="field">
-        <text class="field-label">API 地址</text>
-        <input class="field-input" value="{{localSettings.apiBaseUrl}}" data-field="apiBaseUrl" bindinput="onSettingInput" placeholder="例如 http://127.0.0.1:3001" />
+    <view class="button-row">
+      <button class="button-secondary compact-button" bindtap="goKnowledge">学习资料</button>
+      <button class="button-primary compact-button" bindtap="goParent">学习周报</button>
+    </view>
+  </view>
+
+  <view class="section panel developer-panel">
+    <view class="developer-head" bindtap="toggleDeveloperSettings">
+      <view>
+        <view class="card-title">开发者设置</view>
+        <view class="developer-summary">调试工具，默认关闭</view>
+      </view>
+      <text class="developer-toggle">{{developerSettingsOpen ? "收起" : "展开"}}</text>
+    </view>
+
+    <view wx:if="{{developerSettingsOpen}}" class="developer-body">
+      <view class="section-head">
+        <view class="card-title sub-title">运行状态</view>
+      </view>
+      <view class="status-list">
+        <view class="status-row">
+          <text>云环境</text>
+          <text>{{settings.cloud_env_id}}</text>
+        </view>
+        <view class="status-row">
+          <text>连接方式</text>
+          <text>{{settings.api_mode_label}}</text>
+        </view>
+        <view class="status-row">
+          <text>数据策略</text>
+          <text>{{settings.database_policy_label}}</text>
+        </view>
+        <view class="status-row">
+          <text>云函数</text>
+          <text>{{settings.function_name}}</text>
+        </view>
+      </view>
+
+      <view class="section-head developer-subsection">
+        <view class="card-title sub-title">API 设置</view>
+      </view>
+      <view class="form-list">
+        <view class="field">
+          <text class="field-label">API 地址</text>
+          <input class="field-input" value="{{localSettings.apiBaseUrl}}" data-field="apiBaseUrl" bindinput="onSettingInput" placeholder="例如 http://127.0.0.1:3001" />
+        </view>
+        <view class="field">
+          <text class="field-label">测试 Token</text>
+          <input class="field-input" password value="{{tokenInput}}" bindinput="onTokenInput" placeholder="{{tokenMasked}}" />
+        </view>
+        <view class="toggle-row">
+          <view>
+            <view class="toggle-title">使用云函数转发</view>
+          </view>
+          <switch checked="{{localSettings.useCloudFunctions}}" color="#cc785c" data-field="useCloudFunctions" bindchange="onSettingSwitch" />
+        </view>
+      </view>
+      <view class="button-row">
+        <button class="button-primary compact-button" bindtap="saveSettings">保存设置</button>
+        <button class="button-secondary compact-button" loading="{{testing}}" bindtap="testConnection">测试后端连接</button>
+        <button class="button-ghost compact-button" bindtap="resetSettings">恢复默认</button>
+      </view>
+
+      <view class="section-head developer-subsection">
+        <view class="card-title sub-title">模型</view>
       </view>
       <view class="field">
-        <text class="field-label">测试 Token</text>
-        <input class="field-input" password value="{{tokenInput}}" bindinput="onTokenInput" placeholder="{{tokenMasked}}" />
+        <text class="field-label">模型名称</text>
+        <input class="field-input" value="{{localSettings.modelName}}" data-field="modelName" bindinput="onSettingInput" placeholder="cloudbase-adapter" />
+      </view>
+      <view class="model-note">当前模型：{{settings.model}}</view>
+
+      <view class="section-head developer-subsection">
+        <view class="card-title sub-title">功能开关</view>
       </view>
       <view class="toggle-row">
         <view>
-          <view class="toggle-title">使用云函数转发</view>
+          <view class="toggle-title">资料问答</view>
         </view>
-        <switch checked="{{localSettings.useCloudFunctions}}" color="#cc785c" data-field="useCloudFunctions" bindchange="onSettingSwitch" />
+        <switch checked="{{localSettings.enableRag}}" color="#cc785c" data-field="enableRag" bindchange="onSettingSwitch" />
       </view>
-    </view>
-    <view class="button-row">
-      <button class="button-primary compact-button" bindtap="saveSettings">保存设置</button>
-      <button class="button-secondary compact-button" loading="{{testing}}" bindtap="testConnection">测试后端连接</button>
-      <button class="button-ghost compact-button" bindtap="resetSettings">恢复默认</button>
-    </view>
-  </view>
+      <view class="toggle-row">
+        <view>
+          <view class="toggle-title">联网搜索</view>
+        </view>
+        <switch checked="{{localSettings.enableWebSearch}}" color="#cc785c" data-field="enableWebSearch" bindchange="onSettingSwitch" />
+      </view>
+      <view class="toggle-row">
+        <view>
+          <view class="toggle-title">数学动画</view>
+        </view>
+        <switch checked="{{localSettings.enableMathAnimation}}" color="#cc785c" data-field="enableMathAnimation" bindchange="onSettingSwitch" />
+      </view>
+      <view class="toggle-row">
+        <view>
+          <view class="toggle-title">老师视角</view>
+        </view>
+        <switch checked="{{localSettings.enableTeacherView}}" color="#cc785c" data-field="enableTeacherView" bindchange="onSettingSwitch" />
+      </view>
 
-  <view class="section panel">
-    <view class="section-head">
-      <view class="card-title">模型</view>
-    </view>
-    <view class="field">
-      <text class="field-label">模型名称</text>
-      <input class="field-input" value="{{localSettings.modelName}}" data-field="modelName" bindinput="onSettingInput" placeholder="cloudbase-adapter" />
-    </view>
-    <view class="model-note">当前后端回报模型：{{settings.model}}</view>
-  </view>
+      <view class="connection-block {{connection.status}}">
+        <view class="section-head">
+          <view class="card-title sub-title">后端连接</view>
+        </view>
+        <view class="connection-result">
+          <text class="connection-label">{{connection.label}}</text>
+          <text wx:if="{{connection.latency}}" class="connection-latency">{{connection.latency}}</text>
+        </view>
+        <view class="connection-detail">{{connection.detail}}</view>
+        <button class="button-primary full-button" loading="{{testing}}" bindtap="testConnection">一键测试后端连接</button>
+      </view>
 
-  <view class="section panel">
-    <view class="section-head">
-      <view class="card-title">功能开关</view>
-    </view>
-    <view class="toggle-row">
-      <view>
-        <view class="toggle-title">资料问答</view>
+      <view class="button-row developer-actions">
+        <button class="button-ghost compact-button" bindtap="resetDemoData">重置演示数据</button>
       </view>
-      <switch checked="{{localSettings.enableRag}}" color="#cc785c" data-field="enableRag" bindchange="onSettingSwitch" />
-    </view>
-    <view class="toggle-row">
-      <view>
-        <view class="toggle-title">联网搜索</view>
-      </view>
-      <switch checked="{{localSettings.enableWebSearch}}" color="#cc785c" data-field="enableWebSearch" bindchange="onSettingSwitch" />
-    </view>
-    <view class="toggle-row">
-      <view>
-        <view class="toggle-title">数学动画</view>
-      </view>
-      <switch checked="{{localSettings.enableMathAnimation}}" color="#cc785c" data-field="enableMathAnimation" bindchange="onSettingSwitch" />
-    </view>
-    <view class="toggle-row">
-      <view>
-        <view class="toggle-title">老师视角</view>
-      </view>
-      <switch checked="{{localSettings.enableTeacherView}}" color="#cc785c" data-field="enableTeacherView" bindchange="onSettingSwitch" />
-    </view>
-  </view>
-
-  <view class="section panel connection-panel {{connection.status}}">
-    <view class="section-head">
-      <view class="card-title">后端连接</view>
-    </view>
-    <view class="connection-result">
-      <text class="connection-label">{{connection.label}}</text>
-      <text wx:if="{{connection.latency}}" class="connection-latency">{{connection.latency}}</text>
-    </view>
-    <button class="button-primary full-button" loading="{{testing}}" bindtap="testConnection">一键测试后端连接</button>
-  </view>
-
-  <view class="section panel">
-    <view class="section-head">
-      <view class="card-title">登录与隐私</view>
-    </view>
-    <view class="deploy-list">
-      <view class="deploy-item">
-        <text class="deploy-dot ready"></text>
-        <text>登录使用微信临时凭证创建测试账号，不在前端保存真实敏感密钥。</text>
-      </view>
-      <view class="deploy-item">
-        <text class="deploy-dot testing"></text>
-        <text>聊天、周报、学习路径等 AI 生成内容均仅供参考，需要人工确认。</text>
-      </view>
-      <view class="deploy-item">
-        <text class="deploy-dot pending"></text>
-        <text>正式上线前需补齐完整隐私政策、用户协议、内容安全与未成年人授权流程。</text>
-      </view>
-    </view>
-  </view>
-
-  <view class="section panel">
-    <view class="section-head">
-      <view class="card-title">维护工具</view>
-    </view>
-    <view class="button-row">
-      <button class="button-secondary compact-button" bindtap="clearCache">清缓存</button>
-      <button class="button-ghost compact-button" bindtap="resetDemoData">重置演示数据</button>
-    </view>
-    <view class="button-row">
-      <button class="button-secondary compact-button" bindtap="goKnowledge">管理学习资料</button>
-      <button class="button-primary compact-button" bindtap="goParent">查看家长周报</button>
     </view>
   </view>
 </view>
