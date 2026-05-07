@@ -3,6 +3,12 @@
   padding-bottom: 30rpx;
 }
 
+.hero-row {
+  align-items: center;
+  display: flex;
+  gap: 18rpx;
+}
+
 .grid {
   display: grid;
   gap: 16rpx;
@@ -10,9 +16,31 @@
 }
 
 .metric {
-  background: #efe9de;
+  background: #f3eadc;
   padding: 26rpx 14rpx;
   text-align: center;
+}
+
+.metric-icon {
+  align-items: center;
+  background: #171511;
+  border-radius: 12rpx;
+  color: #fff7ed;
+  display: flex;
+  font-size: 21rpx;
+  font-weight: 600;
+  height: 42rpx;
+  justify-content: center;
+  margin: 0 auto 12rpx;
+  width: 42rpx;
+}
+
+.metric-icon.coral {
+  background: #c9674f;
+}
+
+.metric-icon.gold {
+  background: #d89945;
 }
 
 .metric-value {
@@ -31,16 +59,16 @@
 }
 
 .prompt-panel {
-  background: #181715;
-  border-color: #252320;
+  background: #171511;
+  border-color: #2b2721;
 }
 
 .prompt-panel .card-title {
-  color: #faf9f5;
+  color: #fff7ed;
 }
 
 .tip {
-  background: #cc785c;
+  background: #c9674f;
   border-radius: 16rpx;
   color: #ffffff;
   font-size: 28rpx;
@@ -57,9 +85,35 @@
 }
 
 .prompt-panel .button-secondary {
-  background: #252320;
+  background: #29251f;
   border-color: #3a3731;
-  color: #faf9f5;
+  color: #fff7ed;
+}
+
+.inline-icon {
+  align-items: center;
+  background: #c9674f;
+  border-radius: 10rpx;
+  color: #fff7ed;
+  display: inline-flex;
+  font-size: 20rpx;
+  height: 36rpx;
+  justify-content: center;
+  margin-right: 10rpx;
+  vertical-align: middle;
+  width: 36rpx;
+}
+
+.inline-icon.coral {
+  background: #c9674f;
+}
+
+.inline-icon.gold {
+  background: #d89945;
+}
+
+.inline-icon.dark {
+  background: #171511;
 }
 
 .list-row {
@@ -75,7 +129,7 @@
 }
 
 .dot {
-  background: #cc785c;
+  background: #c9674f;
   border-radius: 50%;
   height: 12rpx;
   width: 12rpx;

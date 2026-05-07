@@ -1,13 +1,18 @@
 <view class="page">
   <view class="section header-band">
-    <view class="title">学习资料</view>
-    <view class="subtitle">资料库、课堂笔记和错题本都在这里，聊天时可直接引用。</view>
+    <view class="header-row">
+      <text class="glyph-icon coral">资</text>
+      <view>
+        <view class="title">学习资料</view>
+        <view class="subtitle">资料库、课堂笔记和错题本都在这里，聊天时可直接引用。</view>
+      </view>
+    </view>
   </view>
 
   <view class="tabs">
-    <view class="{{tab === 'knowledge' ? 'active' : ''}}" data-tab="knowledge" bindtap="switchTab">资料库</view>
-    <view class="{{tab === 'notebooks' ? 'active' : ''}}" data-tab="notebooks" bindtap="switchTab">笔记</view>
-    <view class="{{tab === 'questions' ? 'active' : ''}}" data-tab="questions" bindtap="switchTab">错题</view>
+    <view class="{{tab === 'knowledge' ? 'active' : ''}}" data-tab="knowledge" bindtap="switchTab"><text>库</text>资料库</view>
+    <view class="{{tab === 'notebooks' ? 'active' : ''}}" data-tab="notebooks" bindtap="switchTab"><text>记</text>笔记</view>
+    <view class="{{tab === 'questions' ? 'active' : ''}}" data-tab="questions" bindtap="switchTab"><text>题</text>错题</view>
   </view>
 
   <view wx:if="{{tab === 'knowledge'}}">
@@ -23,6 +28,7 @@
       <block wx:for="{{knowledgeBases}}" wx:key="name">
         <view class="kb-card panel {{item.name === activeKnowledgeBase ? 'selected' : ''}}">
           <view class="row-between">
+            <text class="card-icon">库</text>
             <view class="kb-main">
               <view class="kb-title">{{item.name}}</view>
               <view class="subtitle">状态：{{item.statusLabel || "已就绪"}}</view>
@@ -51,6 +57,7 @@
     <block wx:for="{{notebooks}}" wx:key="id">
       <view class="notebook panel">
         <view class="row-between">
+          <text class="card-icon note">记</text>
           <view>
             <view class="card-title">{{item.name}}</view>
             <view class="subtitle">{{item.description || "学习记录与生成内容"}}</view>
@@ -72,6 +79,7 @@
     <block wx:for="{{questionItems}}" wx:key="id">
       <view class="question-card panel">
         <view class="row-between">
+          <text class="card-icon question">题</text>
           <view class="question-title">{{item.question}}</view>
           <text class="{{item.is_correct ? 'tag' : 'tag wrong'}}">{{item.is_correct ? "已掌握" : "需复盘"}}</text>
         </view>

@@ -1,5 +1,5 @@
 page {
-  background: #faf9f5;
+  background: #f7f0e6;
   color: #141413;
   font-family: "PingFang SC", "Hiragino Sans GB", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 28rpx;
@@ -19,7 +19,8 @@ button {
 }
 
 .page {
-  background: #faf9f5;
+  background:
+    linear-gradient(180deg, #f7f0e6 0%, #fbf6ee 42%, #efe5d8 100%);
   min-height: 100vh;
   padding: 32rpx 28rpx 48rpx;
 }
@@ -29,8 +30,8 @@ button {
 }
 
 .panel {
-  background: #efe9de;
-  border: 1rpx solid #e6dfd8;
+  background: #f3eadc;
+  border: 1rpx solid #e2d5c6;
   border-radius: 16rpx;
   color: #141413;
   padding: 30rpx;
@@ -78,27 +79,27 @@ button {
 }
 
 .button-primary {
-  background: #cc785c;
+  background: #c9674f;
   color: #ffffff;
 }
 
 .button-secondary {
-  background: #faf9f5;
-  border: 1rpx solid #e6dfd8;
+  background: #fbf6ee;
+  border: 1rpx solid #e2d5c6;
   color: #141413;
 }
 
 .button-ghost {
-  background: #f5f0e8;
-  border: 1rpx solid #e6dfd8;
+  background: #f7efe5;
+  border: 1rpx solid #e2d5c6;
   color: #3d3d3a;
 }
 
 .tag {
-  background: #faf9f5;
+  background: #fbf6ee;
   border-radius: 999rpx;
-  border: 1rpx solid #e6dfd8;
-  color: #cc785c;
+  border: 1rpx solid #e2d5c6;
+  color: #c9674f;
   display: inline-flex;
   font-size: 22rpx;
   line-height: 1;
@@ -134,7 +135,43 @@ button {
 }
 
 .dark-panel {
-  background: #181715;
-  border-color: #252320;
-  color: #faf9f5;
+  background: #171511;
+  border-color: #2b2721;
+  color: #fff7ed;
+}
+
+.line-icon,
+.glyph-icon {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.glyph-icon {
+  background: #171511;
+  border-radius: 14rpx;
+  color: #fff7ed;
+  font-size: 24rpx;
+  font-weight: 600;
+  height: 56rpx;
+  width: 56rpx;
+}
+
+.glyph-icon.coral {
+  background: #c9674f;
+}
+
+.glyph-icon.paper {
+  background: #fbf6ee;
+  border: 1rpx solid #e2d5c6;
+  color: #171511;
+}
+
+.glyph-icon.gold {
+  background: #d89945;
+}
+
+.glyph-icon.green {
+  background: #4f9b83;
 }

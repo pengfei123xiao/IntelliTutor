@@ -420,7 +420,7 @@ Page({
       this.refreshSessions({ silent: true });
     } catch (error) {
       this.setData({ streaming: false });
-      const fallback = "我已经收到你的问题。当前真实服务暂时不可用，这里先用演示回答帮你继续验收：可以选择学习工具、资料问答、参考资料，也可以保存回复到课堂笔记。";
+      const fallback = "我已经收到你的问题。当前真实服务暂时不可用，这里先用演示回答帮你继续验收：可以选择学习工具、资料问答、引用来源，也可以保存回复到课堂笔记。";
       this.replaceAssistantContent(fallback);
       this.setData({ streaming: false, scrollIntoView: "bottom" });
     }

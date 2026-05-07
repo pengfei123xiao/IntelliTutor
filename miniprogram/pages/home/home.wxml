@@ -1,20 +1,26 @@
 <view class="page home-page">
   <view class="hero section">
-    <text class="hero-kicker">K12 智能学习伴侣</text>
+    <view class="hero-brand">
+      <text class="hero-mark">ic</text>
+      <text class="hero-kicker">intelliclass 学习工作台</text>
+    </view>
     <view class="title hero-title">今天从哪里开始？</view>
-    <view class="subtitle">聊天、资料、测评、路径和家长反馈围绕同一条学习记录展开。</view>
+    <view class="hero-copy">聊天、资料、测评、路径和家长反馈围绕同一条学习记录展开。</view>
   </view>
 
   <view class="section grid">
     <view class="metric panel">
+      <text class="metric-icon">资</text>
       <text class="metric-value">{{stats.materials}}</text>
       <text class="metric-label">资料库</text>
     </view>
     <view class="metric panel">
+      <text class="metric-icon coral">聊</text>
       <text class="metric-value">{{stats.sessions}}</text>
       <text class="metric-label">会话</text>
     </view>
     <view class="metric panel">
+      <text class="metric-icon gold">掌</text>
       <text class="metric-value">{{stats.mastery}}</text>
       <text class="metric-label">掌握</text>
     </view>
@@ -23,7 +29,7 @@
   <view class="section panel active-card">
     <view class="row-between">
       <view class="active-copy">
-        <view class="card-title">当前资料</view>
+        <view class="card-title"><text class="inline-icon">库</text>当前资料</view>
         <view class="subtitle">{{activeKnowledgeBase || "还没有选择资料"}}</view>
       </view>
       <button class="button-secondary compact" bindtap="goKnowledge">切换</button>
@@ -67,7 +73,7 @@
   </view>
 
   <view class="section panel bot-panel">
-    <view class="card-title">辅导机器人</view>
+    <view class="card-title"><text class="inline-icon dark">助</text>辅导助手</view>
     <view class="subtitle">可一键带入聊天，按不同学习方式继续提问。</view>
     <block wx:for="{{bots}}" wx:key="bot_id">
       <view class="bot-row" data-name="{{item.name}}" bindtap="useBot">

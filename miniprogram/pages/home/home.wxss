@@ -3,22 +3,50 @@
 }
 
 .hero {
-  background: #faf9f5;
-  border-bottom: 1rpx solid #ebe6df;
-  padding: 26rpx 6rpx 34rpx;
+  background: #171511;
+  border: 1rpx solid #2b2721;
+  border-radius: 22rpx;
+  box-shadow: 0 18rpx 42rpx rgba(23, 21, 17, 0.18);
+  padding: 30rpx 28rpx 34rpx;
+}
+
+.hero-brand {
+  align-items: center;
+  display: flex;
+  gap: 12rpx;
+}
+
+.hero-mark {
+  align-items: center;
+  background: #c9674f;
+  border-radius: 14rpx;
+  color: #fff7ed;
+  display: flex;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-size: 22rpx;
+  height: 52rpx;
+  justify-content: center;
+  width: 52rpx;
 }
 
 .hero-kicker {
-  color: #cc785c;
+  color: #e7a38b;
   font-size: 22rpx;
   font-weight: 500;
   letter-spacing: 2rpx;
 }
 
 .hero-title {
-  color: #141413;
+  color: #fff7ed;
   font-size: 56rpx;
   margin-top: 20rpx;
+}
+
+.hero-copy {
+  color: #cfc4b5;
+  font-size: 26rpx;
+  line-height: 1.55;
+  margin-top: 14rpx;
 }
 
 .grid {
@@ -28,9 +56,31 @@
 }
 
 .metric {
-  background: #efe9de;
+  background: #f3eadc;
   padding: 24rpx 12rpx;
   text-align: center;
+}
+
+.metric-icon {
+  align-items: center;
+  background: #171511;
+  border-radius: 12rpx;
+  color: #fff7ed;
+  display: flex;
+  font-size: 21rpx;
+  font-weight: 600;
+  height: 42rpx;
+  justify-content: center;
+  margin: 0 auto 12rpx;
+  width: 42rpx;
+}
+
+.metric-icon.coral {
+  background: #c9674f;
+}
+
+.metric-icon.gold {
+  background: #d89945;
 }
 
 .metric-value {
@@ -49,8 +99,8 @@
 }
 
 .active-card {
-  background: #181715;
-  border-color: #252320;
+  background: #171511;
+  border-color: #2b2721;
   padding: 28rpx;
 }
 
@@ -60,7 +110,7 @@
 }
 
 .active-card .card-title {
-  color: #faf9f5;
+  color: #fff7ed;
 }
 
 .active-card .subtitle {
@@ -75,9 +125,27 @@
 }
 
 .active-card .button-secondary {
-  background: #252320;
+  background: #29251f;
   border-color: #3a3833;
-  color: #faf9f5;
+  color: #fff7ed;
+}
+
+.inline-icon {
+  align-items: center;
+  background: #c9674f;
+  border-radius: 10rpx;
+  color: #fff7ed;
+  display: inline-flex;
+  font-size: 20rpx;
+  height: 36rpx;
+  justify-content: center;
+  margin-right: 10rpx;
+  vertical-align: middle;
+  width: 36rpx;
+}
+
+.inline-icon.dark {
+  background: #171511;
 }
 
 .section-head {
@@ -89,7 +157,7 @@
 
 .text-button {
   background: transparent;
-  color: #cc785c;
+  color: #c9674f;
   font-size: 24rpx;
   height: 52rpx;
   line-height: 52rpx;
@@ -103,7 +171,7 @@
 }
 
 .capability-card {
-  border: 1rpx solid #e6dfd8;
+  border: 1rpx solid #e2d5c6;
   border-radius: 16rpx;
   min-height: 192rpx;
   padding: 22rpx;
@@ -112,17 +180,17 @@
 .capability-card.coral,
 .capability-card.amber,
 .capability-card.teal {
-  background: #efe9de;
+  background: #f3eadc;
 }
 
 .capability-card.dark {
-  background: #181715;
-  border-color: #252320;
+  background: #171511;
+  border-color: #2b2721;
 }
 
 .capability-card.dark .capability-title,
 .capability-card.dark .capability-desc {
-  color: #faf9f5;
+  color: #fff7ed;
 }
 
 .capability-card.dark .capability-desc {
@@ -131,7 +199,7 @@
 
 .capability-icon {
   align-items: center;
-  background: #cc785c;
+  background: #c9674f;
   border-radius: 14rpx;
   color: #ffffff;
   display: flex;
@@ -142,7 +210,7 @@
 }
 
 .capability-card.dark .capability-icon {
-  background: #252320;
+  background: #29251f;
 }
 
 .capability-card.amber .capability-icon {
@@ -175,7 +243,7 @@
 
 .action {
   align-items: center;
-  background: #efe9de;
+  background: #f3eadc;
   display: flex;
   gap: 24rpx;
 }
@@ -202,7 +270,7 @@
 }
 
 .bot-panel {
-  background: #f5f0e8;
+  background: #f7efe5;
 }
 
 .bot-row {

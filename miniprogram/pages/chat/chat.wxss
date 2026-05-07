@@ -1,5 +1,6 @@
 .chat-page {
-  background: #faf9f5;
+  background:
+    linear-gradient(180deg, #171511 0, #171511 212rpx, #f7f0e6 212rpx, #fbf6ee 66%, #efe5d8 100%);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -7,38 +8,58 @@
 
 .chat-topbar {
   align-items: center;
-  background: #faf9f5;
-  border-bottom: 1rpx solid #ebe6df;
+  background: #171511;
+  border-bottom: 1rpx solid #2b2721;
   display: flex;
   justify-content: space-between;
-  min-height: 92rpx;
-  padding: 16rpx 24rpx;
+  min-height: 126rpx;
+  padding: 24rpx 24rpx 20rpx;
 }
 
 .brand-block {
   align-items: center;
   display: flex;
-  flex: 0 0 42rpx;
+  flex: 1;
   gap: 12rpx;
   min-width: 0;
   overflow: hidden;
 }
 
 .brand-mark {
-  color: #cc785c;
-  font-size: 28rpx;
+  align-items: center;
+  background: #c9674f;
+  border-radius: 16rpx;
+  color: #fff7ed;
+  display: flex;
+  font-family: Georgia, "Songti SC", "STSong", serif;
+  font-size: 24rpx;
+  height: 60rpx;
+  justify-content: center;
   line-height: 1;
+  width: 60rpx;
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .brand-name {
-  color: #141413;
-  display: none;
-  font-size: 31rpx;
+  color: #fff7ed;
+  display: block;
+  font-size: 28rpx;
   font-weight: 500;
-  max-width: 172rpx;
+  max-width: 230rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.brand-sub {
+  color: #b7aea1;
+  font-size: 21rpx;
+  margin-top: 4rpx;
 }
 
 .top-actions {
@@ -48,32 +69,85 @@
 }
 
 .top-button {
-  background: #faf9f5;
-  border: 1rpx solid #e6dfd8;
+  align-items: center;
+  background: #25221d;
+  border: 1rpx solid #3a342c;
   border-radius: 999rpx;
-  color: #6c6a64;
+  color: #e7ded1;
+  display: flex;
   font-size: 23rpx;
   height: 56rpx;
-  line-height: 56rpx;
+  justify-content: center;
+  line-height: 1;
   padding: 0 18rpx;
 }
 
 .top-button.primary {
-  background: #181715;
-  border-color: #181715;
-  color: #faf9f5;
+  background: #c9674f;
+  border-color: #c9674f;
+  color: #fff7ed;
 }
 
 .button-icon {
+  border-color: currentColor;
   display: inline-block;
-  font-size: 22rpx;
   margin-right: 7rpx;
+  position: relative;
+}
+
+.history-icon {
+  border-top: 3rpx solid;
+  height: 16rpx;
+  width: 22rpx;
+}
+
+.history-icon::before,
+.history-icon::after {
+  border-top: 3rpx solid;
+  content: "";
+  left: 0;
+  position: absolute;
+  width: 22rpx;
+}
+
+.history-icon::before {
+  top: 6rpx;
+}
+
+.history-icon::after {
+  top: 15rpx;
+}
+
+.plus-icon {
+  height: 22rpx;
+  width: 22rpx;
+}
+
+.plus-icon::before,
+.plus-icon::after {
+  background: currentColor;
+  border-radius: 3rpx;
+  content: "";
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.plus-icon::before {
+  height: 3rpx;
+  width: 22rpx;
+}
+
+.plus-icon::after {
+  height: 22rpx;
+  width: 3rpx;
 }
 
 .message-list {
   flex: 1;
   min-height: 0;
-  padding: 34rpx 32rpx 24rpx;
+  padding: 36rpx 30rpx 24rpx;
 }
 
 .message-head {
@@ -90,8 +164,8 @@
 }
 
 .small-outline {
-  background: #faf9f5;
-  border: 1rpx solid #e6dfd8;
+  background: #fbf6ee;
+  border: 1rpx solid #e2d5c6;
   border-radius: 14rpx;
   color: #6c6a64;
   font-size: 23rpx;
@@ -105,20 +179,54 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 58vh;
+  min-height: 61vh;
   text-align: center;
+}
+
+.empty-orbit {
+  align-items: center;
+  background: #171511;
+  border: 1rpx solid #2f2a23;
+  border-radius: 34rpx;
+  box-shadow: 0 18rpx 40rpx rgba(23, 21, 17, 0.22);
+  display: flex;
+  height: 108rpx;
+  justify-content: center;
+  margin-bottom: 24rpx;
+  width: 108rpx;
+}
+
+.orbit-mark {
+  align-items: center;
+  background: #c9674f;
+  border-radius: 50%;
+  color: #fff7ed;
+  display: flex;
+  font-size: 34rpx;
+  font-weight: 600;
+  height: 66rpx;
+  justify-content: center;
+  width: 66rpx;
+}
+
+.empty-kicker {
+  color: #c9674f;
+  font-size: 23rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  margin-bottom: 12rpx;
 }
 
 .empty-title {
   color: #141413;
   font-family: Georgia, "Songti SC", "STSong", serif;
-  font-size: 48rpx;
+  font-size: 54rpx;
   font-weight: 400;
   line-height: 1.16;
 }
 
 .empty-copy {
-  color: #6c6a64;
+  color: #71685e;
   font-size: 26rpx;
   line-height: 1.55;
   margin-top: 18rpx;
@@ -133,14 +241,53 @@
 }
 
 .empty-prompts view {
-  background: #efe9de;
-  border: 1rpx solid #e6dfd8;
-  border-radius: 16rpx;
+  background: #fff9f0;
+  border: 1rpx solid #e2d5c6;
+  border-radius: 18rpx;
   color: #3d3d3a;
+  display: grid;
   font-size: 27rpx;
+  grid-template-columns: 64rpx 1fr;
   line-height: 1.45;
-  padding: 22rpx 24rpx;
+  padding: 22rpx;
   text-align: left;
+}
+
+.prompt-icon {
+  align-items: center;
+  background: #171511;
+  border-radius: 16rpx;
+  color: #fff7ed;
+  display: flex;
+  font-size: 25rpx;
+  font-weight: 600;
+  grid-row: span 2;
+  height: 52rpx;
+  justify-content: center;
+  margin-top: 2rpx;
+  width: 52rpx;
+}
+
+.prompt-icon.coral {
+  background: #c9674f;
+}
+
+.prompt-icon.gold {
+  background: #d89945;
+}
+
+.prompt-title {
+  color: #171511;
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.prompt-desc {
+  color: #71685e;
+  display: block;
+  font-size: 23rpx;
+  margin-top: 4rpx;
 }
 
 .message {
@@ -166,7 +313,7 @@
 }
 
 .user .bubble {
-  background: #efe9de;
+  background: #f3eadc;
   border-radius: 28rpx;
   color: #141413;
   padding: 20rpx 24rpx;
@@ -189,8 +336,8 @@
 }
 
 .message-attachments text {
-  background: #faf9f5;
-  border: 1rpx solid #e6dfd8;
+  background: #fbf6ee;
+  border: 1rpx solid #e2d5c6;
   border-radius: 999rpx;
   color: #6c6a64;
   font-size: 22rpx;
@@ -213,8 +360,8 @@
 }
 
 .status .bubble {
-  background: #f5f0e8;
-  border: 1rpx solid #e6dfd8;
+  background: #f7efe5;
+  border: 1rpx solid #e2d5c6;
   border-radius: 14rpx;
   color: #a9583e;
   font-size: 24rpx;
@@ -222,22 +369,22 @@
 }
 
 .composer {
-  background: #1f1e1b;
-  border: 1rpx solid #34312d;
-  border-radius: 22rpx;
+  background: #1c1915;
+  border: 1rpx solid #332d25;
+  border-radius: 26rpx;
   box-shadow: 0 16rpx 42rpx rgba(20, 20, 19, 0.22);
   margin: 0 22rpx calc(20rpx + env(safe-area-inset-bottom));
   overflow: hidden;
 }
 
 .composer.focused {
-  border-color: #cc785c;
-  box-shadow: 0 0 0 5rpx rgba(204, 120, 92, 0.18), 0 18rpx 46rpx rgba(20, 20, 19, 0.24);
+  border-color: #c9674f;
+  box-shadow: 0 0 0 5rpx rgba(201, 103, 79, 0.2), 0 18rpx 46rpx rgba(20, 20, 19, 0.24);
 }
 
 .input {
-  background: #1f1e1b;
-  color: #faf9f5;
+  background: #1c1915;
+  color: #fff7ed;
   font-size: 29rpx;
   line-height: 1.52;
   max-height: 220rpx;
@@ -251,7 +398,7 @@
 }
 
 .attachment-strip {
-  background: #1f1e1b;
+  background: #1c1915;
   display: flex;
   flex-wrap: wrap;
   gap: 10rpx;
@@ -263,7 +410,7 @@
   background: #252320;
   border: 1rpx solid #3a3731;
   border-radius: 12rpx;
-  color: #faf9f5;
+  color: #fff7ed;
   display: flex;
   font-size: 22rpx;
   gap: 10rpx;
@@ -279,15 +426,15 @@
 }
 
 .remove-attachment {
-  color: #cc785c;
+  color: #c9674f;
   font-size: 24rpx;
   line-height: 1;
 }
 
 .composer-toolbar {
   align-items: center;
-  background: #1f1e1b;
-  border-top: 1rpx solid #34312d;
+  background: #1c1915;
+  border-top: 1rpx solid #332d25;
   display: flex;
   gap: 12rpx;
   justify-content: space-between;
@@ -309,8 +456,8 @@
 
 .tool-pill {
   align-items: center;
-  background: #252320;
-  border: 1rpx solid #3a3731;
+  background: #29251f;
+  border: 1rpx solid #40382f;
   border-radius: 999rpx;
   color: #d6d1c8;
   display: inline-flex;
@@ -326,16 +473,16 @@
 }
 
 .tool-pill.active {
-  background: rgba(204, 120, 92, 0.16);
-  border-color: rgba(204, 120, 92, 0.55);
+  background: rgba(201, 103, 79, 0.18);
+  border-color: rgba(201, 103, 79, 0.58);
   color: #f0b49e;
 }
 
 .tool-pills .icon-pill {
   align-items: center;
-  background: #faf9f5;
-  border-color: #faf9f5;
-  color: #181715;
+  background: #fff7ed;
+  border-color: #fff7ed;
+  color: #171511;
   flex: 0 0 52rpx;
   font-size: 28rpx;
   height: 52rpx;
@@ -345,14 +492,18 @@
 }
 
 .pill-icon {
+  border-color: currentColor;
   color: inherit;
-  font-size: 21rpx;
+  display: inline-block;
+  height: 22rpx;
   margin-right: 8rpx;
+  position: relative;
+  width: 22rpx;
 }
 
 .send-button {
   align-items: center;
-  background: #cc785c;
+  background: #c9674f;
   border-radius: 999rpx;
   color: #ffffff;
   display: flex;
@@ -371,7 +522,114 @@
 }
 
 .cancel-button {
-  background: #181715;
+  background: #171511;
+}
+
+.clip-icon,
+.mode-icon,
+.tool-icon,
+.book-icon,
+.shelf-icon {
+  border-color: currentColor;
+  display: inline-block;
+  position: relative;
+}
+
+.clip-icon {
+  border: 3rpx solid;
+  border-radius: 10rpx;
+  height: 25rpx;
+  transform: rotate(-12deg);
+  width: 18rpx;
+}
+
+.clip-icon::after {
+  border: 3rpx solid;
+  border-radius: 8rpx;
+  content: "";
+  height: 14rpx;
+  left: 5rpx;
+  position: absolute;
+  top: 4rpx;
+  width: 8rpx;
+}
+
+.mode-icon {
+  border: 3rpx solid;
+  border-radius: 50%;
+}
+
+.mode-icon::after {
+  background: currentColor;
+  border-radius: 50%;
+  content: "";
+  height: 7rpx;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 7rpx;
+}
+
+.tool-icon {
+  border-left: 3rpx solid;
+  border-right: 3rpx solid;
+}
+
+.tool-icon::before,
+.tool-icon::after {
+  background: currentColor;
+  border-radius: 50%;
+  content: "";
+  height: 7rpx;
+  position: absolute;
+  top: 7rpx;
+  width: 7rpx;
+}
+
+.tool-icon::before {
+  left: 2rpx;
+}
+
+.tool-icon::after {
+  right: 2rpx;
+}
+
+.book-icon {
+  border: 3rpx solid;
+  border-radius: 4rpx 8rpx 8rpx 4rpx;
+}
+
+.book-icon::after {
+  border-left: 3rpx solid;
+  content: "";
+  height: 20rpx;
+  left: 8rpx;
+  position: absolute;
+  top: -2rpx;
+}
+
+.shelf-icon {
+  border: 3rpx solid;
+  border-radius: 5rpx;
+}
+
+.shelf-icon::before,
+.shelf-icon::after {
+  background: currentColor;
+  content: "";
+  height: 3rpx;
+  left: 3rpx;
+  position: absolute;
+  right: 3rpx;
+}
+
+.shelf-icon::before {
+  top: 6rpx;
+}
+
+.shelf-icon::after {
+  bottom: 6rpx;
 }
 
 .overlay {
@@ -385,8 +643,8 @@
 }
 
 .session-drawer {
-  background: #faf9f5;
-  border-right: 1rpx solid #e6dfd8;
+  background: #171511;
+  border-right: 1rpx solid #2b2721;
   bottom: 0;
   left: 0;
   position: fixed;
@@ -397,14 +655,14 @@
 
 .drawer-head {
   align-items: center;
-  border-bottom: 1rpx solid #e6dfd8;
+  border-bottom: 1rpx solid #2b2721;
   display: flex;
   justify-content: space-between;
   padding: 32rpx 24rpx 24rpx;
 }
 
 .drawer-kicker {
-  color: #cc785c;
+  color: #e7a38b;
   display: block;
   font-size: 21rpx;
   font-weight: 500;
@@ -412,7 +670,7 @@
 }
 
 .drawer-title {
-  color: #141413;
+  color: #fff7ed;
   font-family: Georgia, "Songti SC", "STSong", serif;
   font-size: 36rpx;
   font-weight: 400;
@@ -426,7 +684,7 @@
 }
 
 .drawer-empty {
-  color: #6c6a64;
+  color: #b7aea1;
   padding: 48rpx 12rpx;
   text-align: center;
 }
@@ -437,11 +695,11 @@
 }
 
 .session-item.active {
-  background: #efe9de;
+  background: #29251f;
 }
 
 .session-title {
-  color: #141413;
+  color: #fff7ed;
   font-size: 27rpx;
   font-weight: 500;
   line-height: 1.35;
@@ -451,7 +709,7 @@
 }
 
 .session-preview {
-  color: #6c6a64;
+  color: #b7aea1;
   font-size: 23rpx;
   line-height: 1.4;
   margin-top: 6rpx;

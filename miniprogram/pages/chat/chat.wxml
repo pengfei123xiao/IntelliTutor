@@ -1,23 +1,42 @@
 <view class="chat-page">
   <view class="chat-topbar">
     <view class="brand-block">
-      <text class="brand-mark">✳</text>
-      <text class="brand-name">IntelliTutor</text>
+      <text class="brand-mark">ic</text>
+      <view class="brand-copy">
+        <text class="brand-name">intelliclass</text>
+        <text class="brand-sub">智能带读</text>
+      </view>
     </view>
     <view class="top-actions">
-      <button class="top-button" bindtap="toggleSessions"><text class="button-icon">☰</text>历史</button>
-      <button class="top-button primary" bindtap="newChat"><text class="button-icon">＋</text>新对话</button>
+      <button class="top-button" bindtap="toggleSessions"><text class="button-icon history-icon"></text>历史</button>
+      <button class="top-button primary" bindtap="newChat"><text class="button-icon plus-icon"></text>新对话</button>
     </view>
   </view>
 
   <scroll-view class="message-list" scroll-y scroll-with-animation scroll-into-view="{{scrollIntoView}}">
     <view wx:if="{{messages.length === 0}}" class="empty-chat">
+      <view class="empty-orbit">
+        <text class="orbit-mark">问</text>
+      </view>
+      <view class="empty-kicker">像网页端一样从一个问题开始</view>
       <view class="empty-title">今天想学什么？</view>
-      <view class="empty-copy">直接输入问题，或选择资料后开启基于资料的带读。</view>
+      <view class="empty-copy">直接输入问题，或选择资料后开启带读、测评和复盘。</view>
       <view class="empty-prompts">
-        <view bindtap="usePrompt" data-text="请用提问的方式带我学习这一节内容">苏格拉底带读</view>
-        <view bindtap="usePrompt" data-text="根据当前资料帮我出三道检测题">生成检测题</view>
-        <view bindtap="usePrompt" data-text="这一章的知识点路径是什么？">知识点路径</view>
+        <view bindtap="usePrompt" data-text="请用提问的方式带我学习这一节内容">
+          <text class="prompt-icon">问</text>
+          <text class="prompt-title">苏格拉底带读</text>
+          <text class="prompt-desc">边问边想，适合预习和课堂讲解</text>
+        </view>
+        <view bindtap="usePrompt" data-text="根据当前资料帮我出三道检测题">
+          <text class="prompt-icon coral">测</text>
+          <text class="prompt-title">生成检测题</text>
+          <text class="prompt-desc">快速看懂学生是否真正掌握</text>
+        </view>
+        <view bindtap="usePrompt" data-text="这一章的知识点路径是什么？">
+          <text class="prompt-icon gold">路</text>
+          <text class="prompt-title">知识点路径</text>
+          <text class="prompt-desc">把章节拆成今日可执行任务</text>
+        </view>
       </view>
     </view>
 
@@ -71,11 +90,11 @@
     <view class="composer-toolbar">
       <scroll-view scroll-x class="tool-scroll" show-scrollbar="{{false}}">
         <view class="tool-pills">
-          <view class="tool-pill icon-pill" bindtap="chooseAttachment">＋</view>
-          <view class="tool-pill" bindtap="chooseCapability"><text class="pill-icon">▢</text>{{activeCapabilityLabel}}</view>
-          <view class="tool-pill {{enabledTools.length ? 'active' : ''}}" bindtap="chooseTools"><text class="pill-icon">✧</text>学习工具{{enabledTools.length ? " " + enabledTools.length : ""}}</view>
-          <view class="tool-pill {{ragEnabled ? 'active' : ''}}" bindtap="toggleRag"><text class="pill-icon">▤</text>资料问答</view>
-          <view class="tool-pill" bindtap="chooseKnowledgeBase"><text class="pill-icon">@</text>{{activeKnowledgeBase || "选择资料"}}</view>
+          <view class="tool-pill icon-pill" bindtap="chooseAttachment"><text class="clip-icon"></text></view>
+          <view class="tool-pill" bindtap="chooseCapability"><text class="pill-icon mode-icon"></text>{{activeCapabilityLabel}}</view>
+          <view class="tool-pill {{enabledTools.length ? 'active' : ''}}" bindtap="chooseTools"><text class="pill-icon tool-icon"></text>学习工具{{enabledTools.length ? " " + enabledTools.length : ""}}</view>
+          <view class="tool-pill {{ragEnabled ? 'active' : ''}}" bindtap="toggleRag"><text class="pill-icon book-icon"></text>资料问答</view>
+          <view class="tool-pill" bindtap="chooseKnowledgeBase"><text class="pill-icon shelf-icon"></text>{{activeKnowledgeBase || "选择资料"}}</view>
         </view>
       </scroll-view>
       <button wx:if="{{streaming}}" class="send-button cancel-button" bindtap="cancelStreaming">×</button>
