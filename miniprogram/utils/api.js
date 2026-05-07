@@ -562,7 +562,7 @@ function getSettings() {
     api_mode: "cloud-function",
     database_policy: "test-open",
     model: "cloudbase-adapter",
-    features: ["聊天", "新对话", "历史记录", "学习工具", "资料问答", "参考资料", "知识库", "学习路径", "家长周报"],
+    features: ["聊天", "新对话", "历史记录", "书架", "资料问答", "参考资料", "个人知识图谱", "学习路径", "学习周报"],
     runtime_note: "测试期会优先返回中文演示数据，真实后端部署后可在此页验证连接。",
   });
 }

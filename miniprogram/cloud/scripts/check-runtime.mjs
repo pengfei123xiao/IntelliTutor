@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
-const cloudRoot = path.resolve(new URL("..", import.meta.url).pathname);
+const cloudRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const miniprogramRoot = path.resolve(cloudRoot, "..");
 const functionRoot = path.join(cloudRoot, "functions", "apiProxy");
 const envFile = path.join(miniprogramRoot, "config", "env.js");
@@ -73,6 +74,8 @@ const requiredRoutes = [
   "/api/v1/mobile/analytics/weak-points",
   "/api/v1/mobile/analytics/recommendations",
   "/api/v1/mobile/analytics/question-stats",
+  "/api/v1/mobile/books",
+  "/api/v1/mobile/graph/summary",
 ];
 
 for (const route of requiredRoutes) {
@@ -88,6 +91,9 @@ for (const collectionName of [
   "guide_sessions",
   "learning_paths",
   "parent_reports",
+  "learning_books",
+  "learning_graph_nodes",
+  "learning_graph_edges",
   "tutor_bots",
   "app_settings",
 ]) {

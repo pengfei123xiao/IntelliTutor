@@ -14,6 +14,9 @@ const collections = {
   guideSessions: "guide_sessions",
   learningPaths: "learning_paths",
   parentReports: "parent_reports",
+  books: "learning_books",
+  graphNodes: "learning_graph_nodes",
+  graphEdges: "learning_graph_edges",
   bots: "tutor_bots",
   settings: "app_settings",
 };
@@ -143,6 +146,77 @@ const demo = {
       created_at: 1778083200000,
     },
   ],
+  books: [
+    {
+      _id: "demo_book_math_7a",
+      book_id: "demo_book_math_7a",
+      title: "七年级数学上册",
+      subject: "数学",
+      progress_percent: 62,
+      mastery_percent: 72,
+      current_chapter: "整式的加减",
+      source: "教材资料",
+      updated_at: 1778083200000,
+    },
+    {
+      _id: "demo_book_luotuoxiangzi",
+      book_id: "demo_book_luotuoxiangzi",
+      title: "骆驼祥子",
+      subject: "语文阅读",
+      progress_percent: 38,
+      mastery_percent: 66,
+      current_chapter: "人物关系与社会背景",
+      source: "阅读项目",
+      updated_at: 1778083200000,
+    },
+  ],
+  graphNodes: [
+    {
+      _id: "node_like_terms",
+      node_id: "node_like_terms",
+      title: "同类项",
+      subject: "数学",
+      mastery: 0.78,
+      status: "stable",
+      evidence_count: 5,
+      updated_at: 1778083200000,
+    },
+    {
+      _id: "node_signs",
+      node_id: "node_signs",
+      title: "符号处理",
+      subject: "数学",
+      mastery: 0.52,
+      status: "weak",
+      evidence_count: 3,
+      updated_at: 1778083200000,
+    },
+    {
+      _id: "node_linear_function",
+      node_id: "node_linear_function",
+      title: "一次函数图像",
+      subject: "数学",
+      mastery: 0.68,
+      status: "learning",
+      evidence_count: 4,
+      updated_at: 1778083200000,
+    },
+    {
+      _id: "node_xiangzi_character",
+      node_id: "node_xiangzi_character",
+      title: "祥子人物弧线",
+      subject: "语文阅读",
+      mastery: 0.64,
+      status: "learning",
+      evidence_count: 2,
+      updated_at: 1778083200000,
+    },
+  ],
+  graphEdges: [
+    { _id: "edge_like_terms_signs", from: "node_like_terms", to: "node_signs", relation: "易错关联" },
+    { _id: "edge_signs_linear", from: "node_signs", to: "node_linear_function", relation: "代数基础" },
+    { _id: "edge_reading_math", from: "node_xiangzi_character", to: "node_like_terms", relation: "学习记录并列" },
+  ],
   guideSessions: [
     {
       session_id: "demo_guide_1",
@@ -215,6 +289,9 @@ function fallbackList(collection, where = {}, limit = 100) {
     [collections.guideSessions]: demo.guideSessions,
     [collections.learningPaths]: demo.learningPaths,
     [collections.parentReports]: demo.parentReports,
+    [collections.books]: demo.books,
+    [collections.graphNodes]: demo.graphNodes,
+    [collections.graphEdges]: demo.graphEdges,
     [collections.bots]: demo.bots,
     [collections.settings]: demo.settings,
   };
@@ -464,12 +541,66 @@ function buildLearningRecommendations({ masteryProfile, weakPoints, knowledge, q
       },
       {
         id: "parent_sync",
-        title: "生成家长沟通摘要",
+        title: "生成学习摘要",
         minutes: 6,
         output: "说明今天卡点、已完成练习、明天复习动作",
       },
     ],
     success_criteria: ["能说清规则", "同类题正确率达到 80%", "错题有明确错因"],
+  };
+}
+
+async function loadBookData() {
+  const stored = await getList(collections.books, {}, 50);
+  const books = stored.length ? stored : demo.books;
+  return books
+    .map((item) => ({
+      book_id: item.book_id || item._id || makeId("book"),
+      title: item.title || item.name || "学习资料",
+      subject: item.subject || "综合",
+      progress_percent: Number(item.progress_percent ?? item.progress ?? 0),
+      mastery_percent: Number(item.mastery_percent ?? Math.round(normalizePercent(item.mastery || 0.6) * 100)),
+      current_chapter: item.current_chapter || item.chapter || "最近学习",
+      source: item.source || "资料库",
+      updated_at: item.updated_at || item.created_at || now(),
+    }))
+    .sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0));
+}
+
+async function loadGraphSummary() {
+  const nodes = await getList(collections.graphNodes, {}, 120);
+  const edges = await getList(collections.graphEdges, {}, 200);
+  const graphNodes = nodes.length ? nodes : demo.graphNodes;
+  const graphEdges = edges.length ? edges : demo.graphEdges;
+  const sortedNodes = [...graphNodes].sort((a, b) => normalizePercent(a.mastery) - normalizePercent(b.mastery));
+  const weakNodes = sortedNodes
+    .filter((item) => item.status === "weak" || normalizePercent(item.mastery) < 0.7)
+    .slice(0, 5)
+    .map((item) => ({
+      node_id: item.node_id || item._id,
+      title: item.title,
+      subject: item.subject || "综合",
+      mastery_percent: Math.round(normalizePercent(item.mastery) * 100),
+      evidence_count: item.evidence_count || 0,
+      next_action: `围绕「${item.title}」完成一次追问和两道检测题`,
+    }));
+
+  const average = graphNodes.length
+    ? graphNodes.reduce((sum, item) => sum + normalizePercent(item.mastery), 0) / graphNodes.length
+    : 0.72;
+
+  return {
+    node_count: graphNodes.length,
+    edge_count: graphEdges.length,
+    mastery_percent: Math.round(average * 100),
+    updated_nodes: graphNodes.slice(0, 4).map((item) => ({
+      node_id: item.node_id || item._id,
+      title: item.title,
+      subject: item.subject || "综合",
+      mastery_percent: Math.round(normalizePercent(item.mastery) * 100),
+      status: item.status || "learning",
+    })),
+    weak_nodes: weakNodes,
   };
 }
 
@@ -773,6 +904,8 @@ async function mobileOverview(query) {
   const storedQuestions = await getList(collections.questionEntries, {}, 100);
   const q = storedQuestions.length ? storedQuestions : demo.questionEntries;
   const analytics = await loadAnalyticsData();
+  const books = await loadBookData();
+  const graph = await loadGraphSummary();
   return ok({
     active_knowledge_base: query.active_knowledge_base || (knowledge[0] && knowledge[0].name) || "",
     stats: {
@@ -781,18 +914,13 @@ async function mobileOverview(query) {
       mastery: analytics.masteryProfile.mastery,
       weak_points: analytics.weakPoints.length,
       questions: q.length,
+      books: books.length,
+      graph_nodes: graph.node_count,
     },
     recommendation: analytics.recommendations,
-    capabilities: [
-      "聊天",
-      "深度解题",
-      "出题测评",
-      "深度研究",
-      "数学动画",
-      "图表可视化",
-      "智能写作",
-      "辅导机器人",
-    ],
+    books: books.slice(0, 4),
+    graph,
+    recent_sessions: sessions.slice(0, 4),
   });
 }
 
@@ -830,6 +958,7 @@ async function parentReport() {
   const sessions = await getList(collections.sessions, {}, 6);
   const reports = await getList(collections.parentReports, {}, 1);
   const analytics = await loadAnalyticsData();
+  const graph = await loadGraphSummary();
   const latestReport = reports[0] || demo.parentReports[0];
   return ok({
     report: latestReport,
@@ -838,10 +967,24 @@ async function parentReport() {
       mastery: analytics.masteryProfile,
       weak_points: analytics.weakPoints.map((item) => `${item.topic}：${item.reason}`),
       review_items: analytics.recommendations.tasks.map((item) => item.title),
+      graph,
+      next_week: analytics.recommendations.tasks.map((item) => ({
+        title: item.title,
+        minutes: item.minutes,
+      })),
     },
-    discussion_prompt: "让孩子先复述今天最卡住的一个点，再用一道题说明自己现在怎么想。",
+    share_summary: `${latestReport.title || "学习周报"}：掌握度 ${analytics.masteryProfile.mastery_percent}%，重点补强 ${analytics.weakPoints[0]?.topic || "当前学习主题"}。`,
+    discussion_prompt: "先复述本周最卡住的一个点，再用一道题说明现在怎么想。",
     recent_sessions: sessions.length ? sessions : demo.sessions,
   });
+}
+
+async function booksEndpoint() {
+  return ok({ books: await loadBookData() }, { source: "cloudbase-or-demo" });
+}
+
+async function graphEndpoint() {
+  return ok(await loadGraphSummary(), { source: "cloudbase-or-demo" });
 }
 
 async function tutorBots() {
@@ -859,7 +1002,7 @@ async function settings() {
     database_policy: runtime.database_policy || "test-open",
     seed_version: runtime.seed_version || "not-seeded",
     model: "cloudbase-adapter",
-    features: ["聊天", "资料库", "笔记", "错题本", "学习路径", "家长周报", "机器人", "掌握度算法", "薄弱点提取"],
+    features: ["聊天", "资料库", "书架", "学习路径", "学习周报", "个人知识图谱", "错题复盘", "掌握度算法", "薄弱点提取"],
     function_name: "apiProxy",
     runtime_note: "apiProxy 优先读取 CloudBase 数据库；集合为空或不可用时返回中文演示数据，保证页面可验收。",
   });
@@ -907,6 +1050,18 @@ async function seedMobileBackend(data = {}) {
       id: item.report_id,
       data: { ...item, _id: item.report_id, seed_version: seedVersion, updated_at: stamp },
     })),
+    [collections.books]: demo.books.map((item) => ({
+      id: item.book_id,
+      data: { ...item, _id: item.book_id, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.graphNodes]: demo.graphNodes.map((item) => ({
+      id: item.node_id,
+      data: { ...item, _id: item.node_id, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.graphEdges]: demo.graphEdges.map((item) => ({
+      id: item._id,
+      data: { ...item, seed_version: seedVersion, updated_at: stamp },
+    })),
     [collections.bots]: demo.bots.map((item) => ({
       id: item.bot_id,
       data: { ...item, _id: item.bot_id, seed_version: seedVersion, updated_at: stamp },
@@ -946,7 +1101,7 @@ async function seedMobileBackend(data = {}) {
     next_steps: [
       "部署 apiProxy 云函数",
       "调用 /api/v1/mobile/setup/seed 写入测试数据",
-      "打开小程序资料、学习、家长、我的页面验证数据库优先读取",
+      "打开小程序资料、学习、周报、我的页面验证数据库优先读取",
     ],
   });
 }
@@ -1007,6 +1162,8 @@ exports.main = async (event) => {
     if (pathname === "/api/v1/mobile/analytics/weak-points" && method === "GET") return weakPointsEndpoint();
     if (pathname === "/api/v1/mobile/analytics/recommendations" && method === "GET") return recommendationsEndpoint();
     if (pathname === "/api/v1/mobile/analytics/question-stats" && method === "GET") return questionStatsEndpoint();
+    if (pathname === "/api/v1/mobile/books" && method === "GET") return booksEndpoint();
+    if (pathname === "/api/v1/mobile/graph/summary" && method === "GET") return graphEndpoint();
     if (pathname === "/api/v1/mobile/overview") return mobileOverview(query);
     if (pathname === "/api/v1/knowledge/list") return ok(await listKnowledge());
     if (pathname === "/api/v1/knowledge/rag-providers") {
