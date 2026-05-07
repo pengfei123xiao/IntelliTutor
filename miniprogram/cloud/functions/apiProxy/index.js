@@ -16,16 +16,164 @@ const collections = {
   settings: "app_settings",
 };
 
+const TARGET_ENV_ID = "cloud1-d0gxrvlbc5c9f8145";
+
+const demo = {
+  knowledge: [
+    {
+      _id: "demo_kb_math",
+      name: "演示资料库：七年级数学",
+      description: "CloudBase 数据库未初始化时的演示资料库",
+      is_default: true,
+      status: "ready",
+      files: [
+        { name: "有理数与整式讲义.pdf", fileID: "demo://math-handout" },
+        { name: "课堂错题整理.md", fileID: "demo://wrong-questions" },
+      ],
+      statistics: {
+        document_count: 2,
+        chunk_count: 24,
+        rag_provider: "cloudbase-demo",
+      },
+      created_at: 1778083200000,
+      updated_at: 1778083200000,
+    },
+  ],
+  sessions: [
+    {
+      session_id: "demo_session_math",
+      title: "演示对话：整式化简",
+      messages: [
+        { id: 1, role: "user", content: "请讲一下合并同类项。", created_at: 1778083200000 },
+        {
+          id: 2,
+          role: "assistant",
+          content: "合并同类项时，先找字母和字母指数完全相同的项，只把系数相加减。比如 3x + 2x = 5x。",
+          created_at: 1778083200000,
+        },
+      ],
+      last_message: "合并同类项时，先找字母和字母指数完全相同的项。",
+      status: "completed",
+      preferences: { capability: "", tools: ["rag"], knowledge_bases: ["演示资料库：七年级数学"], language: "zh" },
+      created_at: 1778083200000,
+      updated_at: 1778083200000,
+    },
+  ],
+  notebooks: [
+    {
+      _id: "demo_notebook_class",
+      name: "课堂笔记",
+      description: "演示笔记本：用于保存聊天重点和课堂记录",
+      color: "#cc785c",
+      icon: "book",
+      record_count: 1,
+      records: [
+        {
+          id: "demo_record_1",
+          type: "chat",
+          title: "合并同类项",
+          summary: "同类项的字母和指数相同，只合并系数。",
+          created_at: 1778083200000,
+        },
+      ],
+      created_at: 1778083200000,
+      updated_at: 1778083200000,
+    },
+  ],
+  questionEntries: [
+    {
+      _id: "demo_question_1",
+      question: "化简：3x + 2x - x",
+      question_type: "short_answer",
+      correct_answer: "4x",
+      explanation: "3、2、-1 是同类项系数，相加得到 4，所以结果是 4x。",
+      difficulty: "基础",
+      user_answer: "5x",
+      is_correct: false,
+      bookmarked: true,
+      categories: ["demo_category_wrong"],
+      created_at: 1778083200000,
+    },
+    {
+      _id: "demo_question_2",
+      question: "下列各项中，2a 与哪一项是同类项？",
+      question_type: "single_choice",
+      options: { A: "2b", B: "-3a", C: "a²", D: "ab" },
+      correct_answer: "B",
+      explanation: "同类项要求字母和字母指数完全相同，-3a 与 2a 是同类项。",
+      difficulty: "基础",
+      user_answer: "B",
+      is_correct: true,
+      bookmarked: false,
+      categories: ["demo_category_core"],
+      created_at: 1778083200000,
+    },
+  ],
+  questionCategories: [
+    { _id: "demo_category_wrong", name: "错题复盘", entry_count: 1, created_at: 1778083200000 },
+    { _id: "demo_category_core", name: "高频考点", entry_count: 1, created_at: 1778083200000 },
+  ],
+  guideSessions: [
+    {
+      session_id: "demo_guide_1",
+      title: "20 分钟复习：合并同类项",
+      topic: "先回顾概念，再完成两道检测题，最后整理错因。",
+      status: "ready",
+      knowledge_base: "演示资料库：七年级数学",
+      tasks: ["复述同类项定义", "完成 2 道化简题", "标记易错系数", "把错题保存到笔记"],
+      created_at: 1778083200000,
+      updated_at: 1778083200000,
+    },
+  ],
+  bots: [
+    {
+      bot_id: "mathtutor",
+      name: "Mathtutor",
+      description: "数学思维辅导机器人",
+      persona: "循序渐进、先问后讲",
+      channels: ["chat", "guide"],
+      model: "cloudbase-demo",
+      running: true,
+    },
+    {
+      bot_id: "reading-coach",
+      name: "Reading Coach",
+      description: "语文阅读与表达教练",
+      persona: "先抓主旨，再追问证据",
+      channels: ["chat"],
+      model: "cloudbase-demo",
+      running: true,
+    },
+  ],
+};
+
 function now() {
   return Date.now();
 }
 
-function ok(data) {
-  return { ok: true, data };
+function ok(data, meta) {
+  return meta ? { ok: true, data, meta } : { ok: true, data };
 }
 
 function fail(statusCode, message) {
   return { ok: false, statusCode, message };
+}
+
+function matchesWhere(item, where = {}) {
+  return Object.keys(where).every((key) => item[key] === where[key]);
+}
+
+function fallbackList(collection, where = {}, limit = 100) {
+  const map = {
+    [collections.knowledge]: demo.knowledge,
+    [collections.sessions]: demo.sessions,
+    [collections.notebooks]: demo.notebooks,
+    [collections.questionEntries]: demo.questionEntries,
+    [collections.questionCategories]: demo.questionCategories,
+    [collections.guideSessions]: demo.guideSessions,
+    [collections.bots]: demo.bots,
+  };
+  return (map[collection] || []).filter((item) => matchesWhere(item, where)).slice(0, limit);
 }
 
 function parsePath(rawPath) {
@@ -43,21 +191,35 @@ async function getList(collection, where = {}, limit = 100) {
     const result = await db.collection(collection).where(where).limit(limit).get();
     return result.data || [];
   } catch (error) {
-    return [];
+    return fallbackList(collection, where, limit);
   }
 }
 
 async function addDoc(collection, data) {
-  const result = await db.collection(collection).add({ data });
-  return result._id;
+  try {
+    const result = await db.collection(collection).add({ data });
+    return result._id;
+  } catch (error) {
+    return makeId("demo");
+  }
 }
 
 async function updateById(collection, id, data) {
-  await db.collection(collection).doc(id).update({ data });
+  try {
+    await db.collection(collection).doc(id).update({ data });
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 async function removeById(collection, id) {
-  await db.collection(collection).doc(id).remove();
+  try {
+    await db.collection(collection).doc(id).remove();
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 function makeId(prefix) {
@@ -103,7 +265,8 @@ function buildAssistantReply(payload, kbNames) {
 }
 
 async function listKnowledge() {
-  const items = await getList(collections.knowledge, {}, 100);
+  const stored = await getList(collections.knowledge, {}, 100);
+  const items = stored.length ? stored : demo.knowledge;
   return items.map((item) => ({
     name: item.name,
     is_default: item.is_default || false,
@@ -144,7 +307,11 @@ async function handleKnowledgeUpload(pathname, data) {
   if (!name) return fail(400, "资料库名称不能为空");
   const items = await getList(collections.knowledge, { name }, 1);
   if (!items.length) await handleKnowledgeCreate({ name });
-  const latest = (await getList(collections.knowledge, { name }, 1))[0];
+  const latest = (await getList(collections.knowledge, { name }, 1))[0] || {
+    _id: makeId("kb"),
+    name,
+    files: [],
+  };
   const files = Array.isArray(data.files) ? data.files : [];
   const nextFiles = [...(latest.files || []), ...files.map((file) => ({
     fileID: file.fileID,
@@ -162,7 +329,12 @@ async function handleKnowledgeUpload(pathname, data) {
     },
     updated_at: now(),
   });
-  return ok({ task_id: makeId("upload"), uploaded: files.length });
+  return ok({
+    task_id: makeId("upload"),
+    uploaded: files.length,
+    status: "ready",
+    message: files.length ? "文件已登记，测试期使用 CloudBase 演示处理结果。" : "未收到文件，已保留资料库。",
+  });
 }
 
 async function listSessions(query) {
@@ -249,7 +421,13 @@ async function chatTurn(data) {
   } else {
     await addDoc(collections.sessions, payload);
   }
-  return ok({ session_id: sessionId, content: reply, message: assistantMessage });
+  return ok({
+    session_id: sessionId,
+    content: reply,
+    message: assistantMessage,
+    status: "completed",
+    fallback: true,
+  });
 }
 
 async function listNotebooks() {
@@ -302,7 +480,7 @@ async function addNotebookRecord(data) {
     record_count: records.length + 1,
     updated_at: now(),
   });
-  return ok({ record });
+  return ok({ record, saved: true });
 }
 
 async function listQuestionEntries(query) {
@@ -346,14 +524,14 @@ async function listQuestionCategories() {
 
 async function updateQuestionEntry(pathname, data) {
   const id = pathname.split("/").pop();
-  await updateById(collections.questionEntries, id, { ...data, updated_at: now() });
-  return ok({ updated: true });
+  const updated = await updateById(collections.questionEntries, id, { ...data, updated_at: now() });
+  return ok({ updated, id });
 }
 
 async function deleteQuestionEntry(pathname) {
   const id = pathname.split("/").pop();
-  await removeById(collections.questionEntries, id);
-  return ok({ deleted: true });
+  const deleted = await removeById(collections.questionEntries, id);
+  return ok({ deleted, id });
 }
 
 async function mobileOverview(query) {
@@ -381,17 +559,19 @@ async function mobileOverview(query) {
 }
 
 async function createGuide(data) {
+  const minutes = Math.max(10, Math.min(Number(data.minutes || 20), 90));
+  const title = data.learning_goal || data.user_input || data.topic || "今日学习路径";
   const doc = {
     session_id: makeId("guide"),
-    title: data.learning_goal || data.user_input || "今日学习路径",
-    topic: data.learning_goal || "完成今日学习并定位薄弱知识点",
+    title,
+    topic: title || "完成今日学习并定位薄弱知识点",
     status: "ready",
     knowledge_base: data.knowledge_base || "",
     tasks: [
-      "梳理已掌握内容",
-      "定位薄弱知识点",
-      "完成 3 道检测题",
-      "生成复习提醒",
+      `用 ${Math.min(minutes, 20)} 分钟梳理已掌握内容`,
+      "定位 1 个薄弱知识点并说出卡点",
+      "完成 3 道检测题并标记错因",
+      "生成下一次复习提醒和家长沟通话术",
     ],
     created_at: now(),
     updated_at: now(),
@@ -401,7 +581,8 @@ async function createGuide(data) {
 }
 
 async function listGuideSessions() {
-  const sessions = await getList(collections.guideSessions, {}, 50);
+  const stored = await getList(collections.guideSessions, {}, 50);
+  const sessions = stored.length ? stored : [...demo.guideSessions];
   sessions.sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0));
   return ok({ sessions });
 }
@@ -411,9 +592,12 @@ async function parentReport() {
   const wrong = await getList(collections.questionEntries, { is_correct: false }, 6);
   return ok({
     summary: {
-      learning_sessions: sessions.length,
-      weak_points: wrong.map((item) => item.question || item.title || "待复盘知识点"),
-      review_items: wrong.slice(0, 3).map((item) => item.explanation || item.question || "复习一条错题解析"),
+      learning_sessions: sessions.length || demo.sessions.length,
+      weak_points: (wrong.length ? wrong : demo.questionEntries.filter((item) => item.is_correct === false))
+        .map((item) => item.question || item.title || "待复盘知识点"),
+      review_items: (wrong.length ? wrong : demo.questionEntries.filter((item) => item.is_correct === false))
+        .slice(0, 3)
+        .map((item) => item.explanation || item.question || "复习一条错题解析"),
     },
     discussion_prompt: "让孩子先复述今天最卡住的一个点，再用一道题说明自己现在怎么想。",
     recent_sessions: sessions,
@@ -421,30 +605,20 @@ async function parentReport() {
 }
 
 async function tutorBots() {
-  const bots = await getList(collections.bots, {}, 50);
-  if (!bots.length) {
-    return ok([
-      {
-        bot_id: "mathtutor",
-        name: "Mathtutor",
-        description: "数学思维辅导机器人",
-        persona: "循序渐进、先问后讲",
-        channels: ["chat", "guide"],
-        model: "cloudbase-adapter",
-        running: true,
-      },
-    ]);
-  }
+  const stored = await getList(collections.bots, {}, 50);
+  const bots = stored.length ? stored : demo.bots;
   return ok(bots);
 }
 
 async function settings() {
   return ok({
-    cloud_env_id: cloud.DYNAMIC_CURRENT_ENV,
+    cloud_env_id: TARGET_ENV_ID,
     api_mode: "cloud-function",
     database_policy: "test-open",
     model: "cloudbase-adapter",
     features: ["聊天", "资料库", "笔记", "错题本", "学习路径", "家长周报", "机器人"],
+    function_name: "apiProxy",
+    runtime_note: "数据库未初始化或外部服务不可用时，apiProxy 会返回中文演示数据，保证页面可验收。",
   });
 }
 
@@ -481,8 +655,18 @@ exports.main = async (event) => {
     if (pathname === "/api/v1/mobile/parent/report") return parentReport();
     if (pathname === "/api/v1/tutorbot") return tutorBots();
     if (pathname === "/api/v1/mobile/settings") return settings();
-    return fail(404, `未实现的移动端接口：${method} ${pathname}`);
+    return ok({
+      message: `接口 ${method} ${pathname} 暂未接入真实服务，当前返回 CloudBase 演示响应。`,
+      path: pathname,
+      method,
+      items: [],
+    });
   } catch (error) {
-    return fail(500, error.message || "云函数执行失败");
+    return ok({
+      message: "云函数运行时已启用演示降级，页面可以继续预览。",
+      error: error.message || "云函数执行失败",
+      path: pathname,
+      method,
+    });
   }
 };

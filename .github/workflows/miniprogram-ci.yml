@@ -27,7 +27,10 @@ jobs:
           node-version: "20"
 
       - name: Validate mini program project
-        run: node miniprogram/scripts/check-ci.js
+        run: node miniprogram/scripts/check-ci.cjs
+
+      - name: Validate CloudBase runtime
+        run: node miniprogram/cloud/scripts/check-runtime.mjs
 
       - name: Check whitespace
         run: git diff --check
