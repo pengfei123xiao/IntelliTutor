@@ -76,11 +76,14 @@ const requiredRoutes = [
   "/api/v1/mobile/analytics/question-stats",
   "/api/v1/mobile/books",
   "/api/v1/mobile/graph/summary",
+  "/api/v1/mobile/assistants",
 ];
 
 for (const route of requiredRoutes) {
   assert(functionSource.includes(route), `apiProxy must implement route: ${route}`);
 }
+
+assert(functionSource.includes("assistantLaunch"), "apiProxy must implement assistant launch presets");
 
 for (const collectionName of [
   "knowledge_bases",
@@ -94,6 +97,7 @@ for (const collectionName of [
   "learning_books",
   "learning_graph_nodes",
   "learning_graph_edges",
+  "assistant_catalog",
   "tutor_bots",
   "app_settings",
 ]) {

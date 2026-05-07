@@ -254,6 +254,41 @@ const MOCK_BOTS = [
   },
 ];
 
+const MOCK_ASSISTANTS = {
+  assistants: [
+    {
+      assistant_id: "assistant_math",
+      name: "数学助教",
+      short_name: "数学",
+      mode: "deep_solve",
+      tone: "先问思路，再补步骤",
+      status_label: "可用",
+      focus: ["拆题", "追问", "错因"],
+      launch_prompt: "我想请数学助教帮我拆一道题。",
+    },
+    {
+      assistant_id: "assistant_writing",
+      name: "写作助教",
+      short_name: "写作",
+      mode: "co_writer",
+      tone: "先保留原意，再改结构",
+      status_label: "可用",
+      focus: ["提纲", "润色", "点评"],
+      launch_prompt: "我想请写作助教帮我改一段文字。",
+    },
+    {
+      assistant_id: "assistant_review",
+      name: "错题助教",
+      short_name: "错题",
+      mode: "deep_question",
+      tone: "先定位知识点，再生成检测",
+      status_label: "可用",
+      focus: ["错因", "检测", "复盘"],
+      launch_prompt: "我想请错题助教根据最近错题出一组检测。",
+    },
+  ],
+};
+
 function mobileLogin(payload) {
   return withFallback(request({
     url: "/api/v1/mobile/auth/wechat/login",
@@ -556,6 +591,26 @@ function getTutorBots() {
   return withFallback(request({ url: "/api/v1/tutorbot" }), MOCK_BOTS);
 }
 
+function getAssistantCatalog() {
+  return withFallback(request({ url: "/api/v1/mobile/assistants" }), MOCK_ASSISTANTS);
+}
+
+function launchAssistant(assistantId, payload = {}) {
+  return withFallback(request({
+    url: `/api/v1/mobile/assistants/${encodeURIComponent(assistantId)}/launch`,
+    method: "POST",
+    data: payload,
+  }), {
+    assistant: MOCK_ASSISTANTS.assistants.find((item) => item.assistant_id === assistantId) || MOCK_ASSISTANTS.assistants[0],
+    preset: {
+      capability: payload.capability || "chat",
+      title: "学习助教",
+      placeholder: payload.placeholder || "输入你想处理的问题",
+      content: payload.content || "我想请助教帮我学习。",
+    },
+  });
+}
+
 function getSettings() {
   return withFallback(request({ url: "/api/v1/mobile/settings" }), {
     cloud_env_id: "cloud1-d0gxrvlbc5c9f8145",
@@ -670,6 +725,8 @@ module.exports = {
   updateQuestionEntry,
   deleteQuestionEntry,
   getTutorBots,
+  getAssistantCatalog,
+  launchAssistant,
   getSettings,
   seedMobileBackend,
   getMasteryAnalytics,

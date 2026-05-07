@@ -17,6 +17,7 @@ const collections = {
   books: "learning_books",
   graphNodes: "learning_graph_nodes",
   graphEdges: "learning_graph_edges",
+  assistants: "assistant_catalog",
   bots: "tutor_bots",
   settings: "app_settings",
 };
@@ -217,6 +218,60 @@ const demo = {
     { _id: "edge_signs_linear", from: "node_signs", to: "node_linear_function", relation: "代数基础" },
     { _id: "edge_reading_math", from: "node_xiangzi_character", to: "node_like_terms", relation: "学习记录并列" },
   ],
+  assistants: [
+    {
+      _id: "assistant_math",
+      assistant_id: "assistant_math",
+      name: "数学助教",
+      short_name: "数学",
+      mode: "deep_solve",
+      tone: "先问思路，再补步骤",
+      status_label: "可用",
+      focus: ["拆题", "追问", "错因"],
+      launch_prompt: "我想请数学助教帮我拆一道题。",
+      source_capability: "Deep Solve",
+      order: 1,
+    },
+    {
+      _id: "assistant_writing",
+      assistant_id: "assistant_writing",
+      name: "写作助教",
+      short_name: "写作",
+      mode: "co_writer",
+      tone: "先保留原意，再改结构",
+      status_label: "可用",
+      focus: ["提纲", "润色", "点评"],
+      launch_prompt: "我想请写作助教帮我改一段文字。",
+      source_capability: "Co-Writer",
+      order: 2,
+    },
+    {
+      _id: "assistant_review",
+      assistant_id: "assistant_review",
+      name: "错题助教",
+      short_name: "错题",
+      mode: "deep_question",
+      tone: "先定位知识点，再生成检测",
+      status_label: "可用",
+      focus: ["错因", "检测", "复盘"],
+      launch_prompt: "我想请错题助教根据最近错题出一组检测。",
+      source_capability: "Question Notebook",
+      order: 3,
+    },
+    {
+      _id: "assistant_visual",
+      assistant_id: "assistant_visual",
+      name: "图像讲解",
+      short_name: "图像",
+      mode: "math_animator",
+      tone: "把抽象过程拆成画面",
+      status_label: "生成脚本",
+      focus: ["分镜", "公式", "动画"],
+      launch_prompt: "我想把一个数学概念变成图像讲解。",
+      source_capability: "Math Animator",
+      order: 4,
+    },
+  ],
   guideSessions: [
     {
       session_id: "demo_guide_1",
@@ -292,6 +347,7 @@ function fallbackList(collection, where = {}, limit = 100) {
     [collections.books]: demo.books,
     [collections.graphNodes]: demo.graphNodes,
     [collections.graphEdges]: demo.graphEdges,
+    [collections.assistants]: demo.assistants,
     [collections.bots]: demo.bots,
     [collections.settings]: demo.settings,
   };
@@ -987,6 +1043,44 @@ async function graphEndpoint() {
   return ok(await loadGraphSummary(), { source: "cloudbase-or-demo" });
 }
 
+function normalizeAssistant(item = {}) {
+  return {
+    assistant_id: item.assistant_id || item.bot_id || item._id,
+    name: item.name || "学习助教",
+    short_name: item.short_name || item.name || "助教",
+    mode: item.mode || item.capability || "chat",
+    tone: item.tone || item.persona || "先听问题，再推进",
+    status_label: item.status_label || (item.running === false ? "暂停" : "可用"),
+    focus: Array.isArray(item.focus) ? item.focus : [],
+    launch_prompt: item.launch_prompt || `我想请${item.name || "学习助教"}帮我学习。`,
+    source_capability: item.source_capability || "TutorBot",
+    order: Number(item.order) || 99,
+  };
+}
+
+async function assistantCatalog() {
+  const stored = await getList(collections.assistants, {}, 20);
+  const source = stored.length ? stored : demo.assistants;
+  const assistants = source.map(normalizeAssistant).sort((a, b) => a.order - b.order);
+  return ok({ assistants }, { source: stored.length ? "database" : "fallback" });
+}
+
+async function assistantLaunch(pathname, data = {}) {
+  const assistantId = decodeURIComponent(pathname.split("/").slice(-2)[0] || "");
+  const stored = await getList(collections.assistants, { assistant_id: assistantId }, 1);
+  const assistant = normalizeAssistant(stored[0] || demo.assistants.find((item) => item.assistant_id === assistantId) || demo.assistants[0]);
+  return ok({
+    assistant,
+    preset: {
+      capability: assistant.mode,
+      tools: assistant.mode === "deep_question" ? ["question"] : [],
+      title: assistant.name,
+      placeholder: data.placeholder || assistant.launch_prompt,
+      content: data.content || assistant.launch_prompt,
+    },
+  });
+}
+
 async function tutorBots() {
   const stored = await getList(collections.bots, {}, 50);
   const bots = stored.length ? stored : demo.bots;
@@ -1002,7 +1096,7 @@ async function settings() {
     database_policy: runtime.database_policy || "test-open",
     seed_version: runtime.seed_version || "not-seeded",
     model: "cloudbase-adapter",
-    features: ["聊天", "资料库", "书架", "学习路径", "学习周报", "个人知识图谱", "错题复盘", "掌握度算法", "薄弱点提取"],
+    features: ["聊天", "资料库", "书架", "学习路径", "学习周报", "个人知识图谱", "错题复盘", "助教目录", "掌握度算法"],
     function_name: "apiProxy",
     runtime_note: "apiProxy 优先读取 CloudBase 数据库；集合为空或不可用时返回中文演示数据，保证页面可验收。",
   });
@@ -1062,6 +1156,10 @@ async function seedMobileBackend(data = {}) {
       id: item._id,
       data: { ...item, seed_version: seedVersion, updated_at: stamp },
     })),
+    [collections.assistants]: demo.assistants.map((item) => ({
+      id: item.assistant_id,
+      data: { ...item, _id: item.assistant_id, seed_version: seedVersion, updated_at: stamp },
+    })),
     [collections.bots]: demo.bots.map((item) => ({
       id: item.bot_id,
       data: { ...item, _id: item.bot_id, seed_version: seedVersion, updated_at: stamp },
@@ -1101,7 +1199,7 @@ async function seedMobileBackend(data = {}) {
     next_steps: [
       "部署 apiProxy 云函数",
       "调用 /api/v1/mobile/setup/seed 写入测试数据",
-      "打开小程序资料、学习、周报、我的页面验证数据库优先读取",
+      "打开小程序资料、学习、助教、我的页面验证数据库优先读取",
     ],
   });
 }
@@ -1164,6 +1262,8 @@ exports.main = async (event) => {
     if (pathname === "/api/v1/mobile/analytics/question-stats" && method === "GET") return questionStatsEndpoint();
     if (pathname === "/api/v1/mobile/books" && method === "GET") return booksEndpoint();
     if (pathname === "/api/v1/mobile/graph/summary" && method === "GET") return graphEndpoint();
+    if (pathname === "/api/v1/mobile/assistants" && method === "GET") return assistantCatalog();
+    if (/^\/api\/v1\/mobile\/assistants\/[^/]+\/launch$/.test(pathname) && method === "POST") return assistantLaunch(pathname, data);
     if (pathname === "/api/v1/mobile/overview") return mobileOverview(query);
     if (pathname === "/api/v1/knowledge/list") return ok(await listKnowledge());
     if (pathname === "/api/v1/knowledge/rag-providers") {
