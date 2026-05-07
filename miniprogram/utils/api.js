@@ -286,6 +286,16 @@ const MOCK_ASSISTANTS = {
       focus: ["错因", "检测", "复盘"],
       launch_prompt: "我想请错题助教根据最近错题出一组检测。",
     },
+    {
+      assistant_id: "assistant_visual",
+      name: "图像讲解",
+      short_name: "图像",
+      mode: "math_animator",
+      tone: "把抽象过程拆成画面",
+      status_label: "生成脚本",
+      focus: ["分镜", "公式", "动画"],
+      launch_prompt: "我想把一个数学概念变成图像讲解。",
+    },
   ],
 };
 
@@ -596,17 +606,18 @@ function getAssistantCatalog() {
 }
 
 function launchAssistant(assistantId, payload = {}) {
+  const fallbackAssistant = MOCK_ASSISTANTS.assistants.find((item) => item.assistant_id === assistantId) || MOCK_ASSISTANTS.assistants[0];
   return withFallback(request({
     url: `/api/v1/mobile/assistants/${encodeURIComponent(assistantId)}/launch`,
     method: "POST",
     data: payload,
   }), {
-    assistant: MOCK_ASSISTANTS.assistants.find((item) => item.assistant_id === assistantId) || MOCK_ASSISTANTS.assistants[0],
+    assistant: fallbackAssistant,
     preset: {
-      capability: payload.capability || "chat",
-      title: "学习助教",
-      placeholder: payload.placeholder || "输入你想处理的问题",
-      content: payload.content || "我想请助教帮我学习。",
+      capability: payload.capability || fallbackAssistant.mode || "chat",
+      title: fallbackAssistant.name || "学习助教",
+      placeholder: payload.placeholder || fallbackAssistant.launch_prompt || "输入你想处理的问题",
+      content: payload.content || fallbackAssistant.launch_prompt || "我想请助教帮我学习。",
     },
   });
 }

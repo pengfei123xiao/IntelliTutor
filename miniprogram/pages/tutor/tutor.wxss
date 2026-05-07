@@ -1,0 +1,156 @@
+.tutor-page {
+  padding-bottom: 54rpx;
+}
+
+.hero {
+  border-bottom: 1rpx solid #e6dfd8;
+  padding-bottom: 24rpx;
+}
+
+.eyebrow,
+.dark-kicker {
+  color: #8b7565;
+  font-size: 22rpx;
+  line-height: 1.4;
+  margin-bottom: 10rpx;
+}
+
+.hero-title {
+  font-size: 50rpx;
+}
+
+.focus-panel {
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.focus-top {
+  align-items: flex-start;
+  display: flex;
+  gap: 20rpx;
+  justify-content: space-between;
+}
+
+.dark-kicker {
+  color: #a09d96;
+}
+
+.focus-title {
+  color: #faf9f5;
+  font-size: 34rpx;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.focus-time {
+  border: 1rpx solid #3a332d;
+  border-radius: 999rpx;
+  color: #faf9f5;
+  flex: 0 0 auto;
+  font-size: 22rpx;
+  line-height: 1;
+  padding: 10rpx 16rpx;
+}
+
+.focus-copy {
+  border-top: 1rpx solid #2b2721;
+  color: #d8d0c5;
+  font-size: 25rpx;
+  line-height: 1.55;
+  margin-top: 26rpx;
+  padding-top: 22rpx;
+}
+
+.focus-button {
+  background: #cc785c;
+  border-radius: 14rpx;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 500;
+  height: 76rpx;
+  line-height: 76rpx;
+  margin-top: 28rpx;
+}
+
+.tool-list {
+  border-top: 1rpx solid #e6dfd8;
+}
+
+.section-head {
+  padding: 22rpx 0 12rpx;
+}
+
+.section-note {
+  color: #8e8b82;
+  font-size: 22rpx;
+  line-height: 1.45;
+  margin-top: 6rpx;
+}
+
+.tool-row {
+  align-items: center;
+  border-bottom: 1rpx solid #e6dfd8;
+  display: flex;
+  justify-content: space-between;
+  min-height: 104rpx;
+  padding: 20rpx 0;
+}
+
+.tool-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20rpx;
+}
+
+.tool-title,
+.mission-title {
+  color: #141413;
+  font-size: 29rpx;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.tool-meta,
+.mission-meta {
+  color: #6c6a64;
+  font-size: 23rpx;
+  line-height: 1.45;
+  margin-top: 8rpx;
+}
+
+.tool-status {
+  border: 1rpx solid #e2d5c6;
+  border-radius: 999rpx;
+  color: #c9674f;
+  flex: 0 0 auto;
+  font-size: 22rpx;
+  line-height: 1;
+  padding: 10rpx 16rpx;
+}
+
+.mission-band {
+  align-items: center;
+  border-bottom: 1rpx solid #e6dfd8;
+  border-top: 1rpx solid #e6dfd8;
+  display: flex;
+  gap: 24rpx;
+  justify-content: space-between;
+  padding: 24rpx 0;
+}
+
+.mission-band > view {
+  flex: 1;
+  min-width: 0;
+}
+
+.mission-button {
+  background: #fbf6ee;
+  border: 1rpx solid #e2d5c6;
+  border-radius: 14rpx;
+  color: #141413;
+  flex: 0 0 auto;
+  font-size: 25rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  padding: 0 28rpx;
+}

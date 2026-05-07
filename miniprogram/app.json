@@ -4,6 +4,7 @@
     "pages/home/home",
     "pages/knowledge/knowledge",
     "pages/guide/guide",
+    "pages/tutor/tutor",
     "pages/parent/parent",
     "pages/profile/profile"
   ],
@@ -39,10 +40,10 @@
         "selectedIconPath": "assets/tabbar/learn-active.png"
       },
       {
-        "pagePath": "pages/parent/parent",
-        "text": "周报",
-        "iconPath": "assets/tabbar/parent.png",
-        "selectedIconPath": "assets/tabbar/parent-active.png"
+        "pagePath": "pages/tutor/tutor",
+        "text": "助教",
+        "iconPath": "assets/tabbar/tutor.png",
+        "selectedIconPath": "assets/tabbar/tutor-active.png"
       },
       {
         "pagePath": "pages/profile/profile",

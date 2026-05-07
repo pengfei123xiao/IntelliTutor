@@ -1,0 +1,47 @@
+<view class="page tutor-page">
+  <view class="section hero">
+    <view class="eyebrow">随时接力</view>
+    <view class="title hero-title">助教</view>
+    <view class="subtitle">题目、作文、卡点，各找一位帮手。</view>
+  </view>
+
+  <view class="section dark-panel focus-panel">
+    <view class="focus-top">
+      <view>
+        <view class="dark-kicker">今日建议</view>
+        <view class="focus-title">{{focus.title}}</view>
+      </view>
+      <text class="focus-time">{{focus.time}}</text>
+    </view>
+    <view class="focus-copy">{{focus.copy}}</view>
+    <button class="focus-button" bindtap="startFocus">开始</button>
+  </view>
+
+  <view class="section tool-list">
+    <view class="section-head">
+      <view>
+        <view class="card-title">常用助教</view>
+        <view class="section-note">选一个方向，直接开问。</view>
+      </view>
+    </view>
+    <block wx:for="{{tools}}" wx:key="title">
+      <view class="tool-row" data-index="{{index}}" bindtap="openTool">
+        <view class="tool-copy">
+          <view class="tool-title">{{item.title}}</view>
+          <view class="tool-meta">{{item.meta}}</view>
+        </view>
+        <text class="tool-status">{{item.status}}</text>
+      </view>
+    </block>
+  </view>
+
+  <view class="section mission-band">
+    <view>
+      <view class="mission-title">学习任务</view>
+      <view class="mission-meta">从资料、错题和近期对话里挑一个目标。</view>
+    </view>
+    <button class="mission-button" bindtap="startMission">生成</button>
+  </view>
+
+  <text class="ai-note">AI 生成内容仅供参考</text>
+</view>
