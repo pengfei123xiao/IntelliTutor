@@ -21,7 +21,7 @@
     <view class="section-head">
       <view>
         <view class="card-title">常用助教</view>
-        <view class="section-note">按当前卡点选择。</view>
+        <view class="section-note">{{loading ? "更新中" : "按当前卡点选择。"}}</view>
       </view>
     </view>
     <block wx:for="{{tools}}" wx:key="title">
