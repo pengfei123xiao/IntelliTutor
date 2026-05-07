@@ -12,6 +12,8 @@ const collections = {
   questionEntries: "question_entries",
   questionCategories: "question_categories",
   guideSessions: "guide_sessions",
+  learningPaths: "learning_paths",
+  parentReports: "parent_reports",
   bots: "tutor_bots",
   settings: "app_settings",
 };
@@ -113,6 +115,34 @@ const demo = {
     { _id: "demo_category_wrong", name: "错题复盘", entry_count: 1, created_at: 1778083200000 },
     { _id: "demo_category_core", name: "高频考点", entry_count: 1, created_at: 1778083200000 },
   ],
+  learningPaths: [
+    {
+      _id: "demo_learning_path_week_1",
+      path_id: "demo_learning_path_week_1",
+      title: "一周补强路径：整式化简",
+      status: "ready",
+      mastery_target: 0.82,
+      tasks: [
+        { id: "task_1", title: "复述同类项定义", minutes: 8, status: "todo" },
+        { id: "task_2", title: "完成 3 道合并同类项题", minutes: 12, status: "todo" },
+        { id: "task_3", title: "整理一次系数符号错因", minutes: 10, status: "todo" },
+      ],
+      created_at: 1778083200000,
+      updated_at: 1778083200000,
+    },
+  ],
+  parentReports: [
+    {
+      _id: "demo_parent_report_week",
+      report_id: "demo_parent_report_week",
+      title: "本周学习报告",
+      period: "测试周",
+      summary: "本周完成了整式化简与同类项复习，能说出基本规则，但符号处理仍需稳定。",
+      weak_points: ["合并同类项时漏看负号", "解释步骤时容易只写答案"],
+      review_items: ["每天 5 分钟口述规则", "复盘 2 道符号题"],
+      created_at: 1778083200000,
+    },
+  ],
   guideSessions: [
     {
       session_id: "demo_guide_1",
@@ -145,6 +175,18 @@ const demo = {
       running: true,
     },
   ],
+  settings: [
+    {
+      _id: "mobile_backend_runtime",
+      key: "mobile_backend_runtime",
+      cloud_env_id: TARGET_ENV_ID,
+      api_mode: "cloud-function",
+      database_policy: "cloud-function-first",
+      seed_version: "2026-05-mobile-backend",
+      created_at: 1778083200000,
+      updated_at: 1778083200000,
+    },
+  ],
 };
 
 function now() {
@@ -171,7 +213,10 @@ function fallbackList(collection, where = {}, limit = 100) {
     [collections.questionEntries]: demo.questionEntries,
     [collections.questionCategories]: demo.questionCategories,
     [collections.guideSessions]: demo.guideSessions,
+    [collections.learningPaths]: demo.learningPaths,
+    [collections.parentReports]: demo.parentReports,
     [collections.bots]: demo.bots,
+    [collections.settings]: demo.settings,
   };
   return (map[collection] || []).filter((item) => matchesWhere(item, where)).slice(0, limit);
 }
@@ -192,6 +237,46 @@ async function getList(collection, where = {}, limit = 100) {
     return result.data || [];
   } catch (error) {
     return fallbackList(collection, where, limit);
+  }
+}
+
+async function getStoredList(collection, where = {}, limit = 100) {
+  try {
+    const result = await db.collection(collection).where(where).limit(limit).get();
+    return result.data || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+async function createCollection(collection) {
+  try {
+    await db.createCollection(collection);
+    return { collection, created: true };
+  } catch (error) {
+    return { collection, created: false, message: error.message || "collection already exists or cannot be created by this SDK" };
+  }
+}
+
+async function upsertDoc(collection, id, data) {
+  const payload = { ...data, _id: id, updated_at: data.updated_at || now() };
+  const storedData = { ...payload };
+  delete storedData._id;
+  try {
+    await db.collection(collection).doc(id).set({ data: storedData });
+    return { id, mode: "set" };
+  } catch (setError) {
+    const existing = await getStoredList(collection, { _id: id }, 1);
+    if (existing.length) {
+      const updated = await updateById(collection, existing[0]._id, storedData);
+      return { id: existing[0]._id, mode: updated ? "update" : "fallback" };
+    }
+    try {
+      const result = await db.collection(collection).add({ data: storedData });
+      return { id: result._id, mode: "add" };
+    } catch (addError) {
+      return { id, mode: "fallback", message: addError.message || setError.message || "database write failed" };
+    }
   }
 }
 
@@ -262,6 +347,144 @@ function buildAssistantReply(payload, kbNames) {
 
   const intro = capabilityMap[capability] || "我会像网页端聊天一样，先抓住你的问题，再用提问和解释帮你推进。";
   return `${intro}${kbLine}\n\n你刚才的问题是：${content}\n\n建议下一步：先告诉我年级、学科和当前资料范围，我可以继续生成讲解、测评题或学习路径。`;
+}
+
+function normalizePercent(value) {
+  return Math.max(0, Math.min(1, Number(value) || 0));
+}
+
+function itemTopic(item) {
+  const categories = Array.isArray(item.categories) ? item.categories.filter(Boolean) : [];
+  return item.knowledge_point || item.category_name || item.category_id || categories[0] || item.difficulty || "综合能力";
+}
+
+function buildQuestionStats(items) {
+  const questions = items.length ? items : demo.questionEntries;
+  const total = questions.length;
+  const correct = questions.filter((item) => item.is_correct !== false).length;
+  const wrong = total - correct;
+  const bookmarked = questions.filter((item) => Boolean(item.bookmarked)).length;
+  const byTopic = {};
+  const byDifficulty = {};
+
+  for (const item of questions) {
+    const topic = itemTopic(item);
+    const difficulty = item.difficulty || "中等";
+    if (!byTopic[topic]) byTopic[topic] = { topic, total: 0, correct: 0, wrong: 0, mastery: 0 };
+    if (!byDifficulty[difficulty]) byDifficulty[difficulty] = { difficulty, total: 0, correct: 0, wrong: 0, accuracy: 0 };
+    byTopic[topic].total += 1;
+    byDifficulty[difficulty].total += 1;
+    if (item.is_correct === false) {
+      byTopic[topic].wrong += 1;
+      byDifficulty[difficulty].wrong += 1;
+    } else {
+      byTopic[topic].correct += 1;
+      byDifficulty[difficulty].correct += 1;
+    }
+  }
+
+  Object.values(byTopic).forEach((entry) => {
+    entry.mastery = normalizePercent(entry.total ? entry.correct / entry.total : 0);
+  });
+  Object.values(byDifficulty).forEach((entry) => {
+    entry.accuracy = normalizePercent(entry.total ? entry.correct / entry.total : 0);
+  });
+
+  return {
+    total,
+    correct,
+    wrong,
+    bookmarked,
+    accuracy: normalizePercent(total ? correct / total : 0),
+    by_topic: Object.values(byTopic).sort((a, b) => b.wrong - a.wrong || a.topic.localeCompare(b.topic, "zh-Hans-CN")),
+    by_difficulty: Object.values(byDifficulty).sort((a, b) => b.total - a.total),
+  };
+}
+
+function buildWeakPoints(questionStats, sessions = []) {
+  const weakTopics = questionStats.by_topic
+    .filter((item) => item.wrong > 0 || item.mastery < 0.75)
+    .slice(0, 5)
+    .map((item) => ({
+      topic: item.topic,
+      mastery: item.mastery,
+      evidence: `${item.total} 道题中错 ${item.wrong} 道`,
+      reason: item.wrong ? "最近错题集中在这个知识点" : "练习量不足，掌握度还不稳定",
+      next_action: `先复述「${item.topic}」的规则，再做 2 道同类题检查`,
+    }));
+
+  if (weakTopics.length) return weakTopics;
+
+  const recentTitle = sessions[0]?.title || "当前学习主题";
+  return [{
+    topic: recentTitle,
+    mastery: questionStats.accuracy || 0.72,
+    evidence: "题目记录较少，先按最近学习主题生成保守建议",
+    reason: "需要更多真实练习数据来稳定判断",
+    next_action: `围绕「${recentTitle}」完成 3 道即时检测题`,
+  }];
+}
+
+function buildMasteryProfile(questionStats, weakPoints, sessions = []) {
+  const activityBoost = Math.min(sessions.length, 8) * 0.015;
+  const mastery = normalizePercent(questionStats.accuracy * 0.82 + activityBoost + 0.08);
+  const label = mastery >= 0.85 ? "掌握较稳" : mastery >= 0.7 ? "基本掌握" : "需要补强";
+  return {
+    mastery,
+    mastery_percent: Math.round(mastery * 100),
+    label,
+    confidence: questionStats.total >= 6 ? "较高" : questionStats.total >= 2 ? "中等" : "低，需要更多练习",
+    dimensions: [
+      { name: "概念理解", score: normalizePercent(mastery + 0.06), evidence: "结合对话主题与错题解释估算" },
+      { name: "解题准确率", score: questionStats.accuracy, evidence: `${questionStats.correct}/${questionStats.total || 1} 道题正确` },
+      { name: "复盘稳定性", score: normalizePercent(1 - weakPoints.length * 0.12), evidence: `当前识别 ${weakPoints.length} 个薄弱点` },
+    ],
+  };
+}
+
+function buildLearningRecommendations({ masteryProfile, weakPoints, knowledge, questionStats }) {
+  const targetTopic = weakPoints[0]?.topic || knowledge[0]?.name || "今日学习主题";
+  const minutes = masteryProfile.mastery < 0.7 ? 30 : 20;
+  return {
+    title: `${minutes} 分钟学习路径：${targetTopic}`,
+    target_topic: targetTopic,
+    rationale: `当前掌握度约 ${masteryProfile.mastery_percent}%，优先处理最影响正确率的薄弱点。`,
+    tasks: [
+      {
+        id: "review_concept",
+        title: `复述「${targetTopic}」核心规则`,
+        minutes: 6,
+        output: "用自己的话写下 2 条规则和 1 个反例",
+      },
+      {
+        id: "guided_practice",
+        title: "完成分层检测题",
+        minutes: Math.max(8, minutes - 12),
+        output: `至少完成 ${questionStats.wrong > 1 ? 4 : 3} 道题，并标记每道题的错因`,
+      },
+      {
+        id: "parent_sync",
+        title: "生成家长沟通摘要",
+        minutes: 6,
+        output: "说明今天卡点、已完成练习、明天复习动作",
+      },
+    ],
+    success_criteria: ["能说清规则", "同类题正确率达到 80%", "错题有明确错因"],
+  };
+}
+
+async function loadAnalyticsData() {
+  const questions = await getList(collections.questionEntries, {}, 200);
+  const sessions = await getList(collections.sessions, {}, 50);
+  const knowledge = await getList(collections.knowledge, {}, 100);
+  const questionItems = questions.length ? questions : demo.questionEntries;
+  const sessionItems = sessions.length ? sessions : demo.sessions;
+  const knowledgeItems = knowledge.length ? knowledge : demo.knowledge;
+  const questionStats = buildQuestionStats(questionItems);
+  const weakPoints = buildWeakPoints(questionStats, sessionItems);
+  const masteryProfile = buildMasteryProfile(questionStats, weakPoints, sessionItems);
+  const recommendations = buildLearningRecommendations({ masteryProfile, weakPoints, knowledge: knowledgeItems, questionStats });
+  return { questions: questionItems, sessions: sessionItems, knowledge: knowledgeItems, questionStats, weakPoints, masteryProfile, recommendations };
 }
 
 async function listKnowledge() {
@@ -339,7 +562,8 @@ async function handleKnowledgeUpload(pathname, data) {
 
 async function listSessions(query) {
   const limit = Math.min(Number(query.limit || 50), 100);
-  const sessions = await getList(collections.sessions, {}, limit);
+  const stored = await getList(collections.sessions, {}, limit);
+  const sessions = stored.length ? stored : demo.sessions.slice(0, limit);
   sessions.sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0));
   return ok({
     sessions: sessions.map((item) => ({
@@ -358,7 +582,9 @@ async function listSessions(query) {
 
 async function getSession(sessionId) {
   const sessions = await getList(collections.sessions, { session_id: sessionId }, 1);
-  if (!sessions.length) return fail(404, "会话不存在");
+  const fallback = demo.sessions.find((item) => item.session_id === sessionId);
+  if (!sessions.length && !fallback) return fail(404, "会话不存在");
+  if (!sessions.length) sessions.push(fallback);
   const session = sessions[0];
   return ok({
     id: session.session_id,
@@ -431,7 +657,8 @@ async function chatTurn(data) {
 }
 
 async function listNotebooks() {
-  const notebooks = await getList(collections.notebooks, {}, 100);
+  const stored = await getList(collections.notebooks, {}, 100);
+  const notebooks = stored.length ? stored : demo.notebooks;
   return ok({
     notebooks: notebooks.map((item) => ({
       id: item._id,
@@ -487,7 +714,11 @@ async function listQuestionEntries(query) {
   const where = {};
   if (query.bookmarked === "true") where.bookmarked = true;
   if (query.is_correct === "false") where.is_correct = false;
-  const items = await getList(collections.questionEntries, where, 200);
+  const stored = await getList(collections.questionEntries, where, 200);
+  let items = stored.length ? stored : fallbackList(collections.questionEntries, where, 200);
+  if (query.category_id) {
+    items = items.filter((item) => item.category_id === query.category_id || (item.categories || []).includes(query.category_id));
+  }
   return ok({
     items: items.map((item) => ({
       id: item._id,
@@ -509,11 +740,12 @@ async function listQuestionEntries(query) {
 
 async function listQuestionCategories() {
   const items = await getList(collections.questionCategories, {}, 100);
-  if (!items.length) {
+  if (!items.length && !fallbackList(collections.questionCategories).length) {
     await addDoc(collections.questionCategories, { name: "错题复盘", entry_count: 0, created_at: now() });
     await addDoc(collections.questionCategories, { name: "高频考点", entry_count: 0, created_at: now() });
   }
-  const next = await getList(collections.questionCategories, {}, 100);
+  const stored = await getList(collections.questionCategories, {}, 100);
+  const next = stored.length ? stored : demo.questionCategories;
   return ok(next.map((item) => ({
     id: item._id,
     name: item.name,
@@ -536,15 +768,21 @@ async function deleteQuestionEntry(pathname) {
 
 async function mobileOverview(query) {
   const knowledge = await listKnowledge();
-  const sessions = await getList(collections.sessions, {}, 100);
-  const q = await getList(collections.questionEntries, {}, 100);
+  const storedSessions = await getList(collections.sessions, {}, 100);
+  const sessions = storedSessions.length ? storedSessions : demo.sessions;
+  const storedQuestions = await getList(collections.questionEntries, {}, 100);
+  const q = storedQuestions.length ? storedQuestions : demo.questionEntries;
+  const analytics = await loadAnalyticsData();
   return ok({
     active_knowledge_base: query.active_knowledge_base || (knowledge[0] && knowledge[0].name) || "",
     stats: {
       materials: knowledge.length,
       sessions: sessions.length,
-      mastery: q.length ? q.filter((item) => item.is_correct !== false).length / q.length : 0.72,
+      mastery: analytics.masteryProfile.mastery,
+      weak_points: analytics.weakPoints.length,
+      questions: q.length,
     },
+    recommendation: analytics.recommendations,
     capabilities: [
       "聊天",
       "深度解题",
@@ -561,18 +799,19 @@ async function mobileOverview(query) {
 async function createGuide(data) {
   const minutes = Math.max(10, Math.min(Number(data.minutes || 20), 90));
   const title = data.learning_goal || data.user_input || data.topic || "今日学习路径";
+  const analytics = await loadAnalyticsData();
   const doc = {
     session_id: makeId("guide"),
     title,
     topic: title || "完成今日学习并定位薄弱知识点",
     status: "ready",
     knowledge_base: data.knowledge_base || "",
-    tasks: [
-      `用 ${Math.min(minutes, 20)} 分钟梳理已掌握内容`,
-      "定位 1 个薄弱知识点并说出卡点",
-      "完成 3 道检测题并标记错因",
-      "生成下一次复习提醒和家长沟通话术",
-    ],
+    tasks: analytics.recommendations.tasks.map((task) => `${task.title}（约 ${task.minutes} 分钟）`),
+    algorithm: {
+      mastery: analytics.masteryProfile.mastery,
+      weak_points: analytics.weakPoints.slice(0, 3),
+      recommended_minutes: minutes,
+    },
     created_at: now(),
     updated_at: now(),
   };
@@ -589,18 +828,19 @@ async function listGuideSessions() {
 
 async function parentReport() {
   const sessions = await getList(collections.sessions, {}, 6);
-  const wrong = await getList(collections.questionEntries, { is_correct: false }, 6);
+  const reports = await getList(collections.parentReports, {}, 1);
+  const analytics = await loadAnalyticsData();
+  const latestReport = reports[0] || demo.parentReports[0];
   return ok({
+    report: latestReport,
     summary: {
       learning_sessions: sessions.length || demo.sessions.length,
-      weak_points: (wrong.length ? wrong : demo.questionEntries.filter((item) => item.is_correct === false))
-        .map((item) => item.question || item.title || "待复盘知识点"),
-      review_items: (wrong.length ? wrong : demo.questionEntries.filter((item) => item.is_correct === false))
-        .slice(0, 3)
-        .map((item) => item.explanation || item.question || "复习一条错题解析"),
+      mastery: analytics.masteryProfile,
+      weak_points: analytics.weakPoints.map((item) => `${item.topic}：${item.reason}`),
+      review_items: analytics.recommendations.tasks.map((item) => item.title),
     },
     discussion_prompt: "让孩子先复述今天最卡住的一个点，再用一道题说明自己现在怎么想。",
-    recent_sessions: sessions,
+    recent_sessions: sessions.length ? sessions : demo.sessions,
   });
 }
 
@@ -611,15 +851,127 @@ async function tutorBots() {
 }
 
 async function settings() {
+  const stored = await getList(collections.settings, { key: "mobile_backend_runtime" }, 1);
+  const runtime = stored[0] || demo.settings[0];
   return ok({
     cloud_env_id: TARGET_ENV_ID,
     api_mode: "cloud-function",
-    database_policy: "test-open",
+    database_policy: runtime.database_policy || "test-open",
+    seed_version: runtime.seed_version || "not-seeded",
     model: "cloudbase-adapter",
-    features: ["聊天", "资料库", "笔记", "错题本", "学习路径", "家长周报", "机器人"],
+    features: ["聊天", "资料库", "笔记", "错题本", "学习路径", "家长周报", "机器人", "掌握度算法", "薄弱点提取"],
     function_name: "apiProxy",
-    runtime_note: "数据库未初始化或外部服务不可用时，apiProxy 会返回中文演示数据，保证页面可验收。",
+    runtime_note: "apiProxy 优先读取 CloudBase 数据库；集合为空或不可用时返回中文演示数据，保证页面可验收。",
   });
+}
+
+async function seedMobileBackend(data = {}) {
+  const stamp = now();
+  const seedVersion = data.seed_version || "2026-05-mobile-backend";
+  const collectionNames = Object.values(collections);
+  const collectionResults = [];
+  for (const name of collectionNames) {
+    collectionResults.push(await createCollection(name));
+  }
+
+  const seedMap = {
+    [collections.knowledge]: demo.knowledge.map((item) => ({
+      id: item._id,
+      data: { ...item, description: "测试期 seed 数据：七年级数学资料库", seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.sessions]: demo.sessions.map((item) => ({
+      id: item.session_id,
+      data: { ...item, _id: item.session_id, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.notebooks]: demo.notebooks.map((item) => ({
+      id: item._id,
+      data: { ...item, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.questionEntries]: demo.questionEntries.map((item) => ({
+      id: item._id,
+      data: { ...item, knowledge_point: item.categories?.[0] === "demo_category_wrong" ? "同类项符号处理" : "同类项识别", seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.questionCategories]: demo.questionCategories.map((item) => ({
+      id: item._id,
+      data: { ...item, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.guideSessions]: demo.guideSessions.map((item) => ({
+      id: item.session_id,
+      data: { ...item, _id: item.session_id, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.learningPaths]: demo.learningPaths.map((item) => ({
+      id: item.path_id,
+      data: { ...item, _id: item.path_id, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.parentReports]: demo.parentReports.map((item) => ({
+      id: item.report_id,
+      data: { ...item, _id: item.report_id, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.bots]: demo.bots.map((item) => ({
+      id: item.bot_id,
+      data: { ...item, _id: item.bot_id, seed_version: seedVersion, updated_at: stamp },
+    })),
+    [collections.settings]: [{
+      id: "mobile_backend_runtime",
+      data: {
+        ...demo.settings[0],
+        _id: "mobile_backend_runtime",
+        seed_version: seedVersion,
+        seeded_at: stamp,
+        updated_at: stamp,
+      },
+    }],
+  };
+
+  const writes = [];
+  for (const [collection, docs] of Object.entries(seedMap)) {
+    for (const item of docs) {
+      writes.push({ collection, ...(await upsertDoc(collection, item.id, item.data)) });
+    }
+  }
+
+  const analytics = await loadAnalyticsData();
+  return ok({
+    seed_version: seedVersion,
+    env_id: TARGET_ENV_ID,
+    collections: collectionResults,
+    written: writes.length,
+    documents: writes,
+    analytics_preview: {
+      mastery: analytics.masteryProfile,
+      weak_points: analytics.weakPoints,
+      recommendation: analytics.recommendations,
+      question_stats: analytics.questionStats,
+    },
+    next_steps: [
+      "部署 apiProxy 云函数",
+      "调用 /api/v1/mobile/setup/seed 写入测试数据",
+      "打开小程序资料、学习、家长、我的页面验证数据库优先读取",
+    ],
+  });
+}
+
+async function masteryEndpoint() {
+  const analytics = await loadAnalyticsData();
+  return ok(analytics.masteryProfile, {
+    source: analytics.questions === demo.questionEntries ? "fallback" : "database",
+    algorithm: "deterministic-js-v1",
+  });
+}
+
+async function weakPointsEndpoint() {
+  const analytics = await loadAnalyticsData();
+  return ok({ weak_points: analytics.weakPoints }, { algorithm: "deterministic-js-v1" });
+}
+
+async function recommendationsEndpoint() {
+  const analytics = await loadAnalyticsData();
+  return ok({ recommendation: analytics.recommendations }, { algorithm: "deterministic-js-v1" });
+}
+
+async function questionStatsEndpoint() {
+  const analytics = await loadAnalyticsData();
+  return ok(analytics.questionStats, { algorithm: "deterministic-js-v1" });
 }
 
 exports.main = async (event) => {
@@ -631,6 +983,11 @@ exports.main = async (event) => {
     if (pathname === "/api/v1/mobile/auth/wechat/login" && method === "POST") {
       return ok({ token: "dev-cloud-token", user: { nickname: "IntelliTutor 用户", role: "teacher", openid: "cloud-dev-openid" } });
     }
+    if (pathname === "/api/v1/mobile/setup/seed" && method === "POST") return seedMobileBackend(data);
+    if (pathname === "/api/v1/mobile/analytics/mastery" && method === "GET") return masteryEndpoint();
+    if (pathname === "/api/v1/mobile/analytics/weak-points" && method === "GET") return weakPointsEndpoint();
+    if (pathname === "/api/v1/mobile/analytics/recommendations" && method === "GET") return recommendationsEndpoint();
+    if (pathname === "/api/v1/mobile/analytics/question-stats" && method === "GET") return questionStatsEndpoint();
     if (pathname === "/api/v1/mobile/overview") return mobileOverview(query);
     if (pathname === "/api/v1/knowledge/list") return ok(await listKnowledge());
     if (pathname === "/api/v1/knowledge/rag-providers") {

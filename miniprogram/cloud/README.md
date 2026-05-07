@@ -19,11 +19,17 @@ Do not place Tencent Cloud, WeChat, or CloudBase secrets in this repository. Use
 - Chat: `/api/v1/mobile/chat/turn`, `/api/v1/sessions`
 - Knowledge: `/api/v1/knowledge/list`, `/api/v1/mobile/knowledge/create-empty`, `/api/v1/knowledge/:name/upload`
 - Learning guide: `/api/v1/mobile/guide/today`, `/api/v1/guide/create_session`, `/api/v1/guide/sessions`
+- Setup and seed: `/api/v1/mobile/setup/seed`
+- Deterministic learning algorithms:
+  - `/api/v1/mobile/analytics/mastery`
+  - `/api/v1/mobile/analytics/weak-points`
+  - `/api/v1/mobile/analytics/recommendations`
+  - `/api/v1/mobile/analytics/question-stats`
 - Parent report: `/api/v1/mobile/parent/report`
 - Profile/settings: `/api/v1/mobile/auth/wechat/login`, `/api/v1/mobile/settings`
 - Notebook and question notebook preview APIs
 
-When CloudBase database collections are unavailable or external services have not been connected, the function returns Chinese demo data instead of failing the page. This is intended for acceptance preview only. Production still needs real authentication, user isolation, content safety, and backend AI/RAG services.
+`apiProxy` now reads CloudBase database collections first. If a collection is unavailable or empty, it falls back to stable Chinese demo data so the Mini Program does not crash during acceptance preview. The lightweight algorithm layer is deterministic JavaScript: it calculates mastery, extracts weak points, recommends a learning path, and aggregates question statistics from saved question records and sessions. Production still needs real authentication, user isolation, content safety, and backend AI/RAG services.
 
 ## Initialize Cloud Functions namespace
 
@@ -59,6 +65,43 @@ tcb fn deploy apiProxy \
 
 After deployment, use WeChat DevTools to upload or preview the Mini Program project at `miniprogram/`.
 
+## Seed test data
+
+After `apiProxy` is deployed, initialize the test-period database through the same cloud function. The route creates or writes records for:
+
+- `knowledge_bases`
+- `chat_sessions`
+- `notebooks`
+- `question_entries`
+- `question_categories`
+- `guide_sessions`
+- `learning_paths`
+- `parent_reports`
+- `tutor_bots`
+- `app_settings`
+
+Print copyable invoke examples without reading any secret:
+
+```bash
+node miniprogram/cloud/scripts/print-invoke-samples.mjs
+```
+
+Seed command shape:
+
+```bash
+cloudbase fn invoke apiProxy \
+  --envId cloud1-d0gxrvlbc5c9f8145 \
+  --params '{"path":"/api/v1/mobile/setup/seed","method":"POST","data":{"seed_version":"2026-05-mobile-backend"}}'
+```
+
+Recommended verification after seeding:
+
+```bash
+cloudbase fn invoke apiProxy \
+  --envId cloud1-d0gxrvlbc5c9f8145 \
+  --params '{"path":"/api/v1/mobile/analytics/mastery","method":"GET","data":{}}'
+```
+
 ## Test-period database permissions
 
 For acceptance testing, create or allow the following collections:
@@ -69,6 +112,8 @@ For acceptance testing, create or allow the following collections:
 - `question_entries`
 - `question_categories`
 - `guide_sessions`
+- `learning_paths`
+- `parent_reports`
 - `tutor_bots`
 - `app_settings`
 
@@ -94,6 +139,7 @@ Run the repository-safe runtime check:
 
 ```bash
 node miniprogram/cloud/scripts/check-runtime.mjs
+node miniprogram/cloud/scripts/print-invoke-samples.mjs
 ```
 
-The script checks required files, JSON validity, JavaScript syntax, target environment ID, function name, and obvious secret markers. It does not read or require any secret.
+The runtime script checks required files, JSON validity, JavaScript syntax, target environment ID, function name, required collections, required seed/algorithm routes, and obvious secret markers. It does not read or require any secret.

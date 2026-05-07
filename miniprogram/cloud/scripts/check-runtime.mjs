@@ -66,6 +66,35 @@ assert(envSource.includes("apiProxy"), "env.js must use apiProxy as the cloud fu
 const pkg = JSON.parse(read(functionPackage));
 assert(pkg.dependencies && pkg.dependencies["wx-server-sdk"], "apiProxy package.json must include wx-server-sdk");
 
+const functionSource = read(functionIndex);
+const requiredRoutes = [
+  "/api/v1/mobile/setup/seed",
+  "/api/v1/mobile/analytics/mastery",
+  "/api/v1/mobile/analytics/weak-points",
+  "/api/v1/mobile/analytics/recommendations",
+  "/api/v1/mobile/analytics/question-stats",
+];
+
+for (const route of requiredRoutes) {
+  assert(functionSource.includes(route), `apiProxy must implement route: ${route}`);
+}
+
+for (const collectionName of [
+  "knowledge_bases",
+  "chat_sessions",
+  "notebooks",
+  "question_entries",
+  "question_categories",
+  "guide_sessions",
+  "learning_paths",
+  "parent_reports",
+  "tutor_bots",
+  "app_settings",
+]) {
+  assert(functionSource.includes(collectionName), `apiProxy must reference collection: ${collectionName}`);
+}
+
 console.log("CloudBase runtime check passed.");
 console.log(`Mini Program root: ${miniprogramRoot}`);
 console.log(`Cloud function: ${functionRoot}`);
+console.log("Invoke examples: node miniprogram/cloud/scripts/print-invoke-samples.mjs");

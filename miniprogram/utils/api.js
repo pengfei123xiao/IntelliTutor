@@ -497,6 +497,59 @@ function getSettings() {
   });
 }
 
+function seedMobileBackend(payload = {}) {
+  return request({
+    url: "/api/v1/mobile/setup/seed",
+    method: "POST",
+    data: payload,
+  });
+}
+
+function getMasteryAnalytics() {
+  return withFallback(request({ url: "/api/v1/mobile/analytics/mastery" }), {
+    mastery: 0.72,
+    mastery_percent: 72,
+    label: "基本掌握",
+    confidence: "演示",
+    dimensions: [],
+  });
+}
+
+function getWeakPointAnalytics() {
+  return withFallback(request({ url: "/api/v1/mobile/analytics/weak-points" }), {
+    weak_points: [
+      {
+        topic: "一次函数图像",
+        mastery: 0.68,
+        evidence: "演示薄弱点",
+        reason: "需要更多题目记录",
+        next_action: "完成 3 道即时检测题",
+      },
+    ],
+  });
+}
+
+function getLearningRecommendations() {
+  return withFallback(request({ url: "/api/v1/mobile/analytics/recommendations" }), {
+    recommendation: {
+      title: "20 分钟学习路径",
+      target_topic: "今日学习主题",
+      tasks: ["梳理概念", "完成检测", "生成复盘"],
+    },
+  });
+}
+
+function getQuestionStats() {
+  return withFallback(request({ url: "/api/v1/mobile/analytics/question-stats" }), {
+    total: MOCK_QUESTIONS.items.length,
+    correct: MOCK_QUESTIONS.items.filter((item) => item.is_correct).length,
+    wrong: MOCK_QUESTIONS.items.filter((item) => !item.is_correct).length,
+    accuracy: 0.5,
+    by_topic: [],
+    by_difficulty: [],
+  });
+}
+
 module.exports = {
   apiUrl,
   request,
@@ -523,4 +576,9 @@ module.exports = {
   deleteQuestionEntry,
   getTutorBots,
   getSettings,
+  seedMobileBackend,
+  getMasteryAnalytics,
+  getWeakPointAnalytics,
+  getLearningRecommendations,
+  getQuestionStats,
 };
