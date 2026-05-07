@@ -1,6 +1,6 @@
 .chat-page {
   background:
-    linear-gradient(180deg, #171511 0, #171511 212rpx, #f7f0e6 212rpx, #fbf6ee 66%, #efe5d8 100%);
+    linear-gradient(180deg, #faf9f5 0, #faf9f5 148rpx, #fbf6ee 58%, #efe5d8 100%);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -11,84 +11,46 @@
 
 .chat-topbar {
   align-items: center;
-  background: #171511;
-  border-bottom: 1rpx solid #2b2721;
+  background: #faf9f5;
+  border-bottom: 1rpx solid #e6dfd8;
   display: flex;
+  gap: 14rpx;
   justify-content: space-between;
-  min-height: 126rpx;
-  padding: 24rpx 24rpx 20rpx;
-}
-
-.brand-block {
-  align-items: center;
-  display: flex;
-  flex: 1;
-  gap: 12rpx;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.brand-mark {
-  align-items: center;
-  background: #c9674f;
-  border-radius: 16rpx;
-  color: #fff7ed;
-  display: flex;
-  font-family: Georgia, "Songti SC", "STSong", serif;
-  font-size: 24rpx;
-  height: 60rpx;
-  justify-content: center;
-  line-height: 1;
-  width: 60rpx;
-}
-
-.brand-copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.brand-name {
-  color: #fff7ed;
-  display: block;
-  font-size: 28rpx;
-  font-weight: 500;
-  max-width: 230rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.brand-sub {
-  color: #b7aea1;
-  font-size: 21rpx;
-  margin-top: 4rpx;
+  min-height: 92rpx;
+  padding: 16rpx 28rpx 18rpx;
 }
 
 .top-actions {
   display: flex;
-  flex: 0 0 auto;
-  gap: 10rpx;
+  flex: 1;
+  gap: 14rpx;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .top-button {
   align-items: center;
-  background: #25221d;
-  border: 1rpx solid #3a342c;
+  background: #faf9f5;
+  border: 1rpx solid #e6dfd8;
   border-radius: 999rpx;
-  color: #e7ded1;
+  color: #3d3d3a;
   display: flex;
-  font-size: 23rpx;
-  height: 56rpx;
+  flex: 1;
+  font-size: 25rpx;
+  font-weight: 500;
+  height: 58rpx;
   justify-content: center;
   line-height: 1;
-  padding: 0 18rpx;
+  max-width: 310rpx;
+  min-width: 0;
+  padding: 0 20rpx;
 }
 
 .top-button.primary {
-  background: #c9674f;
-  border-color: #c9674f;
-  color: #fff7ed;
+  background: #181715;
+  border-color: #181715;
+  color: #faf9f5;
+  max-width: 330rpx;
 }
 
 .button-icon {

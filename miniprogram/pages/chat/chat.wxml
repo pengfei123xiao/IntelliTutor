@@ -1,14 +1,7 @@
 <view class="chat-page">
   <view class="chat-topbar">
-    <view class="brand-block">
-      <text class="brand-mark">ic</text>
-      <view class="brand-copy">
-        <text class="brand-name">AIChat</text>
-        <text class="brand-sub">中文学习助手</text>
-      </view>
-    </view>
+    <button class="top-button" bindtap="toggleSessions"><text class="button-icon history-icon"></text>历史</button>
     <view class="top-actions">
-      <button class="top-button" bindtap="toggleSessions"><text class="button-icon history-icon"></text>历史</button>
       <button class="top-button primary" bindtap="newChat"><text class="button-icon plus-icon"></text>新对话</button>
     </view>
   </view>
